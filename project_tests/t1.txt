@@ -1,0 +1,5 @@
+create(db,"db_t1")
+t1=create(tbl,"tbl1","db_t1",1)
+t1_c1=create(col,"c1",t1,unsorted)
+relational_insert(t1,23)
+tuple(t1_c1)
