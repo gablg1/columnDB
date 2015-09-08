@@ -14,6 +14,24 @@ merge in any updates or bug fixes that we might release.
 This repository is managed by the CS165 Staff, so please contact one
 of the TFs or Stratos if you have any questions at any time.
 
+## Getting Started
+
+
+First, please add our distribution code repository as a new remote,
+you can do that with:
+
+> `git remote add cs165 git://code.seas.harvard.edu/cs165-main/cs165-2015-base.git`
+
+This means in the future, you can pull from our repository using:
+
+> `git pull cs165 master`
+
+Next, please make sure that your project/repo are set to private.
+You'll still need to share read access with the cs165-staff group.
+
+We recommend that throughout the semester, you make git tags at each of
+the checkpoints so that it's easier to manage the progress of your project.
+
 ## CS165-API.h
 
 The CS165-API.h header file contains the public API that your server
@@ -27,8 +45,7 @@ you are allowed to modify them as you see fit.
 
 ## Requirements
 
-You should have either clang or gcc installed in a linux-based machine.
-TODO(Include more information here...)
+You should have gcc installed in a linux-based machine (debian or fedora).
 
 ## Client-Server code
 We have included a simple unix socket implementation of an interactive
