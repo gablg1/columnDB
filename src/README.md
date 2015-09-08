@@ -6,7 +6,7 @@ This repository contains the distribution code for CS165 Fall 2015.
 We will continually update this repository throughout the semester,
 so it is recommended that you add
 
-> `git@code.seas.harvard.edu:cs165-2015/cs165-2015.git`
+> `git://code.seas.harvard.edu/cs165-main/cs165-2015-base.git`
 
 as a new remote to your own local git repository. This will help you
 merge in any updates or bug fixes that we might release.
