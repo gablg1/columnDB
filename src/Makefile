@@ -17,8 +17,7 @@ LDFLAGS =
 LIBS =
 INCLUDES = include
 
-# Automatic dependency magic
-
+####### Automatic dependency magic #######
 # Set-up dependency directory
 DEPSDIR := .deps
 BUILDSTAMP := $(DEPSDIR)/rebuildstamp
@@ -37,6 +36,8 @@ endif
 $(DEPSDIR)/stamp $(BUILDSTAMP):
 	mkdir -p $(@D)
 	touch $@
+
+####### Automatic dependency magic #######
 
 %.o : %.c $(BUILDSTAMP)
 	$(CC) $(CFLAGS) $(DEPCFLAGS) -O$(O) -o $@ -c $<
