@@ -73,7 +73,7 @@ void handle_client(int client_socket) {
     // 3. Handle request if appropriate
     // 4. Send response of request.
     do {
-        length = recv(client_socket, recv_message.message, sizeof(message_t), 0);
+        length = recv(client_socket, &recv_message, sizeof(message_t), 0);
         if (length < 0) {
             log_err("Client connection closed!\n");
             exit(1);
