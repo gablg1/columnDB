@@ -23,7 +23,7 @@ SOFTWARE.
 /**
  * EXTRA
  * DataType
- * Flag to mark what type of data is held in the struct.  
+ * Flag to mark what type of data is held in the struct.
  * You can support additional types by including this enum and using void*
  * in place of int* in db_operator simliar to the way IndexType supports
  * additional types.
@@ -54,6 +54,8 @@ typedef enum IndexType {
  * - type, the column index type (see enum index_type)
  * - index, a pointer to the index structure. For SORTED, this points to the
  *       start of the sorted array. For B+Tree, this points to the root node.
+ *       You will need to cast this from void* to the appropriate type when
+ *       working with the index.
  **/
 typedef struct column_index {
     IndexType type;
@@ -77,7 +79,7 @@ typedef struct column_index {
  **/
 typedef struct column {
     char* name;
-    void* data;
+    int* data;
     column_index *index;
 } column;
 
