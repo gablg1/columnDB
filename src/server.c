@@ -27,12 +27,6 @@
 #include "message.h"
 #include "utils.h"
 
-// PROTOTYPES
-// handle_client(client_socket)
-// This is the execution routine after a client has connected.
-// It will continually listen for messages from the client and execute queries.
-void handle_client(int client_socket);
-
 /**
  * parse_command takes as input the send_message from the client and then
  * parses it into the appropriate query. Stores into send_message the
@@ -58,6 +52,11 @@ char* execute_db_operator(db_operator* query) {
     return "165";
 }
 
+/**
+ * handle_client(client_socket)
+ * This is the execution routine after a client has connected.
+ * It will continually listen for messages from the client and execute queries.
+ **/
 void handle_client(int client_socket) {
     int done = 0;
     int length = 0;
@@ -74,7 +73,7 @@ void handle_client(int client_socket) {
     // 3. Handle request if appropriate
     // 4. Send response of request.
     do {
-        length = recv(client_socket, recv_message.message, DEFAULT_MESSAGE_BUFFER_SIZE, 0);
+        length = recv(client_socket, recv_message.message, sizeof(message_t), 0);
         if (length < 0) {
             log_err("Client connection closed!\n");
             exit(1);
@@ -111,10 +110,12 @@ void handle_client(int client_socket) {
     close(client_socket);
 }
 
-// setup_server()
-//
-// This sets up the connection on the server side using unix sockets.
-// Returns a valid server socket fd on success, else -1 on failure.
+/**
+ * setup_server()
+ *
+ * This sets up the connection on the server side using unix sockets.
+ * Returns a valid server socket fd on success, else -1 on failure.
+ **/
 int setup_server() {
     int server_socket;
     size_t len;
