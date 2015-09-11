@@ -12,7 +12,7 @@ CC = gcc -std=c99 -g -ggdb3
 O ?= 3
 
 # Flags and other libraries
-CFLAGS = -Wall -Wextra -pedantic -pthread -O$(O) -I$(INCLUDES)
+override CFLAGS += -Wall -Wextra -pedantic -pthread -O$(O) -I$(INCLUDES)
 LDFLAGS =
 LIBS =
 INCLUDES = include
