@@ -43,23 +43,18 @@ $(DEPSDIR)/stamp $(BUILDSTAMP):
 	$(CC) $(CFLAGS) $(DEPCFLAGS) -O$(O) -o $@ -c $<
 
 ##
-# To include additional non-executable files (e.g. selects.c), you'll
-# need to add an additional build rule here. See "utils" as an example,
-# and you should be able to just copy the two lines and change the name.
+# To include additional non-executable files (e.g. selects.c, utils.c, etc),
+# you'll need to add an additional build dependency to the file that requires
+# the new file.  For example, see that client and server both require utils.o
 #
-# After that, you should include it as a "dependency" on any other builds
-# that require it.  For example, if you had just added "utils" and then
-# client and server depends on it, you would add "utils.o" to the right
-# side of the build rule
+# If you create a new file such as selects.c, then you will need a "selects.o"
+# dependency on the right side of whichever one requires the file.
 ##
-
-utils: utils.o
-	$(CC) $(CFLAGS) $(DEPCFLAGS) -c -o $@ $<
 
 client: client.o utils.o
 	$(CC) $(CFLAGS) $(DEPCFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
-server: server.o utils.o
+server: server.o utils.o 
 	$(CC) $(CFLAGS) $(DEPCFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 clean:
