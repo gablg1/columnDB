@@ -1,7 +1,7 @@
 # CS165 MakeFile
-# This file includes automatic dependency tracking!
-# Please see example of "utils" to see how to add additional files
-# to your project.
+# This file includes automatic dependency tracking
+# Please see example of "utils" to see how to add additional file
+# to your project
 
 all: client server
 
