@@ -33,12 +33,12 @@
  * status to send back.
  * Returns a db_operator.
  **/
-db_operator* parse_command(message_t* recv_message, message_t* send_message) {
+db_operator* parse_command(message* recv_message, message* send_message) {
     send_message->status = OK_WAIT_FOR_RESPONSE;
     db_operator *dbo = malloc(sizeof(db_operator));
     // Here you parse the message and fill in the proper db_operator fields for
-    // now we just log the message
-    cs165_log(stdout, recv_message->message);
+    // now we just log the payload
+    cs165_log(stdout, recv_message->payload);
     return dbo;
 }
 
@@ -64,16 +64,16 @@ void handle_client(int client_socket) {
     log_info("Connected to socket: %d.\n", client_socket);
 
     // Create two messages, one from which to read and one from which to receive
-    message_t send_message;
-    message_t recv_message;
+    message send_message;
+    message recv_message;
 
     // Continually receive messages from client and execute queries.
     // 1. Parse the command
-    // 2. Send status of the received message (OK, UNKNOWN_QUERY, etc)
-    // 3. Handle request if appropriate
+    // 2. Handle request if appropriate
+    // 3. Send status of the received message (OK, UNKNOWN_QUERY, etc)
     // 4. Send response of request.
     do {
-        length = recv(client_socket, &recv_message, sizeof(message_t), 0);
+        length = recv(client_socket, &recv_message, sizeof(message), 0);
         if (length < 0) {
             log_err("Client connection closed!\n");
             exit(1);
@@ -85,21 +85,18 @@ void handle_client(int client_socket) {
             // 1. Parse command
             db_operator* query = parse_command(&recv_message, &send_message);
 
-            // 2. Send status of the received message (OK, UNKNOWN_QUERY, etc)
-            if (send(client_socket, &(send_message), sizeof(message_t), 0) == -1) {
+            // 2. Handle request
+            char* result = execute_db_operator(query);
+            send_message.length = strlen(result);
+
+            // 3. Send status of the received message (OK, UNKNOWN_QUERY, etc)
+            if (send(client_socket, &(send_message), sizeof(message), 0) == -1) {
                 log_err("Failed to send message.");
                 exit(1);
             }
 
-            // 3. Handle request
-            char* result = execute_db_operator(query);
-            int response_length = strlen(result) < DEFAULT_MESSAGE_BUFFER_SIZE ?
-                strlen(result) : DEFAULT_MESSAGE_BUFFER_SIZE;
-            strncpy(send_message.message, result, response_length);
-            send_message.message[response_length] = '\0';
-
             // 4. Send response of request
-            if (send(client_socket, &(send_message), sizeof(message_t), 0) == -1) {
+            if (send(client_socket, result, send_message.length, 0) == -1) {
                 log_err("Failed to send message.");
                 exit(1);
             }
@@ -155,6 +152,10 @@ int setup_server() {
     return server_socket;
 }
 
+// Currently this main will setup the socket and accept a single client.
+// After handling the client, it will exit.
+// You will need to extend this to handle multiple concurrent clients
+// and remain running until it receives a shut-down command.
 int main(void)
 {
     int server_socket = setup_server();
@@ -168,8 +169,6 @@ int main(void)
     socklen_t t = sizeof(remote);
     int client_socket = 0;
 
-    // For now, only accept a single client, although later we can put this in a loop
-    // to accept for multiple clients.
     if ((client_socket = accept(server_socket, (struct sockaddr *)&remote, &t)) == -1) {
         log_err("L%d: Failed to accept a new connection.\n", __LINE__);
         exit(1);
