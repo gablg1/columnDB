@@ -27,6 +27,8 @@
 #include "message.h"
 #include "utils.h"
 
+#define DEFAULT_QUERY_BUFFER_SIZE 1024
+
 /**
  * parse_command takes as input the send_message from the client and then
  * parses it into the appropriate query. Stores into send_message the
@@ -67,6 +69,8 @@ void handle_client(int client_socket) {
     message send_message;
     message recv_message;
 
+    char recv_buffer[DEFAULT_QUERY_BUFFER_SIZE];
+    recv_message.payload = recv_buffer;
     // Continually receive messages from client and execute queries.
     // 1. Parse the command
     // 2. Handle request if appropriate
@@ -82,6 +86,10 @@ void handle_client(int client_socket) {
         }
 
         if (!done) {
+            length = recv(client_socket, recv_buffer, DEFAULT_QUERY_BUFFER_SIZE,0);
+            recv_message.payload = recv_buffer;
+            recv_message.payload[length] = '\0';
+
             // 1. Parse command
             db_operator* query = parse_command(&recv_message, &send_message);
 
