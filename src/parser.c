@@ -97,6 +97,7 @@ status parse_dsl(char* str, dsl* d, db_operator* op)
         free(str_cpy);
 
         // No db_operator required, since no query plan
+        (void) op;
         status ret;
         ret.code = OK;
         return ret;
