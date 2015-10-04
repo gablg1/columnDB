@@ -1,0 +1,12 @@
+-- Min
+--
+-- SELECT min(col6) FROM tbl1 WHERE col6 >= 127 AND col6 < 123456789;
+s1=select(db1.tbl1.col6,127,123456789)
+f1=fetch(s1,db1.tbl1.col6)
+m1=min(null,f1)
+tuple(m1)
+--
+-- SELECT min(col5) FROM tbl1 WHERE col6 >= 127 AND col6 < 123456789;
+f2=fetch(s1,db1.tbl1.col5)
+m2=min(null,f2)
+tuple(m2)
