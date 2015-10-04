@@ -2,11 +2,11 @@
 --
 -- SELECT max(col6) FROM tbl1 WHERE col6 >= 127 AND col6 < 123456789;
 s1=select(db1.tbl1.col6,127,123456789)
-f1=fetch(s1,db1.tbl1.col6)
+f1=fetch(db1.tbl1.col6,s1)
 m1=max(null,f1)
 tuple(m1)
 --
 -- SELECT max(col5) FROM tbl1 WHERE col6 >= 127 AND col6 < 123456789;
-f2=fetch(s1,db1.tbl1.col5)
+f2=fetch(db1.tbl1.col5,s1)
 m2=max(null,f1)
 tuple(m2)
