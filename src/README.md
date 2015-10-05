@@ -101,4 +101,4 @@ definition at the top of the file:
 The other way is to add it during the compilation process. Instead of running
 just `make`, you can run:
 
-> `make CFLAGS+="-DLOG -DLOG_ERROR -DLOG_INFO"
+> `make CFLAGS+="-DLOG -DLOG_ERR -DLOG_INFO"
