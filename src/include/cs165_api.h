@@ -101,7 +101,7 @@ typedef struct column {
 typedef struct table {
     const char* name;
     size_t col_count;
-    column* col;
+    column** col;
     size_t length;
 } table;
 
@@ -115,7 +115,7 @@ typedef struct table {
 typedef struct db {
     const char* name;
     size_t table_count;
-    table* tables;
+    table** tables;
 } db;
 
 /**

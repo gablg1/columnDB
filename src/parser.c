@@ -6,9 +6,6 @@
 
 #include "db.h"
 
-// Trims the whitespace
-char* trim(char *str);
-
 // Prototype for Helper function that executes that actual parsing after
 // parse_command_string has found a matching regex.
 status parse_dsl(char* str, dsl* d, db_operator* op);
@@ -18,9 +15,6 @@ status parse_dsl(char* str, dsl* d, db_operator* op);
 status parse_command_string(char* str, dsl** commands, db_operator* op)
 {
     log_info("Parsing: %s", str);
-
-    // Trim the string of any spaces.
-    char* trim_str = trim(str);
 
     // Create a regular expression to parse the string
     regex_t regex;
@@ -37,14 +31,14 @@ status parse_command_string(char* str, dsl** commands, db_operator* op)
         }
 
         // Bind regular expression associated with the string
-        ret = regexec(&regex, trim_str, n_matches, &m, 0);
+        ret = regexec(&regex, str, n_matches, &m, 0);
 
         // If we have a match, then figure out which one it is!
         if (ret == 0) {
             log_info("Found Command: %d\n", i);
             // Here, we actually strip the command as appropriately
             // based on the DSL to get the variable names.
-            return parse_dsl(trim_str, d, op);
+            return parse_dsl(str, d, op);
         }
     }
 
@@ -56,10 +50,11 @@ status parse_command_string(char* str, dsl** commands, db_operator* op)
 
 status parse_dsl(char* str, dsl* d, db_operator* op)
 {
-    // Use the delimiters to parse out the string
+    // Use the commas to parse out the string
     char open_paren[2] = "(";
     char close_paren[2] = ")";
-    char delimiter[2] = ",";
+    char comma[2] = ",";
+    char quotes[2] = "\"";
     // char end_line[2] = "\n";
     // char eq_sign[2] = "=";
 
@@ -68,16 +63,20 @@ status parse_dsl(char* str, dsl* d, db_operator* op)
         char* str_cpy = malloc(strlen(str));
         strncpy(str_cpy, str, strlen(str));
 
-        // This gives us everything inside the (db, <db_name>)
+        // This gives us everything inside the (db, "<db_name>")
         strtok(str_cpy, open_paren);
         char* args = strtok(NULL, close_paren);
 
         // This gives us "db", but we don't need to use it
-        char* db_indicator = strtok(args, delimiter);
+        char* db_indicator = strtok(args, comma);
         (void) db_indicator;
 
-        // This gives us <db_name>
-        char* db_name = strtok(NULL, delimiter);
+        // This gives us the , before the quote
+        // char* delimiter = strtok(NULL, quotes);
+        // (void) delimiter;
+
+        // This gives us "<db_name>"
+        char* db_name = strtok(NULL, quotes);
 
         log_info("create_db(%s)\n", db_name);
 
@@ -111,14 +110,14 @@ status parse_dsl(char* str, dsl* d, db_operator* op)
         char* args = strtok(NULL, close_paren);
 
         // This gives us "table"
-        char* tbl_indicator = strtok(args, delimiter);
+        char* tbl_indicator = strtok(args, comma);
         (void) tbl_indicator;
 
         // This gives us <tbl_name>, we will need this to create the full name
-        char* tbl_name = strtok(NULL, delimiter);
+        char* tbl_name = strtok(NULL, quotes);
 
         // This gives us <db_name>, we will need this to create the full name
-        char* db_name = strtok(NULL, delimiter);
+        char* db_name = strtok(NULL, comma);
 
         // Generate the full name using <db_name>.<tbl_name>
         char full_name[strlen(tbl_name) + strlen(db_name)];
@@ -127,7 +126,7 @@ status parse_dsl(char* str, dsl* d, db_operator* op)
         strncat(full_name, tbl_name, strlen(tbl_name));
 
         // This gives us count
-        char* count_str = strtok(NULL, delimiter);
+        char* count_str = strtok(NULL, comma);
         int count = 0;
         if (count_str != NULL) {
             count = atoi(count_str);
@@ -169,14 +168,14 @@ status parse_dsl(char* str, dsl* d, db_operator* op)
         char* args = strtok(NULL, close_paren);
 
         // This gives us "col"
-        char* col_indicator = strtok(args, delimiter);
+        char* col_indicator = strtok(args, comma);
         (void) col_indicator;
 
         // This gives us <col_name>, we will need this to create the full name
-        char* col_name = strtok(NULL, delimiter);
+        char* col_name = strtok(NULL, quotes);
 
         // This gives us <tbl_name>, we will need this to create the full name
-        char* tbl_name = strtok(NULL, delimiter);
+        char* tbl_name = strtok(NULL, comma);
 
         // Generate the full name using <db_name>.<tbl_name>
         char full_name[strlen(tbl_name) + strlen(col_name) + 1];
@@ -185,7 +184,7 @@ status parse_dsl(char* str, dsl* d, db_operator* op)
         strncat(full_name, col_name, strlen(col_name));
 
         // This gives us the "unsorted"
-        char* sorting_str = strtok(NULL, delimiter);
+        char* sorting_str = strtok(NULL, comma);
         (void) sorting_str;
 
         log_info("create_column(%s, %s, %s)\n", full_name, tbl_name, sorting_str);
@@ -219,20 +218,4 @@ status parse_dsl(char* str, dsl* d, db_operator* op)
     status fail;
     fail.code = ERROR;
     return fail;
-}
-
-// Trims the whitespace
-char* trim(char *str)
-{
-    int length = strlen(str);
-    int current = 0;
-    for (int i = 0; i < length; ++i) {
-        if (!isspace(str[i])) {
-            str[current++] = str[i];
-        }
-    }
-
-    // Write new null terminator
-    str[current] = 0;
-    return str;
 }
