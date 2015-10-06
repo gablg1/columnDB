@@ -120,7 +120,8 @@ status parse_dsl(char* str, dsl* d, db_operator* op)
         char* db_name = strtok(NULL, comma);
 
         // Generate the full name using <db_name>.<tbl_name>
-        char full_name[strlen(tbl_name) + strlen(db_name)];
+        char* full_name = (char*)malloc(sizeof(char)*(strlen(tbl_name) + strlen(db_name) + 2));
+
         strncat(full_name, db_name, strlen(db_name));
         strncat(full_name, ".", 1);
         strncat(full_name, tbl_name, strlen(tbl_name));
@@ -153,6 +154,9 @@ status parse_dsl(char* str, dsl* d, db_operator* op)
 
         // Free the str_cpy
         free(str_cpy);
+        free(full_name);
+        str_cpy=NULL;
+        full_name=NULL;
 
         // No db_operator required, since no query plan
         status ret;
@@ -178,7 +182,7 @@ status parse_dsl(char* str, dsl* d, db_operator* op)
         char* tbl_name = strtok(NULL, comma);
 
         // Generate the full name using <db_name>.<tbl_name>
-        char full_name[strlen(tbl_name) + strlen(col_name) + 1];
+        char* full_name=(char*)malloc(sizeof(char)*(strlen(tbl_name) + strlen(col_name) + 2));
         strncat(full_name, tbl_name, strlen(tbl_name));
         strncat(full_name, ".", 1);
         strncat(full_name, col_name, strlen(col_name));
@@ -207,7 +211,10 @@ status parse_dsl(char* str, dsl* d, db_operator* op)
 
         // Free the str_cpy
         free(str_cpy);
-
+        free(full_name);
+        str_cpy=NULL;
+        full_name=NULL;
+        
         // No db_operator required, since no query plan
         status ret;
         ret.code = OK;
