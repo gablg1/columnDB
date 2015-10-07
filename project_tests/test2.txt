@@ -7,5 +7,5 @@ a1=avg(f1)
 tuple(a1)
 --
 -- SELECT avg(col7) FROM tbl1;
-a2=avg(db1.tb1.col7)
+a2=avg(db1.tbl1.col7)
 tuple(a2)
