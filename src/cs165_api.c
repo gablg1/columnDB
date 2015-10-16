@@ -143,21 +143,22 @@ status relational_insert(table *tbl, list *values) {
     assert(values != NULL);
 
     // Insert each respective value into a row
-    int last_count = 0;
+    size_t last_count = 0;
     for (size_t i = 0; i < tbl->col_count; i++) {
         int val = pop_front(values);
-        insert(tbl->cols[i], val);
+        insert(&tbl->cols[i], val);
 
         // check that all counts end up being the same for integrity
-        assert(last_count == 0 || tbl->cols[i]->count != last_count);
-        last_count = tbl->cols[i]->count;
+        assert(last_count == 0 || tbl->cols[i].count != last_count);
+        last_count = tbl->cols[i].count;
     }
     assert(values->length == 0);
+    return OK_STATUS;
 }
 
 status insert(column *col, int data) {
 
-    int *pos = get_next_allocated_element(&col->count, &col->max_count, sizeof(int), col->data);
+    int *pos = get_next_allocated_element(&col->count, &col->max_count, sizeof(int), &col->data);
     *pos = data;
     return OK_STATUS;
 }
@@ -173,7 +174,7 @@ vector *select_one(column *col, MaybeInt low, MaybeInt high) {
             vector_insert(i, ret);
         else if (low.present && !high.present && col->data[i] >= low.val)
             vector_insert(i, ret);
-        else if (!low.present && high.present && col->data[i] < high)
+        else if (!low.present && high.present && col->data[i] < high.val)
             vector_insert(i, ret);
         else if (!low.present && !high.present)
             vector_insert(i, ret);

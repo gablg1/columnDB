@@ -10,17 +10,10 @@
 #include "utils.h"
 #include "message.h"
 
-typedef struct AgnosticVector {
-    size_t elem_size;
-    size_t length;
-    size_t max_length;
-    void *buf;
-} AgnosticVector;
-
 #define INITIAL_COUNT 32
 
 
-agnostic_vector *create_agnostic_vector(size_t elem_size) {
+AgnosticVector *create_agnostic_vector(size_t elem_size) {
     AgnosticVector *v = malloc(sizeof(AgnosticVector));
     v->elem_size = elem_size;
 
@@ -33,27 +26,27 @@ agnostic_vector *create_agnostic_vector(size_t elem_size) {
 
 void agnostic_vector_insert(void *val, AgnosticVector *v) {
     assert(v != NULL);
-    if (v->count >= v->max_count) {
-        v->max_count *= 2;
-        v->buf = realloc(v->buf, v->max_count * v->elem_size);
+    if (v->length >= v->max_length) {
+        v->max_length *= 2;
+        v->buf = realloc(v->buf, v->max_length * v->elem_size);
         assert(v->buf != NULL);
     }
 
     // actually inserts val and increments the length
-    void *dst = get_addr(v->count, v);
-    memcpy(dst, val, elem_size);
-    v->count++;
+    void *dst = get_addr(v->length, v);
+    memcpy(dst, val, v->elem_size);
+    v->length++;
 }
 
 // gets address of i-th element
 void *get_addr(size_t i, AgnosticVector *v) {
-    assert(sizeof(uint_8t) == 1);
-    return (uint_8t *) v->buf + i;
+    assert(sizeof(uint8_t) == 1);
+    return (uint8_t *) v->buf + i;
 }
 
 void destroy_agnostic_vector(AgnosticVector *v) {
-    if (v->data != NULL)
-        free(v->data);
+    if (v->buf != NULL)
+        free(v->buf);
 
     free(v);
 }
