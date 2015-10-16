@@ -168,7 +168,7 @@ db *load(const char *filename) {
     char line[1024];
     while (fgets(line, 1024, stream))
     {
-        pass;
+        assert(1);
     }
 }
 
