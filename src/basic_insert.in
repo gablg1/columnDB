@@ -1,0 +1,9 @@
+create(db,"awesomebase") -- create db with name "awesomebase"
+create(tbl,"grades",awesomebase,6) -- create table "grades" with 6 columns in the "awesomebase"
+create(col,"project",awesomebase.grades,unsorted) -- create column 1 with name "project"
+create(col,"midterm1",awesomebase.grades,unsorted) -- create column 2 with name "midterm1"
+create(col,"midterm2",awesomebase.grades,unsorted) -- create column 3 with name "midterm2"
+create(col,"class",awesomebase.grades,unsorted) -- create column 4 with name "class"
+create(col,"quizzes",awesomebase.grades,unsorted) -- create column 5 with name "quizzes"
+create(col,"student_id",awesomebase.grades,unsorted) -- create column 6 with name "student_id"
+relational_insert(awesomebase.grades,107,80,75,95,93,1)

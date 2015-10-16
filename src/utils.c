@@ -1,10 +1,39 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
 
 #include "utils.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
+
+#define LOG_INFO
+#define LOG
+#define LOG_ERR
+
+#define TO_ALLOCATE 64
+
+void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, void **buf) {
+    assert(buf != NULL);
+    assert(count != NULL && max_count != NULL);
+    if (*count >= *max_count) {
+        *max_count += TO_ALLOCATE;
+        *buf = realloc(*buf, *max_count * size);
+        assert(*buf != NULL);
+    }
+
+    // returns the address of the new added element
+    // if sizeof(char) != 1 the whole world breaks
+    assert(sizeof(char) == 1);
+    return (char *) *buf + size * ((*count)++);
+}
+
+void delete_allocated_element(void *elem, void *buf) {
+    // TODO: implement me
+    return;
+}
+
 
 void cs165_log(FILE* out, const char *format, ...) {
 #ifdef LOG
@@ -44,5 +73,4 @@ void log_info(const char *format, ...) {
     (void) format;
 #endif
 }
-
 

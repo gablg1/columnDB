@@ -1,23 +1,48 @@
 %{
 #include <stdio.h>
+#include "../include/cs165_api.h"
+
 #include "grammar.tab.h"
 
-extern void yyerror(char *);
-extern int yyparse(void);
+void comment(void);
 
+//extern void yyerror(db_operator *op, char *);
+//extern int yyparse(void);
 %}
 
 DIGIT [0-9]
 LETTER [A-Za-z]
-SYMBOL [_-]
+ALPHANUM_AND_SYMBOLS [A-Za-z0-9_]
+VALID_SYMBO [_]
+SYMBOL [,();=]
 
 %%
 
-[\t\n ]     /* spaces just signify end of token */
-;           { return END_OF_QUERY; }
-*           { return ALL; }
+-- {comment();}
+create {return CREATE;}
+relational_insert {return REL_INSERT;}
+select {return SELECT;}
+fetch {return FETCH;}
+db { return DB; }
+tbl { return TBL; }
+col { return COL; }
+unsorted { return UNSORTED_T; }
+sorted {return SORTED_T; }
 
-.+          { return WORD; } /* A combination of everything else is a WORD */
+
+[\t ]     /* spaces just signify end of token */
+"."|","|"("|")"|";"|"="|"\"" { return yytext[0]; }
+
+null { return NULL_T; }
+{DIGIT}+ {yylval.val = atoi(yytext); return INT;}
+{ALPHANUM_AND_SYMBOLS}+ { yylval.str = strdup(yytext); return WORD; } /* A combination of everything else is a WORD */
 
 %%
 
+
+void comment(void) {
+	char c;
+	// we just go until the end of input
+	while ((c = input()) != '\0' && c != '\n')
+		;
+}

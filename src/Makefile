@@ -3,16 +3,16 @@
 # Please see example of "utils" to see how to add additional file
 # to your project
 
-all: client server
+all: parse client server
 
 # C-compiler settings
 CC = gcc -std=c99 -g -ggdb3
 
 # Default optimization level
-O ?= 3
+O ?= 0
 
 # Flags and other libraries
-override CFLAGS += -Wall -Wextra -pedantic -pthread -O$(O) -I$(INCLUDES)
+override CFLAGS += -Wall -Wextra -pedantic -O$(O) -I$(INCLUDES)
 LDFLAGS =
 LIBS =
 INCLUDES = include
@@ -51,10 +51,13 @@ $(DEPSDIR)/stamp $(BUILDSTAMP):
 # dependency on the right side of whichever one requires the file.
 ##
 
+parse: list.o
+	$(MAKE) -C parser
+
 client: client.o utils.o
 	$(CC) $(CFLAGS) $(DEPCFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
-server: server.o db.o dsl.o parser.o utils.o
+server: server.o utils.o message.o dbs.o cs165_api.o parser/grammar.tab.o parser/lex.yy.o list.o
 	$(CC) $(CFLAGS) $(DEPCFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 clean:

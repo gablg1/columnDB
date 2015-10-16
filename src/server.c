@@ -27,11 +27,15 @@
 #include "message.h"
 #include "parser.h"
 #include "utils.h"
+#include "dbs.h"
+#include "list.h"
 
 #define DEFAULT_QUERY_BUFFER_SIZE 1024
 
-// Here, we allow for a global of DSL COMMANDS to be shared in the program
-dsl** dsl_commands;
+/* Bison parser */
+#include "parser/grammar.tab.h"
+
+void parse_dsl(char *str, db_operator *op, message *send_msg);
 
 /**
  * parse_command takes as input the send_message from the client and then
@@ -41,16 +45,12 @@ dsl** dsl_commands;
  **/
 db_operator* parse_command(message* recv_message, message* send_message) {
     send_message->status = OK_WAIT_FOR_RESPONSE;
-    db_operator *dbo = malloc(sizeof(db_operator));
-    // Here you parse the message and fill in the proper db_operator fields for
-    // now we just log the payload
-    cs165_log(stdout, recv_message->payload);
 
-    // Here, we give you a default parser, you are welcome to replace it with anything you want
-    status parse_status = parse_command_string(recv_message->payload, dsl_commands, dbo);
-    if (parse_status.code != OK) {
-        // Something went wrong
-    }
+    // this will be used and freed in execute_db_operator
+    db_operator *dbo = malloc(sizeof(db_operator));
+
+    // Uses Bison and flex to parse the string
+    parse_dsl(recv_message->payload, dbo, send_message);
 
     return dbo;
 }
@@ -60,9 +60,31 @@ db_operator* parse_command(message* recv_message, message* send_message) {
  * on what the return type should be, maybe a result struct, and then have
  * a serialization into a string message).
  **/
-char* execute_db_operator(db_operator* query) {
+void execute_db_operator(db_operator* query, message *send_msg) {
+    switch (query->type) {
+        case NOOP:
+            // in this case the payload was already added by parse_dsl
+            break;
+        case INSERT: {
+            list *values = query->values1;
+            table *tbl = query->tbl;
+
+            relational_insert(tbl, values);
+
+            // now we destroy the list
+            // TODO: move this to cleanup
+            destroy_list(query->values1);
+
+            add_payload(send_msg, "Row added succesfully to table %s", query->tbl->name);
+            break;
+        } case ERROR:
+            break;
+        default:
+            add_payload(send_msg, "Unsupported query type");
+            break;
+    }
+    // TODO: move this to cleanup
     free(query);
-    return "165";
 }
 
 /**
@@ -78,6 +100,9 @@ void handle_client(int client_socket) {
 
     // Create two messages, one from which to read and one from which to receive
     message send_message;
+    init_message(&send_message);
+
+    // recv_message will live on the stack, so we don't need to init it
     message recv_message;
 
     // Continually receive messages from client and execute queries.
@@ -104,8 +129,7 @@ void handle_client(int client_socket) {
             db_operator* query = parse_command(&recv_message, &send_message);
 
             // 2. Handle request
-            char* result = execute_db_operator(query);
-            send_message.length = strlen(result);
+            execute_db_operator(query, &send_message);
 
             // 3. Send status of the received message (OK, UNKNOWN_QUERY, etc)
             if (send(client_socket, &(send_message), sizeof(message), 0) == -1) {
@@ -114,15 +138,19 @@ void handle_client(int client_socket) {
             }
 
             // 4. Send response of request
-            if (send(client_socket, result, send_message.length, 0) == -1) {
+            if (send(client_socket, send_message.payload, send_message.length, 0) == -1) {
                 log_err("Failed to send message.");
                 exit(1);
             }
+
+            destroy_message(&send_message);
         }
     } while (!done);
 
     log_info("Connection closed at socket %d!\n", client_socket);
     close(client_socket);
+
+    drop_dbs();
 }
 
 /**

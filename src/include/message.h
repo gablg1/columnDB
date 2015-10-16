@@ -5,8 +5,6 @@
 typedef enum message_status {
     OK_DONE,
     OK_WAIT_FOR_RESPONSE,
-    UNKNOWN_COMMAND,
-    INCORRECT_FORMAT
 } message_status;
 
 // message is a single packet of information sent between client/server.
@@ -18,5 +16,11 @@ typedef struct message {
     int length;
     char* payload;
 } message;
+
+void add_payload(message *m, const char *format, ...);
+
+void init_message(message *m);
+
+void destroy_message(message *m);
 
 #endif

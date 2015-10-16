@@ -21,6 +21,10 @@ SOFTWARE.
 #define CS165_H
 
 #include <stdlib.h>
+#include "list.h"
+#include "vector.h"
+
+#define MAX_MSG_SIZE 1024
 
 /**
  * EXTRA
@@ -45,6 +49,7 @@ typedef enum DataType {
  * Additonal types are encouraged as extra.
  **/
 typedef enum IndexType {
+    UNSORTED,
     SORTED,
     B_PLUS_TREE,
 } IndexType;
@@ -64,6 +69,9 @@ typedef struct column_index {
     void* index;
 } column_index;
 
+
+
+
 /**
  * column
  * Defines a column structure, which is the building block of our column-store.
@@ -81,8 +89,10 @@ typedef struct column_index {
  **/
 typedef struct column {
     const char* name;
+    size_t max_count;
+    size_t count;
     int* data;
-    column_index *index;
+    column_index index;
 } column;
 
 /**
@@ -94,15 +104,16 @@ typedef struct column {
  * name, the name associated with the table. Table names must be unique
  *     within a database, but tables from different databases can have the same
  *     name.
- * - col_count, the number of columns in the table
- * - col, this is the pointer to an array of columns contained in the table.
+ * - col_count, the current number of columns in the table
+ * - max_col_count, the maximum number of currently allocated columns in the table
+ * - cols, this is the pointer to an array of columns contained in the table.
  * - length, the size of the columns in the table.
  **/
 typedef struct table {
     const char* name;
     size_t col_count;
-    column** col;
-    size_t length;
+    size_t max_col_count;
+    column* cols;
 } table;
 
 /**
@@ -115,7 +126,8 @@ typedef struct table {
 typedef struct db {
     const char* name;
     size_t table_count;
-    table** tables;
+    size_t max_table_count;
+    table* tables;
 } db;
 
 /**
@@ -141,6 +153,11 @@ typedef enum ComparatorType {
     GREATER_THAN = 2,
     EQUAL = 4,
 } ComparatorType;
+
+typedef struct MaybeInt {
+    int present;
+    int val;
+} MaybeInt;
 
 /**
  * A Junction defines the relationship between comparators.
@@ -196,13 +213,15 @@ typedef enum Aggr {
 } Aggr;
 
 typedef enum OperatorType {
-    SELECT,
+    NOOP,
+    ERROR_OP,
+
     PROJECT,
     HASH_JOIN,
     INSERT,
     DELETE,
     UPDATE,
-    AGGREGATE,
+    AGGREGATE
 } OperatorType;
 
 /**
@@ -239,8 +258,13 @@ typedef struct db_operator {
     OperatorType type;
 
     // Used for every operator
+    db db;
     table** tables;
-    column** columns;
+
+    // Operators that only use one table use this instead
+    table *tbl;
+
+    column* col;
 
     // Internmediaties used for PROJECT, DELETE, HASH_JOIN
     int *pos1;
@@ -249,18 +273,18 @@ typedef struct db_operator {
 
     // For insert/delete operations, we only use value1;
     // For update operations, we update value1 -> value2;
-    int *value1;
-    int *value2;
+    //int *values1;
+    list *values1;
+    int *values2;
 
     // This includes several possible fields that may be used in the operation.
     Aggr agg;
     comparator* c;
-
 } db_operator;
 
 typedef enum OpenFlags {
-    CREATE = 1,
-    LOAD = 2,
+    OPEN_CREATE = 1,
+    OPEN_LOAD = 2,
 } OpenFlags;
 
 /* OPERATOR API*/
@@ -319,6 +343,13 @@ status sync_db(db* db);
  **/
 status create_db(const char* db_name, db** db);
 
+/* destroys a db and frees all of the data,
+ * including the data of its tables
+ *
+ * It does not free db itself though. This is left to the user.
+ */
+void destroy_db(db* db);
+
 /**
  * create_table(db, name, num_columns, table)
  * Creates a table named @name in @db with @num_columns, and stores the pointer
@@ -340,7 +371,7 @@ status create_db(const char* db_name, db** db);
  *      // Something went wrong
  *  }
  **/
-status create_table(db* db, const char* name, size_t num_columns, table** table);
+status create_table(db* db, const char* name, size_t num_columns);
 
 /**
  * drop_table(db, table)
@@ -372,8 +403,9 @@ status drop_table(db* db, table* table);
  *      // Something went wrong
  *  }
  **/
-status create_column(table *table, const char* name, column** col);
+status create_column(table *table, const char* name, IndexType type);
 
+status drop_column(table* table, column *col);
 /**
  * create_index(col, type)
  * Creates an index for @col of the given IndexType. It stores the created index
@@ -385,11 +417,15 @@ status create_column(table *table, const char* name, column** col);
  **/
 status create_index(column* col, IndexType type);
 
+status relational_insert(table *tbl, list *data);
 status insert(column *col, int data);
 status delete(column *col, int *pos);
 status update(column *col, int *pos, int new_val);
 status col_scan(comparator *f, column *col, result **r);
 status index_scan(comparator *f, column *col, result **r);
+
+vector *select_one(column *col, MaybeInt low, MaybeInt high);
+vector *select_two(vector *positions, column *col, MaybeInt low, MaybeInt high);
 
 /* Query API */
 status query_prepare(const char* query, db_operator** op);
