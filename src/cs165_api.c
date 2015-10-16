@@ -3,6 +3,7 @@
 
 #include "include/cs165_api.h"
 #include "include/utils.h"
+#include "agnostic_vector.h"
 
 
 status OK_STATUS = {OK, NULL};
@@ -161,15 +162,78 @@ status insert(column *col, int data) {
     return OK_STATUS;
 }
 
-
-db *load(const char *filename) {
-    FILE* stream = fopen(filename, "r");
-
-    char line[1024];
-    while (fgets(line, 1024, stream))
-    {
-        assert(1);
+status insert_vector(column *col, vector *v) {
+    // first we make sure the column has enough space to hold the new data
+    size_t new_max_count = col->max_count;
+    while (new_max_count < col->count + v->length) {
+        new_max_count *= 2;
     }
+
+    if (new_max_count != col->max_count) {
+        col->data = realloc(col->data, new_max_count * sizeof(int));
+        assert(col->data != NULL);
+        col->max_count = new_max_count;
+    }
+
+    memcpy(col->data + col->count, v->buf, v->length * sizeof(int));
+    col->count += v->length;
+
+    return OK_STATUS;
+}
+
+status load(const char *filename) {
+    FILE* fp = fopen(filename, "r");
+
+    AgnosticVector *ag_cols = create_agnostic_vector(sizeof(column *));
+    column **cols = ag_cols->buf;
+    AgnosticVector *values = create_agnostic_vector(sizeof(vector *));
+    vector **vals = values->buf;
+
+    // buffer for storing lines
+    char *line = malloc(1024 * sizeof(char));
+    char *tofree = line;
+    assert(line != NULL);
+
+    // first we grab the first line
+    fgets(line, 1024, fp);
+    char *db_name, *tbl_name, *col_name;
+    while ((db_name = strsep(&line, ",")) != NULL) {
+        tbl_name = strsep(&line, ".");
+        col_name = strsep(&line, ".");
+
+        // this can be optimized by only looking up the table once
+        // since all tables must be the same
+        column *col = get_column_by_name(db_name, tbl_name, col_name);
+        agnostic_vector_insert(&col, ag_cols);
+
+        // each v will hold the values to be inserted in each column
+        vector *v = create_vector(NULL);
+        agnostic_vector_insert(&v, values);
+
+    }
+
+    table *tbl = get_table_by_name(db_name, tbl_name);
+    assert(ag_cols->length == tbl->col_count);
+
+    while (fgets(line, 1024, fp))
+    {
+        size_t count = 0;
+        char *token;
+        while ((token = strsep(&line, ",")) != NULL) {
+            int val = atoi(token);
+            vector_insert(val, vals[count++]);
+        }
+        assert(count == ag_cols->length);
+    }
+
+    for (size_t i = 0; i < values->length; i++) {
+        insert_vector(cols[i], vals[i]);
+    }
+
+    fclose(fp);
+    free(tofree);
+    destroy_agnostic_vector(ag_cols);
+    return OK_STATUS;
 }
 
 vector *fetch(column *col, vector *positions) {
