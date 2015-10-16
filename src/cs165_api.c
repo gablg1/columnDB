@@ -19,8 +19,7 @@ void free_db_operator(db_operator *dbo) {
 }
 
 status create_db(const char* db_name, db** db) {
-    if (db == NULL)
-        return NULL_PTR;
+    assert(db != NULL);
 
     if (*db == NULL)
         *db = malloc(sizeof(db));
@@ -34,8 +33,7 @@ status create_db(const char* db_name, db** db) {
 
 
 status create_table(db* db, const char* name, size_t num_columns) {
-    if (db == NULL)
-        return NULL_PTR;
+    assert(db != NULL);
 
     table *table = get_next_allocated_element(&db->table_count, &db->max_table_count,
                                                 sizeof(table), &(db->tables));
@@ -149,7 +147,7 @@ status relational_insert(table *tbl, list *values) {
         insert(&tbl->cols[i], val);
 
         // check that all counts end up being the same for integrity
-        assert(last_count == 0 || tbl->cols[i].count != last_count);
+        assert(last_count == 0 || tbl->cols[i].count == last_count);
         last_count = tbl->cols[i].count;
     }
     assert(values->length == 0);

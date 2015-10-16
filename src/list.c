@@ -34,6 +34,7 @@ int pop_front(list *root) {
     // root now points to the second element, and we free the first
     root->first = front->next;
     free(front);
+    root->length--;
     return ret;
 }
 
