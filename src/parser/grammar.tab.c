@@ -452,7 +452,7 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    56,    56,    60,    66,    79,    92,   105,   123,   141,
-     158,   166,   185,   191,   199,   200,   202,   205,   208,   213
+     158,   171,   190,   196,   204,   205,   207,   210,   213,   218
 };
 #endif
 
@@ -1517,6 +1517,11 @@ yyreduce:
             table *tbl = (yyvsp[(3) - (6)].ptr);
             list *root = (yyvsp[(5) - (6)].list);
 
+            if (tbl->col_count != root->length) {
+                op->type = ERROR_OP;
+                add_payload(send_msg, "Wrong number of values. Got %d, but needed %d", root->length, tbl->col_count);
+                YYACCEPT;
+            }
             op->type = INSERT;
             op->values1 = root;
             op->tbl = tbl;
@@ -1524,7 +1529,7 @@ yyreduce:
     break;
 
   case 11:
-#line 166 "grammar.y"
+#line 171 "grammar.y"
     {
             char *var_name = (yyvsp[(1) - (10)].str);
             column *col = (yyvsp[(5) - (10)].ptr);
@@ -1545,7 +1550,7 @@ yyreduce:
     break;
 
   case 12:
-#line 185 "grammar.y"
+#line 190 "grammar.y"
     {
             // here we create the linked list
             list *root = create_list();
@@ -1555,7 +1560,7 @@ yyreduce:
     break;
 
   case 13:
-#line 191 "grammar.y"
+#line 196 "grammar.y"
     {
             // $3 is the root of the linked list
             list *root = (yyvsp[(3) - (3)].list);
@@ -1565,27 +1570,27 @@ yyreduce:
     break;
 
   case 14:
-#line 199 "grammar.y"
+#line 204 "grammar.y"
     { (yyval.val) = UNSORTED; ;}
     break;
 
   case 15:
-#line 200 "grammar.y"
+#line 205 "grammar.y"
     { (yyval.val) = SORTED; ;}
     break;
 
   case 16:
-#line 202 "grammar.y"
+#line 207 "grammar.y"
     { (yyval.str) = (yyvsp[(1) - (1)].str); ;}
     break;
 
   case 17:
-#line 205 "grammar.y"
+#line 210 "grammar.y"
     { (yyval.str) = (yyvsp[(2) - (3)].str); ;}
     break;
 
   case 18:
-#line 208 "grammar.y"
+#line 213 "grammar.y"
     {
         MaybeInt n;
         n.present = 1;
@@ -1595,7 +1600,7 @@ yyreduce:
     break;
 
   case 19:
-#line 213 "grammar.y"
+#line 218 "grammar.y"
     {
         MaybeInt n;
         n.present = 0;
@@ -1605,7 +1610,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1609 "grammar.tab.c"
+#line 1614 "grammar.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1819,7 +1824,7 @@ yyreturn:
 }
 
 
-#line 219 "grammar.y"
+#line 224 "grammar.y"
 
 
 void parse_dsl(char *str, db_operator *op, message *send_msg) {
