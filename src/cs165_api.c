@@ -161,6 +161,17 @@ status insert(column *col, int data) {
     return OK_STATUS;
 }
 
+
+db *load(const char *filename) {
+    FILE* stream = fopen(filename, "r");
+
+    char line[1024];
+    while (fgets(line, 1024, stream))
+    {
+        pass;
+    }
+}
+
 vector *fetch(column *col, vector *positions) {
     vector *ret = create_vector(NULL);
 

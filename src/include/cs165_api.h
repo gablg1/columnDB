@@ -428,6 +428,8 @@ vector *select_one(column *col, MaybeInt low, MaybeInt high);
 vector *select_two(vector *positions, column *col, MaybeInt low, MaybeInt high);
 vector *fetch(column *col, vector *positions);
 
+db *load(const char *filename);
+
 /* Query API */
 status query_prepare(const char* query, db_operator** op);
 status query_execute(db_operator* op, result** results);
