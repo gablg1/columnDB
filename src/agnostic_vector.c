@@ -41,7 +41,7 @@ void agnostic_vector_insert(void *val, AgnosticVector *v) {
 // gets address of i-th element
 void *get_addr(size_t i, AgnosticVector *v) {
     assert(sizeof(uint8_t) == 1);
-    return (uint8_t *) v->buf + i;
+    return (uint8_t *) v->buf + i * v->elem_size;
 }
 
 void destroy_agnostic_vector(AgnosticVector *v) {

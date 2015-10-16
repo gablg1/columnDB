@@ -27,8 +27,11 @@
 #include "message.h"
 #include "parser.h"
 #include "utils.h"
-#include "dbs.h"
 #include "list.h"
+
+// includes that use global structures
+#include "dbs.h"
+#include "variables.h"
 
 #define DEFAULT_QUERY_BUFFER_SIZE 1024
 
@@ -83,8 +86,17 @@ void execute_db_operator(db_operator* query, message *send_msg) {
             add_payload(send_msg, "Unsupported query type");
             break;
     }
-    // TODO: move this to cleanup
+    // TODO: move this to cleanup_db_operator
     free(query);
+}
+
+/*
+ * Here we free all of the global structures that were allocated,
+ * before shutting down the DB server.
+ */
+void cleanup_globals(void) {
+    drop_dbs();
+    destroy_vars();
 }
 
 /**
@@ -150,8 +162,9 @@ void handle_client(int client_socket) {
     log_info("Connection closed at socket %d!\n", client_socket);
     close(client_socket);
 
-    drop_dbs();
+    cleanup_globals();
 }
+
 
 /**
  * setup_server()

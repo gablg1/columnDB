@@ -161,6 +161,15 @@ status insert(column *col, int data) {
     return OK_STATUS;
 }
 
+vector *fetch(column *col, vector *positions) {
+    vector *ret = create_vector(NULL);
+
+    for (size_t i = 0; i < positions->length; i++) {
+        vector_insert(col->data[i], ret);
+    }
+    return ret;
+}
+
 vector *select_one(column *col, MaybeInt low, MaybeInt high) {
     // right now we create the vector with no name
     vector *ret = create_vector(NULL);

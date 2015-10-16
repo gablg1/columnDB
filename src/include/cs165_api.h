@@ -426,6 +426,7 @@ status index_scan(comparator *f, column *col, result **r);
 
 vector *select_one(column *col, MaybeInt low, MaybeInt high);
 vector *select_two(vector *positions, column *col, MaybeInt low, MaybeInt high);
+vector *fetch(column *col, vector *positions);
 
 /* Query API */
 status query_prepare(const char* query, db_operator** op);
