@@ -23,6 +23,7 @@ create {return CREATE;}
 relational_insert {return REL_INSERT;}
 select {return SELECT;}
 fetch {return FETCH;}
+load { return LOAD;}
 db { return DB; }
 tbl { return TBL; }
 col { return COL; }

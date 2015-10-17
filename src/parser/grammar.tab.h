@@ -49,9 +49,10 @@
      REL_INSERT = 265,
      SELECT = 266,
      FETCH = 267,
-     NULL_T = 268,
-     WORD = 269,
-     INT = 270
+     LOAD = 268,
+     NULL_T = 269,
+     WORD = 270,
+     INT = 271
    };
 #endif
 /* Tokens.  */
@@ -65,9 +66,10 @@
 #define REL_INSERT 265
 #define SELECT 266
 #define FETCH 267
-#define NULL_T 268
-#define WORD 269
-#define INT 270
+#define LOAD 268
+#define NULL_T 269
+#define WORD 270
+#define INT 271
 
 
 
@@ -83,7 +85,7 @@ typedef union YYSTYPE
     void *ptr;
 }
 /* Line 1529 of yacc.c.  */
-#line 87 "grammar.tab.h"
+#line 89 "grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

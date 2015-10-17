@@ -36,6 +36,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token REL_INSERT
 %token SELECT
 %token FETCH
+%token LOAD
 %token NULL_T
 
 %token <str> WORD
@@ -219,7 +220,7 @@ query: CREATE '(' DB ',' quoted_name ')'
 
         status st = load(file_name);
         if (st.code == OK) {
-            add_payload(send_msg, "Values loaded successfuly", col_name);
+            add_payload(send_msg, "Values loaded successfuly");
         } else {
             op->type = ERROR_OP;
             add_payload(send_msg, st.error_message);

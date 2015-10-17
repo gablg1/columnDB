@@ -25,7 +25,6 @@
 #include "common.h"
 #include "cs165_api.h"
 #include "message.h"
-#include "parser.h"
 #include "utils.h"
 #include "list.h"
 
@@ -221,9 +220,6 @@ int main(void)
     if (server_socket < 0) {
         exit(1);
     }
-
-    // Populate the global dsl commands
-    dsl_commands = dsl_commands_init();
 
     log_info("Waiting for a connection %d ...\n", server_socket);
 
