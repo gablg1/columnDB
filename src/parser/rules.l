@@ -12,7 +12,8 @@ void comment(void);
 
 DIGIT [0-9]
 LETTER [A-Za-z]
-ALPHANUM_AND_SYMBOLS [A-Za-z0-9_]
+ALPHANUM_AND_SYMBOLS [A-Za-z0-9_/]
+ALPHANUM_AND_SYMBOLS_AND_DOT [A-Za-z0-9_/.]
 VALID_SYMBO [_]
 SYMBOL [,();=]
 
@@ -36,7 +37,11 @@ sorted {return SORTED_T; }
 
 null { return NULL_T; }
 {DIGIT}+ {yylval.val = atoi(yytext); return INT;}
-{ALPHANUM_AND_SYMBOLS}+ { yylval.str = strdup(yytext); return WORD; } /* A combination of everything else is a WORD */
+
+
+{ALPHANUM_AND_SYMBOLS_AND_DOT}+ { yylval.str = strdup(yytext); return WORD; } /* A combination of everything else
+is a WORD */
+
 
 %%
 

@@ -52,7 +52,8 @@
      LOAD = 268,
      NULL_T = 269,
      WORD = 270,
-     INT = 271
+     DOTTED_WORD = 271,
+     INT = 272
    };
 #endif
 /* Tokens.  */
@@ -69,7 +70,8 @@
 #define LOAD 268
 #define NULL_T 269
 #define WORD 270
-#define INT 271
+#define DOTTED_WORD 271
+#define INT 272
 
 
 
@@ -85,7 +87,7 @@ typedef union YYSTYPE
     void *ptr;
 }
 /* Line 1529 of yacc.c.  */
-#line 89 "grammar.tab.h"
+#line 91 "grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

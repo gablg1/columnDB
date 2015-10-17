@@ -40,6 +40,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token NULL_T
 
 %token <str> WORD
+%token <str> DOTTED_WORD
 %token <val> INT
 %type <str> name
 %type <str> quoted_name
@@ -71,35 +72,53 @@ db : name {
         if (db == NULL) {
             op->type = ERROR_OP;
             add_payload(send_msg, "Could not find db %s", $1);
-            YYACCEPT;
+            YYERROR;
         }
         $$ = db;
    }
 ;
 
-tbl : name '.' name {
+tbl : name {
+        char *tbl_name = $1;
+        char *db_name = strsep(&tbl_name, ".");
+        if (tbl_name == NULL) {
+            op->type = ERROR_OP;
+            add_payload(send_msg, "Format of table name should be <db>.<table>");
+            YYERROR;
+        }
+
         //  we look to see if the name exists
-        table *tbl = get_table_by_name($1, $3);
+        table *tbl = get_table_by_name(db_name, tbl_name);
 
         // if it doesn't, we terminate parsing immediately
         if (tbl == NULL) {
             op->type = ERROR_OP;
-            add_payload(send_msg, "Could not find table %s in db %s", $3, $1);
-            YYACCEPT;
+            add_payload(send_msg, "Could not find table %s in db %s", tbl_name, db_name);
+            YYERROR;
         }
         $$ = tbl;
    }
 ;
 
-col : name '.' name '.' name {
+col : name {
+        char *col_name = $1;
+        char *db_name = strsep(&col_name, ".");
+        char *tbl_name = strsep(&col_name, ".");
+
+        if (col_name == NULL) {
+            op->type = ERROR_OP;
+            add_payload(send_msg, "Format of column name should be <db>.<table>.<column>");
+            YYERROR;
+        }
+
         //  we look to see if the name exists
-        column *col = get_column_by_name($1, $3, $5);
+        column *col = get_column_by_name(db_name, tbl_name, col_name);
 
         // if it doesn't, we terminate parsing immediately
         if (col == NULL) {
             op->type = ERROR_OP;
-            add_payload(send_msg, "Could not find column %s in table %s of db %s", $5, $3, $1);
-            YYACCEPT;
+            add_payload(send_msg, "Could not find column %s in table %s of db %s", col_name, tbl_name, db_name);
+            YYERROR;
         }
         $$ = col;
    }
@@ -110,7 +129,7 @@ var : name {
         if (v == NULL) {
             op->type = ERROR_OP;
             add_payload(send_msg, "Could not find variable %s", $1);
-            YYACCEPT;
+            YYERROR;
         }
         $$ = v;
     }
@@ -176,7 +195,7 @@ query: CREATE '(' DB ',' quoted_name ')'
             if (tbl->col_count != root->length) {
                 op->type = ERROR_OP;
                 add_payload(send_msg, "Wrong number of values. Got %d, but needed %d", root->length, tbl->col_count);
-                YYACCEPT;
+                YYERROR;
             }
             op->type = INSERT;
             op->values1 = root;
@@ -215,7 +234,7 @@ query: CREATE '(' DB ',' quoted_name ')'
 
             add_payload(send_msg, "Fetched %d values succesfully", v->length);
      }
-     | LOAD '(' name ')' {
+     | LOAD '(' quoted_name ')' {
         char *file_name = $3;
 
         status st = load(file_name);
@@ -250,6 +269,7 @@ name: WORD { $$ = $1; }
 ;
 
 quoted_name: '"' WORD '"' { $$ = $2; }
+
 ;
 
 maybe_int: INT {
@@ -276,6 +296,7 @@ void parse_dsl(char *str, db_operator *op, message *send_msg) {
 }
 
 void yyerror(db_operator *op, message *send_msg, const char *msg) {
+    op->type = ERROR_OP;
     add_payload(send_msg, "Unknown command");
 }
 
