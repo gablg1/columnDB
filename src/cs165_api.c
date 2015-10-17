@@ -1,13 +1,15 @@
 #include <string.h>
 #include <assert.h>
 
-#include "include/cs165_api.h"
-#include "include/utils.h"
+#include "cs165_api.h"
+#include "utils.h"
+#include "dbs.h"
 #include "agnostic_vector.h"
 
 
 status OK_STATUS = {OK, NULL};
 status NULL_PTR = {ERROR, "You are trying to dereference a null pointer"};
+status FILE_ERR = {ERROR, "Unable to open file"};
 
 /*
  * Frees the given db operators thoroughly.
@@ -183,6 +185,8 @@ status insert_vector(column *col, vector *v) {
 
 status load(const char *filename) {
     FILE* fp = fopen(filename, "r");
+    if (fp == NULL)
+        return FILE_ERR;
 
     AgnosticVector *ag_cols = create_agnostic_vector(sizeof(column *));
     column **cols = ag_cols->buf;

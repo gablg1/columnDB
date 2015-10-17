@@ -453,9 +453,9 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    55,    55,    59,    65,    78,    91,   104,   115,   133,
-     151,   168,   181,   198,   216,   222,   230,   231,   233,   236,
-     239,   244
+       0,    55,    55,    59,    65,    79,    93,   107,   118,   136,
+     154,   171,   184,   201,   219,   225,   233,   234,   236,   239,
+     242,   247
 };
 #endif
 
@@ -1409,11 +1409,12 @@ yyreduce:
 #line 65 "grammar.y"
     {
         //  we look to see if the db_name exists
-        db *db = get_db_by_name((yyvsp[(1) - (1)].str), send_msg);
+        db *db = get_db_by_name((yyvsp[(1) - (1)].str));
 
         // if it doesn't, we terminate parsing immediately
         if (db == NULL) {
             op->type = ERROR_OP;
+            add_payload(send_msg, "Could not find db %s", (yyvsp[(1) - (1)].str));
             YYACCEPT;
         }
         (yyval.ptr) = db;
@@ -1421,14 +1422,15 @@ yyreduce:
     break;
 
   case 5:
-#line 78 "grammar.y"
+#line 79 "grammar.y"
     {
         //  we look to see if the name exists
-        table *tbl = get_table_by_name((yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str), send_msg);
+        table *tbl = get_table_by_name((yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str));
 
         // if it doesn't, we terminate parsing immediately
         if (tbl == NULL) {
             op->type = ERROR_OP;
+            add_payload(send_msg, "Could not find table %s in db %s", (yyvsp[(3) - (3)].str), (yyvsp[(1) - (3)].str));
             YYACCEPT;
         }
         (yyval.ptr) = tbl;
@@ -1436,14 +1438,15 @@ yyreduce:
     break;
 
   case 6:
-#line 91 "grammar.y"
+#line 93 "grammar.y"
     {
         //  we look to see if the name exists
-        column *col = get_column_by_name((yyvsp[(1) - (5)].str), (yyvsp[(3) - (5)].str), (yyvsp[(5) - (5)].str), send_msg);
+        column *col = get_column_by_name((yyvsp[(1) - (5)].str), (yyvsp[(3) - (5)].str), (yyvsp[(5) - (5)].str));
 
         // if it doesn't, we terminate parsing immediately
         if (col == NULL) {
             op->type = ERROR_OP;
+            add_payload(send_msg, "Could not find column %s in table %s of db %s", (yyvsp[(5) - (5)].str), (yyvsp[(3) - (5)].str), (yyvsp[(1) - (5)].str));
             YYACCEPT;
         }
         (yyval.ptr) = col;
@@ -1451,7 +1454,7 @@ yyreduce:
     break;
 
   case 7:
-#line 104 "grammar.y"
+#line 107 "grammar.y"
     {
         vector *v = get_var_by_name((yyvsp[(1) - (1)].str));
         if (v == NULL) {
@@ -1464,7 +1467,7 @@ yyreduce:
     break;
 
   case 8:
-#line 116 "grammar.y"
+#line 119 "grammar.y"
     {
             char *db_name = (yyvsp[(5) - (6)].str);
 
@@ -1485,7 +1488,7 @@ yyreduce:
     break;
 
   case 9:
-#line 134 "grammar.y"
+#line 137 "grammar.y"
     {
             char *tbl_name = (yyvsp[(5) - (10)].str);
             db *db = (yyvsp[(7) - (10)].ptr);
@@ -1506,7 +1509,7 @@ yyreduce:
     break;
 
   case 10:
-#line 152 "grammar.y"
+#line 155 "grammar.y"
     {
             char *col_name = (yyvsp[(5) - (10)].str);
             table *tbl = (yyvsp[(7) - (10)].ptr);
@@ -1526,7 +1529,7 @@ yyreduce:
     break;
 
   case 11:
-#line 168 "grammar.y"
+#line 171 "grammar.y"
     {
             table *tbl = (yyvsp[(3) - (6)].ptr);
             list *root = (yyvsp[(5) - (6)].list);
@@ -1543,7 +1546,7 @@ yyreduce:
     break;
 
   case 12:
-#line 181 "grammar.y"
+#line 184 "grammar.y"
     {
             char *var_name = (yyvsp[(1) - (10)].str);
             column *col = (yyvsp[(5) - (10)].ptr);
@@ -1564,7 +1567,7 @@ yyreduce:
     break;
 
   case 13:
-#line 198 "grammar.y"
+#line 201 "grammar.y"
     {
             char *var_name = (yyvsp[(1) - (8)].str);
             column *col = (yyvsp[(5) - (8)].ptr);
@@ -1584,7 +1587,7 @@ yyreduce:
     break;
 
   case 14:
-#line 216 "grammar.y"
+#line 219 "grammar.y"
     {
             // here we create the linked list
             list *root = create_list();
@@ -1594,7 +1597,7 @@ yyreduce:
     break;
 
   case 15:
-#line 222 "grammar.y"
+#line 225 "grammar.y"
     {
             // $3 is the root of the linked list
             list *root = (yyvsp[(3) - (3)].list);
@@ -1604,27 +1607,27 @@ yyreduce:
     break;
 
   case 16:
-#line 230 "grammar.y"
+#line 233 "grammar.y"
     { (yyval.val) = UNSORTED; ;}
     break;
 
   case 17:
-#line 231 "grammar.y"
+#line 234 "grammar.y"
     { (yyval.val) = SORTED; ;}
     break;
 
   case 18:
-#line 233 "grammar.y"
+#line 236 "grammar.y"
     { (yyval.str) = (yyvsp[(1) - (1)].str); ;}
     break;
 
   case 19:
-#line 236 "grammar.y"
+#line 239 "grammar.y"
     { (yyval.str) = (yyvsp[(2) - (3)].str); ;}
     break;
 
   case 20:
-#line 239 "grammar.y"
+#line 242 "grammar.y"
     {
         MaybeInt n;
         n.present = 1;
@@ -1634,7 +1637,7 @@ yyreduce:
     break;
 
   case 21:
-#line 244 "grammar.y"
+#line 247 "grammar.y"
     {
         MaybeInt n;
         n.present = 0;
@@ -1644,7 +1647,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1648 "grammar.tab.c"
+#line 1651 "grammar.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1858,7 +1861,7 @@ yyreturn:
 }
 
 
-#line 250 "grammar.y"
+#line 253 "grammar.y"
 
 
 void parse_dsl(char *str, db_operator *op, message *send_msg) {
