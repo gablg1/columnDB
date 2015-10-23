@@ -51,6 +51,28 @@ column *get_column_by_name(const char *db_name, const char *tbl_name, const char
     return NULL;
 }
 
+void load_dbs(void) {
+    FILE *fp = persist_fopen(MASTER_DBS_FILENAME);
+    char buf[NAME_SIZE];
+
+    // first we get the number of dbs
+    fgets(buf, NAME_SIZE, fp);
+    assert(num_of_dbs == 0);
+    num_of_dbs = atoi(buf);
+
+    // now we allocate space for all of them
+    dbs = malloc(sizeof(db) * num_of_dbs);
+    allocated_dbs = num_of_dbs;
+
+    // finally we load their data
+    for (size_t i = 0; i < num_of_dbs; i++) {
+        fgets(buf, NAME_SIZE, fp);
+        int n = strlen(buf);
+        buf[n] = '\0';
+
+        load_db(buf, &(dbs[i]));
+    }
+}
 
 void persist_dbs(void) {
     for (size_t i = 0; i < num_of_dbs; i++)
