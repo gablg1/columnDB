@@ -215,6 +215,7 @@ typedef enum Aggr {
 typedef enum OperatorType {
     NOOP,
     ERROR_OP,
+    SHUTDOWN_OP,
 
     PROJECT,
     HASH_JOIN,

@@ -50,10 +50,11 @@
      SELECT = 266,
      FETCH = 267,
      LOAD = 268,
-     NULL_T = 269,
-     WORD = 270,
-     DOTTED_WORD = 271,
-     INT = 272
+     SHUTDOWN = 269,
+     NULL_T = 270,
+     WORD = 271,
+     DOTTED_WORD = 272,
+     INT = 273
    };
 #endif
 /* Tokens.  */
@@ -68,10 +69,11 @@
 #define SELECT 266
 #define FETCH 267
 #define LOAD 268
-#define NULL_T 269
-#define WORD 270
-#define DOTTED_WORD 271
-#define INT 272
+#define SHUTDOWN 269
+#define NULL_T 270
+#define WORD 271
+#define DOTTED_WORD 272
+#define INT 273
 
 
 
@@ -87,7 +89,7 @@ typedef union YYSTYPE
     void *ptr;
 }
 /* Line 1529 of yacc.c.  */
-#line 91 "grammar.tab.h"
+#line 93 "grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

@@ -81,6 +81,8 @@ void execute_db_operator(db_operator* query, message *send_msg) {
             break;
         } case ERROR:
             break;
+        case SHUTDOWN_OP:
+            break;
         default:
             add_payload(send_msg, "Unsupported query type");
             break;
@@ -138,6 +140,8 @@ void handle_client(int client_socket) {
 
             // 1. Parse command
             db_operator* query = parse_command(&recv_message, &send_message);
+            if (query->type == SHUTDOWN_OP)
+                done = 1;
 
             // 2. Handle request
             execute_db_operator(query, &send_message);

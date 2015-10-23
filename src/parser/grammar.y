@@ -37,6 +37,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token SELECT
 %token FETCH
 %token LOAD
+%token SHUTDOWN
 %token NULL_T
 
 %token <str> WORD
@@ -245,6 +246,9 @@ query: CREATE '(' DB ',' quoted_name ')'
             add_payload(send_msg, st.error_message);
         }
 
+     } | SHUTDOWN {
+        op->type = SHUTDOWN_OP;
+        add_payload(send_msg, "Shutting down DB");
      }
 ;
 
