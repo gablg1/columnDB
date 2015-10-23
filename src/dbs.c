@@ -9,6 +9,8 @@
 #include "message.h"
 #include "persist.h"
 
+#define MASTER_DBS_FILENAME "dbs"
+
 // structure that keeps track of all of the dbs we have in memory
 db *dbs = NULL;
 size_t num_of_dbs = 0;
@@ -52,7 +54,7 @@ column *get_column_by_name(const char *db_name, const char *tbl_name, const char
 }
 
 void load_dbs(void) {
-    FILE *fp = persist_fopen(MASTER_DBS_FILENAME);
+    FILE *fp = persist_fopen(MASTER_DBS_FILENAME, "r");
     char buf[NAME_SIZE];
 
     // first we get the number of dbs
@@ -72,6 +74,7 @@ void load_dbs(void) {
 
         load_db(buf, &(dbs[i]));
     }
+    fclose(fp);
 }
 
 void persist_dbs(void) {
