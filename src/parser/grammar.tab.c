@@ -459,9 +459,9 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    58,    58,    62,    68,    82,   104,   128,   139,   157,
-     175,   192,   205,   222,   238,   249,   255,   261,   269,   270,
-     272,   275,   279,   284
+       0,    58,    58,    62,    65,    79,   101,   125,   136,   154,
+     172,   189,   202,   219,   235,   246,   252,   258,   266,   267,
+     269,   272,   276,   281
 };
 #endif
 
@@ -1411,7 +1411,7 @@ yyreduce:
   switch (yyn)
     {
         case 4:
-#line 68 "grammar.y"
+#line 65 "grammar.y"
     {
         //  we look to see if the db_name exists
         db *db = get_db_by_name((yyvsp[(1) - (1)].str));
@@ -1427,7 +1427,7 @@ yyreduce:
     break;
 
   case 5:
-#line 82 "grammar.y"
+#line 79 "grammar.y"
     {
         char *tbl_name = (yyvsp[(1) - (1)].str);
         char *db_name = strsep(&tbl_name, ".");
@@ -1451,7 +1451,7 @@ yyreduce:
     break;
 
   case 6:
-#line 104 "grammar.y"
+#line 101 "grammar.y"
     {
         char *col_name = (yyvsp[(1) - (1)].str);
         char *db_name = strsep(&col_name, ".");
@@ -1477,7 +1477,7 @@ yyreduce:
     break;
 
   case 7:
-#line 128 "grammar.y"
+#line 125 "grammar.y"
     {
         vector *v = get_var_by_name((yyvsp[(1) - (1)].str));
         if (v == NULL) {
@@ -1490,7 +1490,7 @@ yyreduce:
     break;
 
   case 8:
-#line 140 "grammar.y"
+#line 137 "grammar.y"
     {
             char *db_name = (yyvsp[(5) - (6)].str);
 
@@ -1511,7 +1511,7 @@ yyreduce:
     break;
 
   case 9:
-#line 158 "grammar.y"
+#line 155 "grammar.y"
     {
             char *tbl_name = (yyvsp[(5) - (10)].str);
             db *db = (yyvsp[(7) - (10)].ptr);
@@ -1532,7 +1532,7 @@ yyreduce:
     break;
 
   case 10:
-#line 176 "grammar.y"
+#line 173 "grammar.y"
     {
             char *col_name = (yyvsp[(5) - (10)].str);
             table *tbl = (yyvsp[(7) - (10)].ptr);
@@ -1552,7 +1552,7 @@ yyreduce:
     break;
 
   case 11:
-#line 192 "grammar.y"
+#line 189 "grammar.y"
     {
             table *tbl = (yyvsp[(3) - (6)].ptr);
             list *root = (yyvsp[(5) - (6)].list);
@@ -1569,7 +1569,7 @@ yyreduce:
     break;
 
   case 12:
-#line 205 "grammar.y"
+#line 202 "grammar.y"
     {
             char *var_name = (yyvsp[(1) - (10)].str);
             column *col = (yyvsp[(5) - (10)].ptr);
@@ -1590,7 +1590,7 @@ yyreduce:
     break;
 
   case 13:
-#line 222 "grammar.y"
+#line 219 "grammar.y"
     {
             char *var_name = (yyvsp[(1) - (8)].str);
             column *col = (yyvsp[(5) - (8)].ptr);
@@ -1610,7 +1610,7 @@ yyreduce:
     break;
 
   case 14:
-#line 238 "grammar.y"
+#line 235 "grammar.y"
     {
         char *file_name = (yyvsp[(3) - (4)].str);
 
@@ -1626,7 +1626,7 @@ yyreduce:
     break;
 
   case 15:
-#line 249 "grammar.y"
+#line 246 "grammar.y"
     {
         op->type = SHUTDOWN_OP;
         add_payload(send_msg, "Shutting down DB");
@@ -1634,7 +1634,7 @@ yyreduce:
     break;
 
   case 16:
-#line 255 "grammar.y"
+#line 252 "grammar.y"
     {
             // here we create the linked list
             list *root = create_list();
@@ -1644,7 +1644,7 @@ yyreduce:
     break;
 
   case 17:
-#line 261 "grammar.y"
+#line 258 "grammar.y"
     {
             // $3 is the root of the linked list
             list *root = (yyvsp[(3) - (3)].list);
@@ -1654,27 +1654,27 @@ yyreduce:
     break;
 
   case 18:
-#line 269 "grammar.y"
+#line 266 "grammar.y"
     { (yyval.val) = UNSORTED; ;}
     break;
 
   case 19:
-#line 270 "grammar.y"
+#line 267 "grammar.y"
     { (yyval.val) = SORTED; ;}
     break;
 
   case 20:
-#line 272 "grammar.y"
+#line 269 "grammar.y"
     { (yyval.str) = (yyvsp[(1) - (1)].str); ;}
     break;
 
   case 21:
-#line 275 "grammar.y"
+#line 272 "grammar.y"
     { (yyval.str) = (yyvsp[(2) - (3)].str); ;}
     break;
 
   case 22:
-#line 279 "grammar.y"
+#line 276 "grammar.y"
     {
         MaybeInt n;
         n.present = 1;
@@ -1684,7 +1684,7 @@ yyreduce:
     break;
 
   case 23:
-#line 284 "grammar.y"
+#line 281 "grammar.y"
     {
         MaybeInt n;
         n.present = 0;
@@ -1908,7 +1908,7 @@ yyreturn:
 }
 
 
-#line 290 "grammar.y"
+#line 287 "grammar.y"
 
 
 void parse_dsl(char *str, db_operator *op, message *send_msg) {

@@ -7,6 +7,7 @@
 #include "dbs.h"
 #include "utils.h"
 #include "message.h"
+#include "persist.h"
 
 // structure that keeps track of all of the dbs we have in memory
 db *dbs = NULL;
@@ -48,6 +49,12 @@ column *get_column_by_name(const char *db_name, const char *tbl_name, const char
             return &cols[i];
 
     return NULL;
+}
+
+
+void persist_dbs(void) {
+    for (size_t i = 0; i < num_of_dbs; i++)
+        persist_db(&dbs[i]);
 }
 
 void drop_dbs(void) {

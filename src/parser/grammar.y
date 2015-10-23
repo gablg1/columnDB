@@ -62,9 +62,6 @@ line: expression
 expression: query
 ;
 
-variable: WORD
-;
-
 db : name {
         //  we look to see if the db_name exists
         db *db = get_db_by_name($1);

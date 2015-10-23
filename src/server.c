@@ -92,6 +92,14 @@ void execute_db_operator(db_operator* query, message *send_msg) {
 }
 
 /*
+ * Here we persist to disk all global structures used by the DBs
+ * so a next run of the server will be able to read them.
+ */
+void persist(void) {
+    persist_dbs();
+}
+
+/*
  * Here we free all of the global structures that were allocated,
  * before shutting down the DB server.
  */

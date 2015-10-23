@@ -14,7 +14,8 @@
 
 #define TO_ALLOCATE 64
 
-void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, void **buf) {
+void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, void *b) {
+    void **buf = b;
     assert(buf != NULL);
     assert(count != NULL && max_count != NULL);
     if (*count >= *max_count) {
@@ -27,11 +28,6 @@ void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, 
     // if sizeof(char) != 1 the whole world breaks
     assert(sizeof(char) == 1);
     return (char *) *buf + size * ((*count)++);
-}
-
-void delete_allocated_element(void *elem, void *buf) {
-    // TODO: implement me
-    return;
 }
 
 

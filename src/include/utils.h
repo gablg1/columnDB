@@ -11,9 +11,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, void **buf);
-
-void delete_allocated_element(void *elem, void *buf);
+void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, void *b);
 
 // cs165_log(out, format, ...)
 // Writes the string from @format to the @out pointer, extendable for

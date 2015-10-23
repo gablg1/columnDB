@@ -9,3 +9,5 @@ table *get_table_by_name(const char *db_name, const char *tbl_name);
 column *get_column_by_name(const char *db_name, const char *tbl_name, const char *col_name);
 
 void drop_dbs(void);
+
+void persist_dbs(void);

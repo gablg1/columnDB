@@ -27,7 +27,7 @@ status create_db(const char* db_name, db** db) {
     if (*db == NULL)
         *db = malloc(sizeof(db));
 
-    (*db)->name = strdup(db_name);
+    strncpy((*db)->name, db_name, NAME_SIZE);
     (*db)->table_count = 0;
     (*db)->max_table_count = 0;
     (*db)->tables = NULL;
@@ -41,7 +41,7 @@ status create_table(db* db, const char* name, size_t num_columns) {
     table *table = get_next_allocated_element(&db->table_count, &db->max_table_count,
                                                 sizeof(table), &(db->tables));
 
-    table->name = strdup(name);
+    strncpy(table->name, name, NAME_SIZE);
 
     // create space for the columns
     table->cols = malloc(num_columns * sizeof(column));
@@ -61,7 +61,7 @@ status create_column(table *table, const char* name, IndexType type) {
                                                 sizeof(column), &(table->cols));
 
     // creates column
-    col->name = strdup(name);
+    strncpy(col->name, name, NAME_SIZE);
     col->data = NULL;
     col->count = 0;
     col->max_count = 0;
@@ -75,8 +75,8 @@ status drop_db(db* db) {
     if (db == NULL)
         return NULL_PTR;
 
-    assert(db->name != NULL);
-    free(db->name);
+    // db must have a name
+    assert(db->name[0] != '\0');
 
     // destroy all tables
     if (db->tables != NULL) {
@@ -86,6 +86,7 @@ status drop_db(db* db) {
             drop_table(db, &(db->tables[i]));
         free(db->tables);
     }
+    free(db);
     return OK_STATUS;
 }
 
@@ -94,8 +95,7 @@ status drop_table(db *db, table* tbl) {
         return NULL_PTR;
 
     // table must have a name
-    assert(tbl->name != NULL);
-    free(tbl->name);
+    assert(tbl->name[0] != '\0');
 
     // destroy all columns
     if (tbl->cols != NULL) {
@@ -112,9 +112,10 @@ status drop_table(db *db, table* tbl) {
         }
     }
 
+    free(tbl);
+
     // db bookkeeping
     db->table_count--;
-    delete_allocated_element(tbl, db->tables);
     return OK_STATUS;
 }
 
@@ -123,8 +124,7 @@ status drop_column(table *tbl, column* col) {
         return NULL_PTR;
 
     // column must have a name
-    assert(col->name != NULL);
-    free(col->name);
+    assert(col->name[0] != '\0');
 
     if (col->index.index != NULL)
         free(col->index.index);
@@ -133,7 +133,7 @@ status drop_column(table *tbl, column* col) {
         free(col->data);
 
     tbl->col_count--;
-    delete_allocated_element(col, tbl->cols);
+    free(col);
     return OK_STATUS;
 }
 
@@ -174,7 +174,7 @@ status insert_vector(column *col, vector *v) {
         new_max_count *= 2;
     }
 
-    if (new_max_count != col->max_count) {
+    if (new_max_count > col->max_count) {
         col->data = realloc(col->data, new_max_count * sizeof(int));
         assert(col->data != NULL);
         col->max_count = new_max_count;

@@ -25,6 +25,7 @@ SOFTWARE.
 #include "vector.h"
 
 #define MAX_MSG_SIZE 1024
+#define NAME_SIZE 64
 
 /**
  * EXTRA
@@ -88,7 +89,7 @@ typedef struct column_index {
  * tracked in the table (length).
  **/
 typedef struct column {
-    const char* name;
+    char name[NAME_SIZE];
     size_t max_count;
     size_t count;
     int* data;
@@ -110,7 +111,7 @@ typedef struct column {
  * - length, the size of the columns in the table.
  **/
 typedef struct table {
-    const char* name;
+    char name[NAME_SIZE];
     size_t col_count;
     size_t max_col_count;
     column* cols;
@@ -124,7 +125,7 @@ typedef struct table {
  * - tables: the pointer to the array of tables contained in the db.
  **/
 typedef struct db {
-    const char* name;
+    char name[NAME_SIZE];
     size_t table_count;
     size_t max_table_count;
     table* tables;
