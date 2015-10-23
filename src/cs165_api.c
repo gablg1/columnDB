@@ -86,7 +86,6 @@ status drop_db(db* db) {
             drop_table(db, &(db->tables[i]));
         free(db->tables);
     }
-    free(db);
     return OK_STATUS;
 }
 
@@ -112,7 +111,6 @@ status drop_table(db *db, table* tbl) {
         }
     }
 
-    free(tbl);
 
     // db bookkeeping
     db->table_count--;
@@ -133,7 +131,6 @@ status drop_column(table *tbl, column* col) {
         free(col->data);
 
     tbl->col_count--;
-    free(col);
     return OK_STATUS;
 }
 
