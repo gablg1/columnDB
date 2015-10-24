@@ -55,6 +55,8 @@ column *get_column_by_name(const char *db_name, const char *tbl_name, const char
 
 void load_dbs(void) {
     FILE *fp = persist_fopen(MASTER_DBS_FILENAME, "r");
+    if (fp == NULL)
+        return;
     char buf[NAME_SIZE];
 
     // first we get the number of dbs
@@ -69,8 +71,7 @@ void load_dbs(void) {
     // finally we load their data
     for (size_t i = 0; i < num_of_dbs; i++) {
         fgets(buf, NAME_SIZE, fp);
-        int n = strlen(buf);
-        buf[n] = '\0';
+        newline_to_null(buf);
 
         load_db(buf, &(dbs[i]));
     }
@@ -78,8 +79,19 @@ void load_dbs(void) {
 }
 
 void persist_dbs(void) {
-    for (size_t i = 0; i < num_of_dbs; i++)
+    FILE *fp = persist_fopen(MASTER_DBS_FILENAME, "w");
+    assert(fp != NULL);
+    fprintf(fp, "%ld\n", num_of_dbs);
+
+    // load the name of each db
+    for (size_t i = 0; i < num_of_dbs; i++) {
+        fputs(dbs[i].name, fp);
+        fputc('\n', fp);
+
         persist_db(&dbs[i]);
+    }
+    fclose(fp);
+
 }
 
 void drop_dbs(void) {

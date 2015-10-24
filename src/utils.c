@@ -14,6 +14,12 @@
 
 #define TO_ALLOCATE 64
 
+// buf ends with a newline character, so transform that to null
+void newline_to_null(const char *buf) {
+    char *p = buf;
+    strsep(&p, "\n");
+}
+
 void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, void *b) {
     void **buf = b;
     assert(buf != NULL);

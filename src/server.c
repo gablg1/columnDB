@@ -245,6 +245,9 @@ int main(void)
         exit(1);
     }
 
+    // tries to load persisted databases from file
+    load_dbs();
+
     handle_client(client_socket);
 
     return 0;

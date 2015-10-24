@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <assert.h>
 
+void newline_to_null(const char *buf);
+
 void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, void *b);
 
 // cs165_log(out, format, ...)

@@ -11,3 +11,5 @@ column *get_column_by_name(const char *db_name, const char *tbl_name, const char
 void drop_dbs(void);
 
 void persist_dbs(void);
+
+void load_dbs(void);
