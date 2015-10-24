@@ -54,6 +54,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %type <ptr> db
 %type <ptr> tbl
 %type <ptr> col
+%type <ptr> var_or_col
 %type <ptr> var
 
 
@@ -125,7 +126,43 @@ col : name {
    }
 ;
 
-vector_var: name
+
+var_or_col: name {
+          // this will always return a vector * no matter if var or col
+          char *name = $1;
+          if (strchr(name, '.')) {
+                char *col_name = $1;
+                char *db_name = strsep(&col_name, ".");
+                char *tbl_name = strsep(&col_name, ".");
+
+                if (col_name == NULL) {
+                    op->type = ERROR_OP;
+                    add_payload(send_msg, "Format of column name should be <db>.<table>.<column>");
+                    YYERROR;
+                }
+
+                //  we look to see if the name exists
+                column *col = get_column_by_name(db_name, tbl_name, col_name);
+
+                // if it doesn't, we terminate parsing immediately
+                if (col == NULL) {
+                    op->type = ERROR_OP;
+                    add_payload(send_msg, "Could not find column %s in table %s of db %s", col_name, tbl_name, db_name);
+                    YYERROR;
+                }
+                $$ = col->vector;
+          }
+          else {
+                variable *v = get_var_by_name($1);
+                if (v == NULL) {
+                    op->type = ERROR_OP;
+                    add_payload(send_msg, "Could not find variable %s", $1);
+                    YYERROR;
+                }
+                assert(v->type == VECTOR_N);
+                $$ = v->v;
+          }
+          }
 
 var : name {
         variable *v = get_var_by_name($1);
@@ -243,14 +280,13 @@ query: CREATE '(' DB ',' quoted_name ')'
             int m = min(val_vec->v);
             add_int_var(m, var_name);
             add_payload(send_msg, "Minimum of %d calculated", m);
-     } | name '=' AVG '(' var ')' {
+     } | name '=' AVG '(' var_or_col ')' {
             char *var_name = $1;
-            variable *var = $5;
+            vector *v = $5;
             op->type = NOOP;
 
             // avg is supported only for vector variables
-            assert(var->type == VECTOR_N);
-            double av = avg(var->v);
+            double av = avg(v);
             add_float_var(av, var_name);
             add_payload(send_msg, "Average of %f calculated", av);
      } | TUPLE '(' var ')' {
