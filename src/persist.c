@@ -29,14 +29,16 @@ void load_column(const char *filename, column *col) {
     assert(fp != NULL);
 
     fread(col, sizeof(column), 1, fp);
-    assert(col->max_count > 0);
-    int *data = malloc(sizeof(int) * col->max_count);
+    col->vector = malloc(sizeof(vector));
+    assert(col->vector != NULL);
+    fread(col->vector, sizeof(vector), 1, fp);
+
+    int *data = malloc(sizeof(int) * col->vector->max_length);
     assert(data != NULL);
-    fread(data, sizeof(int), col->count, fp);
+    fread(data, sizeof(int), col->vector->length, fp);
+    col->vector->buf = data;
     fclose(fp);
 
-    // column points to the data
-    col->data = data;
 
 }
 
@@ -104,7 +106,8 @@ void persist_column(db *db, table *tbl, column *col) {
 
     // here we persist both the column struct and the data
     fwrite(col, sizeof(column), 1, fp);
-    fwrite(col->data, sizeof(int), col->count, fp);
+    fwrite(col->vector, sizeof(vector), 1, fp);
+    fwrite(col->vector->buf, sizeof(int), col->vector->length, fp);
     fclose(fp);
 }
 

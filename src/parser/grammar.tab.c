@@ -467,9 +467,9 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    61,    61,    65,    68,    82,   104,   128,   139,   157,
-     175,   192,   205,   221,   236,   244,   254,   259,   271,   277,
-     283,   291,   292,   294,   297,   301,   306
+       0,    61,    61,    65,    68,    82,   104,   130,   141,   159,
+     177,   194,   207,   223,   238,   246,   256,   261,   273,   279,
+     285,   293,   294,   296,   299,   303,   308
 };
 #endif
 
@@ -1495,7 +1495,7 @@ yyreduce:
     break;
 
   case 7:
-#line 128 "grammar.y"
+#line 130 "grammar.y"
     {
         variable *v = get_var_by_name((yyvsp[(1) - (1)].str));
         if (v == NULL) {
@@ -1508,7 +1508,7 @@ yyreduce:
     break;
 
   case 8:
-#line 140 "grammar.y"
+#line 142 "grammar.y"
     {
             char *db_name = (yyvsp[(5) - (6)].str);
 
@@ -1529,7 +1529,7 @@ yyreduce:
     break;
 
   case 9:
-#line 158 "grammar.y"
+#line 160 "grammar.y"
     {
             char *tbl_name = (yyvsp[(5) - (10)].str);
             db *db = (yyvsp[(7) - (10)].ptr);
@@ -1550,7 +1550,7 @@ yyreduce:
     break;
 
   case 10:
-#line 176 "grammar.y"
+#line 178 "grammar.y"
     {
             char *col_name = (yyvsp[(5) - (10)].str);
             table *tbl = (yyvsp[(7) - (10)].ptr);
@@ -1570,7 +1570,7 @@ yyreduce:
     break;
 
   case 11:
-#line 192 "grammar.y"
+#line 194 "grammar.y"
     {
             table *tbl = (yyvsp[(3) - (6)].ptr);
             list *root = (yyvsp[(5) - (6)].list);
@@ -1587,7 +1587,7 @@ yyreduce:
     break;
 
   case 12:
-#line 205 "grammar.y"
+#line 207 "grammar.y"
     {
             char *var_name = (yyvsp[(1) - (10)].str);
             column *col = (yyvsp[(5) - (10)].ptr);
@@ -1607,7 +1607,7 @@ yyreduce:
     break;
 
   case 13:
-#line 221 "grammar.y"
+#line 223 "grammar.y"
     {
             char *var_name = (yyvsp[(1) - (8)].str);
             column *col = (yyvsp[(5) - (8)].ptr);
@@ -1627,7 +1627,7 @@ yyreduce:
     break;
 
   case 14:
-#line 236 "grammar.y"
+#line 238 "grammar.y"
     {
             char *var_name = (yyvsp[(1) - (6)].str);
             variable *val_vec = (yyvsp[(5) - (6)].ptr);
@@ -1640,7 +1640,7 @@ yyreduce:
     break;
 
   case 15:
-#line 244 "grammar.y"
+#line 246 "grammar.y"
     {
             char *var_name = (yyvsp[(1) - (6)].str);
             variable *var = (yyvsp[(5) - (6)].ptr);
@@ -1655,7 +1655,7 @@ yyreduce:
     break;
 
   case 16:
-#line 254 "grammar.y"
+#line 256 "grammar.y"
     {
             variable *var = (yyvsp[(3) - (4)].ptr);
             tuple(var, send_msg);
@@ -1665,7 +1665,7 @@ yyreduce:
     break;
 
   case 17:
-#line 259 "grammar.y"
+#line 261 "grammar.y"
     {
         char *file_name = (yyvsp[(3) - (4)].str);
         op->type = NOOP;
@@ -1682,7 +1682,7 @@ yyreduce:
     break;
 
   case 18:
-#line 271 "grammar.y"
+#line 273 "grammar.y"
     {
         op->type = SHUTDOWN_OP;
         add_payload(send_msg, "Shutting down DB");
@@ -1690,7 +1690,7 @@ yyreduce:
     break;
 
   case 19:
-#line 277 "grammar.y"
+#line 279 "grammar.y"
     {
             // here we create the linked list
             list *root = create_list();
@@ -1700,7 +1700,7 @@ yyreduce:
     break;
 
   case 20:
-#line 283 "grammar.y"
+#line 285 "grammar.y"
     {
             // $3 is the root of the linked list
             list *root = (yyvsp[(3) - (3)].list);
@@ -1710,27 +1710,27 @@ yyreduce:
     break;
 
   case 21:
-#line 291 "grammar.y"
+#line 293 "grammar.y"
     { (yyval.val) = UNSORTED; ;}
     break;
 
   case 22:
-#line 292 "grammar.y"
+#line 294 "grammar.y"
     { (yyval.val) = SORTED; ;}
     break;
 
   case 23:
-#line 294 "grammar.y"
+#line 296 "grammar.y"
     { (yyval.str) = (yyvsp[(1) - (1)].str); ;}
     break;
 
   case 24:
-#line 297 "grammar.y"
+#line 299 "grammar.y"
     { (yyval.str) = (yyvsp[(2) - (3)].str); ;}
     break;
 
   case 25:
-#line 301 "grammar.y"
+#line 303 "grammar.y"
     {
         MaybeInt n;
         n.present = 1;
@@ -1740,7 +1740,7 @@ yyreduce:
     break;
 
   case 26:
-#line 306 "grammar.y"
+#line 308 "grammar.y"
     {
         MaybeInt n;
         n.present = 0;
@@ -1964,7 +1964,7 @@ yyreturn:
 }
 
 
-#line 312 "grammar.y"
+#line 314 "grammar.y"
 
 
 void parse_dsl(char *str, db_operator *op, message *send_msg) {

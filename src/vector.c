@@ -18,6 +18,26 @@ vector *create_vector(void) {
     return v;
 }
 
+void vector_cat(vector *from, vector *to) {
+    size_t new_length = to->length;
+    if (new_length == 0)
+        new_length = 64;
+
+    while (new_length < to->length + from->length) {
+        new_length *= 2;
+    }
+
+    if (new_length > to->length) {
+        to->buf = realloc(to->buf, new_length * sizeof(int));
+        assert(to->buf != NULL);
+        to->max_length = new_length;
+    }
+    // after here, to has enough space to get the elements from from
+    memcpy(to->buf + to->length, from->buf, from->length * sizeof(int));
+    to->length += from->length;
+
+}
+
 void vector_insert(int val, vector *v) {
     assert(v != NULL);
     if (v->length >= v->max_length) {

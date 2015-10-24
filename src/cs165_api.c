@@ -64,9 +64,7 @@ status create_column(table *table, const char* name, IndexType type) {
 
     // creates column
     strncpy(col->name, name, NAME_SIZE);
-    col->data = NULL;
-    col->count = 0;
-    col->max_count = 0;
+    col->vector = create_vector();
     col->index.type = type;
     col->index.index = NULL;
 
@@ -129,8 +127,8 @@ status drop_column(table *tbl, column* col) {
     if (col->index.index != NULL)
         free(col->index.index);
 
-    if (col->data != NULL)
-        free(col->data);
+    if (col->vector != NULL)
+        destroy_vector(col->vector);
 
     tbl->col_count--;
     return OK_STATUS;
@@ -149,38 +147,21 @@ status relational_insert(table *tbl, list *values) {
         insert(&tbl->cols[i], val);
 
         // check that all counts end up being the same for integrity
-        assert(last_count == 0 || tbl->cols[i].count == last_count);
-        last_count = tbl->cols[i].count;
+        assert(last_count == 0 || tbl->cols[i].vector->length == last_count);
+        last_count = tbl->cols[i].vector->length;
     }
     assert(values->length == 0);
     return OK_STATUS;
 }
 
 status insert(column *col, int data) {
-
-    int *pos = get_next_allocated_element(&col->count, &col->max_count, sizeof(int), &col->data);
-    *pos = data;
+    vector_insert(data, col->vector);
     return OK_STATUS;
 }
 
 status insert_vector(column *col, vector *v) {
-    // first we make sure the column has enough space to hold the new data
-    size_t new_max_count = col->max_count;
-    if (new_max_count == 0)
-        new_max_count = 8;
-
-    while (new_max_count < col->count + v->length) {
-        new_max_count *= 2;
-    }
-
-    if (new_max_count > col->max_count) {
-        col->data = realloc(col->data, new_max_count * sizeof(int));
-        assert(col->data != NULL);
-        col->max_count = new_max_count;
-    }
-
-    memcpy(col->data + col->count, v->buf, v->length * sizeof(int));
-    col->count += v->length;
+    // concatenate both vectors into col->vector
+    vector_cat(v, col->vector);
 
     return OK_STATUS;
 }
@@ -252,7 +233,7 @@ vector *fetch(column *col, vector *positions) {
 
     for (size_t i = 0; i < positions->length; i++) {
         size_t pos = positions->buf[i];
-        vector_insert(col->data[pos], ret);
+        vector_insert(col->vector->buf[pos], ret);
     }
     return ret;
 }
@@ -336,15 +317,15 @@ status tuple(variable *var, message *msg) {
 vector *select_one(column *col, MaybeInt low, MaybeInt high) {
     // right now we create the vector with no name
     vector *ret = create_vector();
-
+    vector *data = col->vector;
     // performing the select
-    for (size_t i = 0; i < col->count; i++) {
-        if (low.present && high.present && col->data[i] < high.val
-                                       && col->data[i] >= low.val)
+    for (size_t i = 0; i < data->length; i++) {
+        if (low.present && high.present && data->buf[i] < high.val
+                                       && data->buf[i] >= low.val)
             vector_insert(i, ret);
-        else if (low.present && !high.present && col->data[i] >= low.val)
+        else if (low.present && !high.present && data->buf[i] >= low.val)
             vector_insert(i, ret);
-        else if (!low.present && high.present && col->data[i] < high.val)
+        else if (!low.present && high.present && data->buf[i] < high.val)
             vector_insert(i, ret);
         else if (!low.present && !high.present)
             vector_insert(i, ret);

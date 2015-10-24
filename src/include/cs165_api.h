@@ -91,9 +91,7 @@ typedef struct column_index {
  **/
 typedef struct column {
     char name[NAME_SIZE];
-    size_t max_count;
-    size_t count;
-    int* data;
+    vector *vector;
     column_index index;
 } column;
 
