@@ -161,7 +161,7 @@ void handle_client(int client_socket) {
             }
 
             // 4. Send response of request
-            if (send(client_socket, send_message.payload, send_message.length, 0) == -1) {
+            if (send_message.payload != NULL && send(client_socket, send_message.payload, send_message.length, 0) == -1) {
                 log_err("Failed to send message.");
                 exit(1);
             }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 #include "utils.h"
 
@@ -8,14 +9,11 @@
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-#define LOG_INFO
-#define LOG
-#define LOG_ERR
 
 #define TO_ALLOCATE 64
 
 // buf ends with a newline character, so transform that to null
-void newline_to_null(const char *buf) {
+void newline_to_null(char *buf) {
     char *p = buf;
     strsep(&p, "\n");
 }

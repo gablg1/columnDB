@@ -250,7 +250,8 @@ vector *fetch(column *col, vector *positions) {
     vector *ret = create_vector(NULL);
 
     for (size_t i = 0; i < positions->length; i++) {
-        vector_insert(col->data[i], ret);
+        size_t pos = positions->buf[i];
+        vector_insert(col->data[pos], ret);
     }
     return ret;
 }
@@ -266,6 +267,9 @@ status tuple(vector *values, message *msg) {
             add_payload(msg, "Not enough space in buffer");
             return BUF_ERR;
         }
+
+        // also print it on the server
+        printf("%d\n", values->buf[i]);
     }
     buf[pos] = '\0';
     add_payload(msg, buf);
