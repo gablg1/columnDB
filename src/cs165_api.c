@@ -257,6 +257,14 @@ vector *fetch(column *col, vector *positions) {
     return ret;
 }
 
+double avg(vector *values) {
+    long long sum = 0;
+    for (size_t i = 0; i < values->length; i++) {
+        sum += values->buf[i];
+    }
+    return (double) sum / values->length;
+}
+
 int min(vector *values) {
     assert(values->length >= 1);
     int min = values->buf[0];
@@ -292,16 +300,20 @@ status tuple_int(int n, message *msg) {
         add_payload(msg, "Not enough space in buffer");
         return BUF_ERR;
     }
+    add_payload(msg, buf);
+    printf("%d\n", n);
     return OK_STATUS;
 }
 
-status tuple_float(float f, message *msg) {
+status tuple_float(double f, message *msg) {
     char buf[MAX_MSG_SIZE];
-    int ret = snprintf(buf, MAX_MSG_SIZE, "%f\n", f);
+    int ret = snprintf(buf, MAX_MSG_SIZE, "%.12f\n", f);
     if (ret >= MAX_MSG_SIZE) {
         add_payload(msg, "Not enough space in buffer");
         return BUF_ERR;
     }
+    add_payload(msg, buf);
+    printf("%.12f\n", f);
     return OK_STATUS;
 }
 
@@ -315,7 +327,7 @@ status tuple(variable *var, message *msg) {
         case INT_N:
             return tuple_int(var->i, msg);
             break;
-        case FLOAT_N:
+        case DOUBLE_N:
             return tuple_float(var->f, msg);
             break;
     }

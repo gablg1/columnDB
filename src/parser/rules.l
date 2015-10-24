@@ -26,7 +26,8 @@ select {return SELECT;}
 fetch {return FETCH;}
 tuple {return TUPLE;}
 load { return LOAD;}
-mind {return MIN_T;}
+min {return MIN_T;}
+avg {return AVG;}
 shutdown { return SHUTDOWN; }
 db { return DB; }
 tbl { return TBL; }

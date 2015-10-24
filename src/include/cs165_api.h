@@ -207,11 +207,7 @@ typedef struct result {
 } result;
 
 typedef enum Aggr {
-    MIN,
-    MAX,
-    SUM,
-    AVG,
-    CNT,
+    NOT,
 } Aggr;
 
 typedef enum OperatorType {
@@ -436,6 +432,7 @@ status load(const char *filename);
 status tuple(variable *var, message *msg);
 
 int min(vector *values);
+double avg(vector *values);
 
 /* Query API */
 status query_prepare(const char* query, db_operator** op);

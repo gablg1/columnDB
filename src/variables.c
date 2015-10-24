@@ -31,7 +31,7 @@ void add_int_var(int n, const char *name) {
     agnostic_vector_insert(&n, vars);
 }
 
-void add_float_var(float f, const char *name) {
+void add_float_var(double f, const char *name) {
     assert(name != NULL);
     // creates the AgnosticVector if it doesn't exist yet
     if (vars == NULL)
@@ -39,7 +39,8 @@ void add_float_var(float f, const char *name) {
 
     // inserts a vector into the global AgnosticVector
     variable n;
-    n.type = FLOAT_N;
+    n.name = strdup(name);
+    n.type = DOUBLE_N;
     n.f = f;
     agnostic_vector_insert(&n, vars);
 }

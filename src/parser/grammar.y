@@ -31,6 +31,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token TBL
 %token COL
 %token MIN_T
+%token AVG
 %token BEGIN_COMMENT
 %token SORTED_T
 %token UNSORTED_T
@@ -123,6 +124,8 @@ col : name {
         $$ = col;
    }
 ;
+
+vector_var: name
 
 var : name {
         variable *v = get_var_by_name($1);
@@ -234,11 +237,22 @@ query: CREATE '(' DB ',' quoted_name ')'
             add_payload(send_msg, "Fetched %d values succesfully", v->length);
      } | name '=' MIN_T '(' var ')' {
             char *var_name = $1;
-            vector *val_vec = $5;
+            variable *val_vec = $5;
             op->type = NOOP;
-            int m = min(val_vec);
+            assert(val_vec->type == VECTOR_N);
+            int m = min(val_vec->v);
             add_int_var(m, var_name);
             add_payload(send_msg, "Minimum of %d calculated", m);
+     } | name '=' AVG '(' var ')' {
+            char *var_name = $1;
+            variable *var = $5;
+            op->type = NOOP;
+
+            // avg is supported only for vector variables
+            assert(var->type == VECTOR_N);
+            double av = avg(var->v);
+            add_float_var(av, var_name);
+            add_payload(send_msg, "Average of %f calculated", av);
      } | TUPLE '(' var ')' {
             variable *var = $3;
             tuple(var, send_msg);
