@@ -30,6 +30,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token DB
 %token TBL
 %token COL
+%token MIN_T
 %token BEGIN_COMMENT
 %token SORTED_T
 %token UNSORTED_T
@@ -124,7 +125,7 @@ col : name {
 ;
 
 var : name {
-        vector *v = get_var_by_name($1);
+        variable *v = get_var_by_name($1);
         if (v == NULL) {
             op->type = ERROR_OP;
             add_payload(send_msg, "Could not find variable %s", $1);
@@ -212,15 +213,15 @@ query: CREATE '(' DB ',' quoted_name ')'
             vector *v = select_one(col, low, high);
 
             // now we just give a name and add it to our pool of variables
-            v->name = var_name;
-            add_var(v);
+            add_vector_var(v, var_name);
 
             add_payload(send_msg, "Selected %d positions succesfully", v->length);
      }
      | name '=' FETCH '(' col ',' var ')' {
             char *var_name = $1;
             column *col = $5;
-            vector *pos_vec = $7;
+            variable *vn = $7;
+            vector *pos_vec = vn->v;
 
             op->type = NOOP;
 
@@ -228,16 +229,24 @@ query: CREATE '(' DB ',' quoted_name ')'
             vector *v = fetch(col, pos_vec);
 
             // now we just give a name and add it to our pool of variables
-            v->name = var_name;
-            add_var(v);
+            add_vector_var(v, var_name);
 
             add_payload(send_msg, "Fetched %d values succesfully", v->length);
+     } | name '=' MIN_T '(' var ')' {
+            char *var_name = $1;
+            vector *val_vec = $5;
+            op->type = NOOP;
+            int m = min(val_vec);
+            add_int_var(m, var_name);
+            add_payload(send_msg, "Minimum of %d calculated", m);
      } | TUPLE '(' var ')' {
-            vector *val_vec = $3;
-            tuple(val_vec, send_msg);
+            variable *var = $3;
+            tuple(var, send_msg);
+            op->type = NOOP;
 
      } | LOAD '(' quoted_name ')' {
         char *file_name = $3;
+        op->type = NOOP;
 
         status st = load(file_name);
         if (st.code == OK) {

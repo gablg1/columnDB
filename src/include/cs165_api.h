@@ -23,6 +23,7 @@ SOFTWARE.
 #include <stdlib.h>
 #include "list.h"
 #include "vector.h"
+#include "variables.h"
 #include "message.h"
 
 #define NAME_SIZE 64
@@ -432,7 +433,9 @@ vector *fetch(column *col, vector *positions);
 
 status load(const char *filename);
 
-status tuple(vector *values, message *msg);
+status tuple(variable *var, message *msg);
+
+int min(vector *values);
 
 /* Query API */
 status query_prepare(const char* query, db_operator** op);

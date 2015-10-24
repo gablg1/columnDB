@@ -8,27 +8,62 @@
 #include "utils.h"
 #include "message.h"
 #include "agnostic_vector.h"
+#include "variables.h"
 
-// We use an AgnosticVector of pointers to (int) vectors to store variables
+
+// We use an AgnosticVector of variables to store variables
 // such as var1 in
 // <var1>=select(...)
 AgnosticVector *vars = NULL;
 
-void add_var(vector *v) {
+void add_int_var(int n, const char *name) {
+    assert(name != NULL);
     // creates the AgnosticVector if it doesn't exist yet
     if (vars == NULL)
-        vars = create_agnostic_vector(sizeof(vector *));
+        vars = create_agnostic_vector(sizeof(variable));
+
 
     // inserts a vector into the global AgnosticVector
-    agnostic_vector_insert(&v, vars);
+    variable nod;
+    nod.name = strdup(name);
+    nod.type = INT_N;
+    nod.i = n;
+    agnostic_vector_insert(&n, vars);
 }
 
-vector *get_var_by_name(const char *lookup_name) {
+void add_float_var(float f, const char *name) {
+    assert(name != NULL);
+    // creates the AgnosticVector if it doesn't exist yet
+    if (vars == NULL)
+        vars = create_agnostic_vector(sizeof(variable));
+
+    // inserts a vector into the global AgnosticVector
+    variable n;
+    n.type = FLOAT_N;
+    n.f = f;
+    agnostic_vector_insert(&n, vars);
+}
+
+void add_vector_var(vector *v, const char *name) {
+    assert(name != NULL);
+    // creates the AgnosticVector if it doesn't exist yet
+    if (vars == NULL)
+        vars = create_agnostic_vector(sizeof(variable));
+
+    // inserts a vector into the global AgnosticVector
+    variable n;
+    n.name = strdup(name);
+    n.type = VECTOR_N;
+    n.v = v;
+    agnostic_vector_insert(&n, vars);
+}
+
+variable *get_var_by_name(const char *lookup_name) {
     // we know that vars->buf is actually pointing to an array of vectors
-    vector **vs = vars->buf;
+    variable *vs = vars->buf;
     for (size_t i = 0; i < vars->length; i++)
-        if (strcmp(vs[i]->name, lookup_name) == 0)
-            return vs[i];
+        if (strcmp(vs[i].name, lookup_name) == 0)
+            return &vs[i];
 
     return NULL;
 }
@@ -37,9 +72,14 @@ void destroy_vars(void) {
     if (vars == NULL)
         return;
 
-    vector **vs = vars->buf;
-    for (size_t i = 0; i < vars->length; i++)
-        destroy_vector(vs[i]);
+    variable *vs = vars->buf;
+    for (size_t i = 0; i < vars->length; i++) {
+        assert(vs[i].name != NULL);
+        free(vs[i].name);
+
+        if (vs[i].type == VECTOR_N)
+            destroy_vector(vs[i].v);
+    }
 
     destroy_agnostic_vector(vars);
 }

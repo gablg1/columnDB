@@ -8,12 +8,8 @@
 
 // Here we implement a basic int vector that grows dinamically
 
-vector *create_vector(const char *name) {
+vector *create_vector(void) {
     vector *v = malloc(sizeof(vector));
-    if (name == NULL)
-        v->name = NULL;
-    else
-        v->name = strdup(name);
 
     // Allocates some initial space
     v->buf = malloc(INITIAL_length * sizeof(int));
@@ -35,9 +31,6 @@ void vector_insert(int val, vector *v) {
 }
 
 void destroy_vector(vector *v) {
-    assert(v->name != NULL);
-    free(v->name);
-
     if (v->buf != NULL)
         free(v->buf);
 

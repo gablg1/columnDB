@@ -4,6 +4,7 @@
 #include "cs165_api.h"
 #include "utils.h"
 #include "dbs.h"
+#include "variables.h"
 #include "agnostic_vector.h"
 
 
@@ -216,7 +217,7 @@ status load(const char *filename) {
         agnostic_vector_insert(&col, ag_cols);
 
         // each v will hold the values to be inserted in each column
-        vector *v = create_vector(NULL);
+        vector *v = create_vector();
         assert(v != NULL);
         agnostic_vector_insert(&v, values);
 
@@ -247,7 +248,7 @@ status load(const char *filename) {
 }
 
 vector *fetch(column *col, vector *positions) {
-    vector *ret = create_vector(NULL);
+    vector *ret = create_vector();
 
     for (size_t i = 0; i < positions->length; i++) {
         size_t pos = positions->buf[i];
@@ -256,9 +257,18 @@ vector *fetch(column *col, vector *positions) {
     return ret;
 }
 
-status tuple(vector *values, message *msg) {
-    assert(values != NULL);
+int min(vector *values) {
+    assert(values->length >= 1);
+    int min = values->buf[0];
+    for (size_t i = 1; i < values->length; i++) {
+        if (min > values->buf[i])
+            min = values->buf[i];
+    }
+    return min;
+}
 
+status tuple_vector(vector *values, message *msg) {
+    assert(values != NULL);
     char buf[MAX_MSG_SIZE];
     int pos = 0;
     for (size_t i = 0; i < values->length; i++) {
@@ -271,14 +281,49 @@ status tuple(vector *values, message *msg) {
         // also print it on the server
         printf("%d\n", values->buf[i]);
     }
-    buf[pos] = '\0';
     add_payload(msg, buf);
     return OK_STATUS;
 }
 
+status tuple_int(int n, message *msg) {
+    char buf[MAX_MSG_SIZE];
+    int ret = snprintf(buf, MAX_MSG_SIZE, "%d\n", n);
+    if (ret >= MAX_MSG_SIZE) {
+        add_payload(msg, "Not enough space in buffer");
+        return BUF_ERR;
+    }
+    return OK_STATUS;
+}
+
+status tuple_float(float f, message *msg) {
+    char buf[MAX_MSG_SIZE];
+    int ret = snprintf(buf, MAX_MSG_SIZE, "%f\n", f);
+    if (ret >= MAX_MSG_SIZE) {
+        add_payload(msg, "Not enough space in buffer");
+        return BUF_ERR;
+    }
+    return OK_STATUS;
+}
+
+status tuple(variable *var, message *msg) {
+    assert(var != NULL);
+
+    switch (var->type) {
+        case VECTOR_N:
+            return tuple_vector(var->v, msg);
+            break;
+        case INT_N:
+            return tuple_int(var->i, msg);
+            break;
+        case FLOAT_N:
+            return tuple_float(var->f, msg);
+            break;
+    }
+}
+
 vector *select_one(column *col, MaybeInt low, MaybeInt high) {
     // right now we create the vector with no name
-    vector *ret = create_vector(NULL);
+    vector *ret = create_vector();
 
     // performing the select
     for (size_t i = 0; i < col->count; i++) {
