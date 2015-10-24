@@ -24,6 +24,7 @@ create {return CREATE;}
 relational_insert {return REL_INSERT;}
 select {return SELECT;}
 fetch {return FETCH;}
+tuple {return TUPLE;}
 load { return LOAD;}
 shutdown { return SHUTDOWN; }
 db { return DB; }
@@ -37,7 +38,7 @@ sorted {return SORTED_T; }
 "."|","|"("|")"|";"|"="|"\"" { return yytext[0]; }
 
 null { return NULL_T; }
-{DIGIT}+ {yylval.val = atoi(yytext); return INT;}
+(\-|\+)?{DIGIT}+ {yylval.val = atoi(yytext); return INT;}
 
 
 {ALPHANUM_AND_SYMBOLS_AND_DOT}+ { yylval.str = strdup(yytext); return WORD; } /* A combination of everything else

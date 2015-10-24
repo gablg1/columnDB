@@ -23,8 +23,8 @@ SOFTWARE.
 #include <stdlib.h>
 #include "list.h"
 #include "vector.h"
+#include "message.h"
 
-#define MAX_MSG_SIZE 1024
 #define NAME_SIZE 64
 
 /**
@@ -431,6 +431,8 @@ vector *select_two(vector *positions, column *col, MaybeInt low, MaybeInt high);
 vector *fetch(column *col, vector *positions);
 
 status load(const char *filename);
+
+status tuple(vector *values, message *msg);
 
 /* Query API */
 status query_prepare(const char* query, db_operator** op);

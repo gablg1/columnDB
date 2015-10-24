@@ -10,6 +10,7 @@
 status OK_STATUS = {OK, NULL};
 status NULL_PTR = {ERROR, "You are trying to dereference a null pointer"};
 status FILE_ERR = {ERROR, "Unable to open file"};
+status BUF_ERR = {ERROR, "Not enough space in buffer"};
 
 /*
  * Frees the given db operators thoroughly.
@@ -252,6 +253,23 @@ vector *fetch(column *col, vector *positions) {
         vector_insert(col->data[i], ret);
     }
     return ret;
+}
+
+status tuple(vector *values, message *msg) {
+    assert(values != NULL);
+
+    char buf[MAX_MSG_SIZE];
+    int pos = 0;
+    for (size_t i = 0; i < values->length; i++) {
+        pos += snprintf(&buf[pos], MAX_MSG_SIZE - pos, "%d\n", values->buf[i]);
+        if (pos >= MAX_MSG_SIZE) {
+            add_payload(msg, "Not enough space in buffer");
+            return BUF_ERR;
+        }
+    }
+    buf[pos] = '\0';
+    add_payload(msg, buf);
+    return OK_STATUS;
 }
 
 vector *select_one(column *col, MaybeInt low, MaybeInt high) {

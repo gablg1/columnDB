@@ -5,7 +5,6 @@
 #include <string.h>
 #include <assert.h>
 
-#define MAX_MSG_SIZE 256
 
 void add_payload(message *m, const char *format, ...) {
     va_list v;

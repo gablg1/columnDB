@@ -36,6 +36,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token REL_INSERT
 %token SELECT
 %token FETCH
+%token TUPLE
 %token LOAD
 %token SHUTDOWN
 %token NULL_T
@@ -231,8 +232,11 @@ query: CREATE '(' DB ',' quoted_name ')'
             add_var(v);
 
             add_payload(send_msg, "Fetched %d values succesfully", v->length);
-     }
-     | LOAD '(' quoted_name ')' {
+     } | TUPLE '(' var ')' {
+            vector *val_vec = $3;
+            tuple(val_vec, send_msg);
+
+     } | LOAD '(' quoted_name ')' {
         char *file_name = $3;
 
         status st = load(file_name);
