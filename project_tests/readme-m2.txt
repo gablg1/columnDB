@@ -42,6 +42,16 @@ in the form of a sorted column on 'col1'. This test will compare between the
 performance of the two secondary index structures.
 
 
+Comments
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+We expect all tests to be executed as follows:
+"make testX"
+which would run the testX.dsl as input in the client.
+It should be expected that the server is already running.
+
+
+
+
 
 
 
