@@ -60,6 +60,8 @@ void add_vector_var(vector *v, const char *name) {
 }
 
 variable *get_var_by_name(const char *lookup_name) {
+    if (vars == NULL)
+        return NULL;
     // we know that vars->buf is actually pointing to an array of vectors
     variable *vs = vars->buf;
     for (size_t i = 0; i < vars->length; i++)
