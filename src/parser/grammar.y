@@ -32,6 +32,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token COL
 %token MIN_T
 %token AVG
+%token ADD
 %token BEGIN_COMMENT
 %token SORTED_T
 %token UNSORTED_T
@@ -289,6 +290,15 @@ query: CREATE '(' DB ',' quoted_name ')'
             double av = avg(v);
             add_float_var(av, var_name);
             add_payload(send_msg, "Average of %f calculated", av);
+     } | name '=' ADD '(' var_or_col ',' var_or_col ')' {
+            char *var_name = $1;
+            vector *v1 = $5;
+            vector *v2 = $7;
+            op->type = NOOP;
+
+            vector *sum = add(v1, v2);
+            add_vector_var(sum, var_name);
+            add_payload(send_msg, "Sum of vectors calculated");
      } | TUPLE '(' var ')' {
             variable *var = $3;
             tuple(var, send_msg);

@@ -238,6 +238,17 @@ vector *fetch(column *col, vector *positions) {
     return ret;
 }
 
+vector *add(vector *v1, vector *v2) {
+    assert(v1->length == v2->length);
+    vector *ret = create_vector();
+    vector_cat(v1, ret);
+    assert(v1->length == ret->length);
+    for (size_t i = 0; i < v2->length; i++)
+        ret->buf[i] += v2->buf[i];
+    return ret;
+
+}
+
 double avg(vector *values) {
     long long sum = 0;
     for (size_t i = 0; i < values->length; i++) {
@@ -286,6 +297,18 @@ status tuple_int(int n, message *msg) {
     return OK_STATUS;
 }
 
+status tuple_long(long long n, message *msg) {
+    char buf[MAX_MSG_SIZE];
+    int ret = snprintf(buf, MAX_MSG_SIZE, "%lld\n", n);
+    if (ret >= MAX_MSG_SIZE) {
+        add_payload(msg, "Not enough space in buffer");
+        return BUF_ERR;
+    }
+    add_payload(msg, buf);
+    printf("%lld\n", n);
+    return OK_STATUS;
+}
+
 status tuple_float(double f, message *msg) {
     char buf[MAX_MSG_SIZE];
     int ret = snprintf(buf, MAX_MSG_SIZE, "%.12f\n", f);
@@ -308,10 +331,14 @@ status tuple(variable *var, message *msg) {
         case INT_N:
             return tuple_int(var->i, msg);
             break;
+        case LONG_N:
+            return tuple_long(var->l, msg);
+            break;
         case DOUBLE_N:
             return tuple_float(var->f, msg);
             break;
     }
+    return OK_STATUS;
 }
 
 vector *select_one(column *col, MaybeInt low, MaybeInt high) {

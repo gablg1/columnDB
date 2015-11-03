@@ -430,6 +430,7 @@ status load(const char *filename);
 status tuple(variable *var, message *msg);
 
 int min(vector *values);
+vector *add(vector *v1, vector *v2);
 double avg(vector *values);
 
 /* Query API */

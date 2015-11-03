@@ -28,7 +28,21 @@ void add_int_var(int n, const char *name) {
     nod.name = strdup(name);
     nod.type = INT_N;
     nod.i = n;
-    agnostic_vector_insert(&n, vars);
+    agnostic_vector_insert(&nod, vars);
+}
+
+void add_long_var(long long n, const char *name) {
+    assert(name != NULL);
+    // creates the AgnosticVector if it doesn't exist yet
+    if (vars == NULL)
+        vars = create_agnostic_vector(sizeof(variable));
+
+    // inserts a vector into the global AgnosticVector
+    variable nod;
+    nod.name = strdup(name);
+    nod.type = LONG_N;
+    nod.l = n;
+    agnostic_vector_insert(&nod, vars);
 }
 
 void add_float_var(double f, const char *name) {

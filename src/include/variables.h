@@ -6,6 +6,7 @@
 
 typedef enum NodeType {
     INT_N,
+    LONG_N,
     DOUBLE_N,
     VECTOR_N
 } NodeType;
@@ -17,11 +18,13 @@ typedef struct variable {
     NodeType type;
     vector *v;
     int i;
+    long long l;
     double f;
 } variable;
 
 void add_vector_var(vector *v, const char *name);
 void add_float_var(double f, const char *name);
+void add_long_var(long long n, const char *name);
 void add_int_var(int n, const char *name);
 variable *get_var_by_name(const char *lookup_name);
 void destroy_vars(void);

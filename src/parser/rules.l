@@ -28,6 +28,7 @@ tuple {return TUPLE;}
 load { return LOAD;}
 min {return MIN_T;}
 avg {return AVG;}
+add {return ADD;}
 shutdown { return SHUTDOWN; }
 db { return DB; }
 tbl { return TBL; }
