@@ -29,6 +29,8 @@ load { return LOAD;}
 min {return MIN_T;}
 avg {return AVG;}
 add {return ADD;}
+sub {return SUB;}
+max {return MAX_T;}
 shutdown { return SHUTDOWN; }
 db { return DB; }
 tbl { return TBL; }

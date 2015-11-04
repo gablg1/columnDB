@@ -249,6 +249,17 @@ vector *add(vector *v1, vector *v2) {
 
 }
 
+vector *sub(vector *v1, vector *v2) {
+    assert(v1->length == v2->length);
+    vector *ret = create_vector();
+    vector_cat(v1, ret);
+    assert(v1->length == ret->length);
+    for (size_t i = 0; i < v2->length; i++)
+        ret->buf[i] -= v2->buf[i];
+    return ret;
+
+}
+
 double avg(vector *values) {
     long long sum = 0;
     for (size_t i = 0; i < values->length; i++) {
@@ -265,6 +276,16 @@ int min(vector *values) {
             min = values->buf[i];
     }
     return min;
+}
+
+int max(vector *values) {
+    assert(values->length >= 1);
+    int max = values->buf[0];
+    for (size_t i = 1; i < values->length; i++) {
+        if (max < values->buf[i])
+            max = values->buf[i];
+    }
+    return max;
 }
 
 status tuple_vector(vector *values, message *msg) {

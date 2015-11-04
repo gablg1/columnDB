@@ -33,6 +33,8 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token MIN_T
 %token AVG
 %token ADD
+%token SUB
+%token MAX_T
 %token BEGIN_COMMENT
 %token SORTED_T
 %token UNSORTED_T
@@ -273,14 +275,20 @@ query: CREATE '(' DB ',' quoted_name ')'
             add_vector_var(v, var_name);
 
             add_payload(send_msg, "Fetched %d values succesfully", v->length);
-     } | name '=' MIN_T '(' var ')' {
+     } | name '=' MIN_T '(' var_or_col ')' {
             char *var_name = $1;
-            variable *val_vec = $5;
+            vector *val_vec = $5;
             op->type = NOOP;
-            assert(val_vec->type == VECTOR_N);
-            int m = min(val_vec->v);
+            int m = min(val_vec);
             add_int_var(m, var_name);
             add_payload(send_msg, "Minimum of %d calculated", m);
+    } | name '=' MAX_T '(' var_or_col ')' {
+            char *var_name = $1;
+            vector *val_vec = $5;
+            op->type = NOOP;
+            int m = max(val_vec);
+            add_int_var(m, var_name);
+            add_payload(send_msg, "Maximum of %d calculated", m);
      } | name '=' AVG '(' var_or_col ')' {
             char *var_name = $1;
             vector *v = $5;
@@ -299,6 +307,15 @@ query: CREATE '(' DB ',' quoted_name ')'
             vector *sum = add(v1, v2);
             add_vector_var(sum, var_name);
             add_payload(send_msg, "Sum of vectors calculated");
+    } | name '=' SUB '(' var_or_col ',' var_or_col ')' {
+            char *var_name = $1;
+            vector *v1 = $5;
+            vector *v2 = $7;
+            op->type = NOOP;
+
+            vector *diff = sub(v1, v2);
+            add_vector_var(diff, var_name);
+            add_payload(send_msg, "Difference of vectors calculated");
      } | TUPLE '(' var ')' {
             variable *var = $3;
             tuple(var, send_msg);
