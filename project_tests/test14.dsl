@@ -7,7 +7,7 @@
 -- Loads data from: data2.csv
 --
 -- Create Table
-create(tbl,"tbl3",db1,10)
+create(tbl,"tbl3",db1,7)
 create(col,"col1",db1.tbl3,unsorted)
 create(col,"col2",db1.tbl3,unsorted)
 create(col,"col3",db1.tbl3,unsorted)
