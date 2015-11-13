@@ -167,7 +167,19 @@ status relational_insert(table *tbl, list *values) {
 }
 
 status insert(column *col, int data) {
-    vector_insert(data, col->vector);
+    size_t pos = vector_insert(data, col->vector);
+
+    switch (col->index.type) {
+        case (UNSORTED):
+            break;
+        case (BTREE):
+            bt_insert(col->index.index, data);
+            break;
+        case (SORTED):
+            insert_sorted(col->index.index, data, pos);
+            break;
+    }
+
     return OK_STATUS;
 }
 

@@ -11,4 +11,4 @@ vector *create_vector(void);
 
 void vector_cat(vector *from, vector *to);
 
-void vector_insert(int val, vector *v);
+size_t vector_insert(int val, vector *v);

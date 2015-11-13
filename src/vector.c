@@ -39,7 +39,8 @@ void vector_cat(vector *from, vector *to) {
 
 }
 
-void vector_insert(int val, vector *v) {
+// returns the position where the val was inserted
+size_t vector_insert(int val, vector *v) {
     assert(v != NULL);
     if (v->length >= v->max_length) {
         v->max_length *= 2;
@@ -49,6 +50,7 @@ void vector_insert(int val, vector *v) {
 
     // actually inserts val and increments the length
     v->buf[v->length++] = val;
+    return v->length - 1;
 }
 
 void destroy_vector(vector *v) {

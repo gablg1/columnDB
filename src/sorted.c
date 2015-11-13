@@ -40,7 +40,7 @@ vector *select_one_sorted(sorted_index *index, int low, int high) {
 
     // performing the select
     for (size_t i = lp; i < hp; i++)
-        vector_insert(index->data[i], ret);
+        vector_insert(index->positions[i], ret);
     return ret;
 }
 
@@ -63,4 +63,5 @@ void insert_sorted(sorted_index *index, int n, size_t pos) {
     // finally insert it
     index->data[i] = n;
     index->positions[i] = pos;
+    index->length++;
 }
