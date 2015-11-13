@@ -4,6 +4,8 @@
 
 #include "cs165_api.h"
 #include "utils.h"
+#include "sorted.h"
+#include "btree.h"
 
 #define PERSIST_DIR "persist"
 
@@ -15,6 +17,27 @@ FILE *persist_fopen(const char *restrict filename, const char *restrict mode) {
     snprintf(buf, NAME_SIZE, "%s/%s", PERSIST_DIR, filename);
     FILE *fp = fopen(buf, mode);
     return fp;
+}
+
+void load_sorted_index(column *col, FILE *fp) {
+    col->index.type = SORTED;
+    col->index.index = malloc(sizeof(sorted_index));
+    sorted_index *index = col->index.index;
+
+    assert(index != NULL);
+    fread(index, sizeof(sorted_index), 1, fp);
+
+    index->positions = malloc(sizeof(size_t) * index->max_length);
+    assert(index->positions != NULL);
+    fread(index->positions, sizeof(size_t), index->length, fp);
+
+    index->data = malloc(sizeof(int) * index->max_length);
+    assert(index->data != NULL);
+    fread(index->data, sizeof(int), index->length, fp);
+}
+
+void load_btree_index(column *col, FILE *fp) {
+    // TODO: implement me
 }
 
 /*
@@ -37,9 +60,19 @@ void load_column(const char *filename, column *col) {
     assert(data != NULL);
     fread(data, sizeof(int), col->vector->length, fp);
     col->vector->buf = data;
+
+    switch (col->index.type) {
+        case (UNSORTED):
+            break;
+        case (BTREE):
+            load_btree_index(col, fp);
+            break;
+        case (SORTED):
+            load_sorted_index(col, fp);
+            break;
+    }
+
     fclose(fp);
-
-
 }
 
 void load_table(const char* filename, table *tbl) {
@@ -95,6 +128,16 @@ void load_db(const char* filename, db *dbp) {
 }
 
 
+void persist_btree_index(bt_node *root, FILE *fp) {
+    // TODO: implement me
+}
+
+void persist_sorted_index(sorted_index *index, FILE *fp) {
+    fwrite(index, sizeof(sorted_index), 1, fp);
+    fwrite(index->positions, sizeof(size_t), index->length, fp);
+    fwrite(index->data, sizeof(int), index->length, fp);
+}
+
 void persist_column(db *db, table *tbl, column *col) {
     assert(db != NULL && tbl != NULL && col != NULL);
     char filename[NAME_SIZE];
@@ -108,6 +151,17 @@ void persist_column(db *db, table *tbl, column *col) {
     fwrite(col, sizeof(column), 1, fp);
     fwrite(col->vector, sizeof(vector), 1, fp);
     fwrite(col->vector->buf, sizeof(int), col->vector->length, fp);
+
+    switch (col->index.type) {
+        case (UNSORTED):
+            break;
+        case (BTREE):
+            persist_btree_index(col->index.index, fp);
+            break;
+        case (SORTED):
+            persist_sorted_index(col->index.index, fp);
+            break;
+    }
     fclose(fp);
 }
 
