@@ -20,6 +20,7 @@ SOFTWARE.
 #ifndef CS165_H
 #define CS165_H
 
+#include <assert.h>
 #include <stdlib.h>
 #include "list.h"
 #include "vector.h"
@@ -27,6 +28,13 @@ SOFTWARE.
 #include "message.h"
 
 #define NAME_SIZE 64
+
+// Used by select_one
+#define MIN_DATA - 1 << 31
+#define MAX_DATA 1 << 31
+
+// used by dynamically allocated arrays
+#define INITIAL_LENGTH 32
 
 /**
  * EXTRA

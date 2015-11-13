@@ -1,11 +1,13 @@
 #include <string.h>
-#include <assert.h>
 
 #include "cs165_api.h"
 #include "utils.h"
 #include "dbs.h"
 #include "variables.h"
 #include "agnostic_vector.h"
+#include "sorted.h"
+#include "btree.h"
+
 
 
 status OK_STATUS = {OK, NULL};
@@ -36,12 +38,11 @@ status create_db(const char* db_name, db** db) {
     return OK_STATUS;
 }
 
-
 status create_table(db* db, const char* name, size_t num_columns) {
     assert(db != NULL);
 
     table *table = get_next_allocated_element(&db->table_count, &db->max_table_count,
-                                                sizeof(table), &(db->tables));
+                                                sizeof(struct table), &(db->tables));
 
     strncpy(table->name, name, NAME_SIZE);
 
@@ -65,8 +66,19 @@ status create_column(table *table, const char* name, IndexType type) {
     // creates column
     strncpy(col->name, name, NAME_SIZE);
     col->vector = create_vector();
+
     col->index.type = type;
-    col->index.index = NULL;
+    switch (type) {
+        case (UNSORTED):
+            col->index.index = NULL;
+            break;
+        case (BTREE):
+            col->index.index = create_btree_index();
+            break;
+        case (SORTED):
+            col->index.index = create_sorted_index();
+            break;
+    }
 
     return OK_STATUS;
 }
@@ -362,22 +374,34 @@ status tuple(variable *var, message *msg) {
     return OK_STATUS;
 }
 
-vector *select_one(column *col, MaybeInt low, MaybeInt high) {
+vector *select_one_unsorted(column *col, int l, int h) {
     // right now we create the vector with no name
     vector *ret = create_vector();
     vector *data = col->vector;
-    // performing the select
+
+    // performing the select;
     for (size_t i = 0; i < data->length; i++) {
-        if (low.present && high.present && data->buf[i] < high.val
-                                       && data->buf[i] >= low.val)
-            vector_insert(i, ret);
-        else if (low.present && !high.present && data->buf[i] >= low.val)
-            vector_insert(i, ret);
-        else if (!low.present && high.present && data->buf[i] < high.val)
-            vector_insert(i, ret);
-        else if (!low.present && !high.present)
+        if (data->buf[i] >= l && data->buf[i] < h)
             vector_insert(i, ret);
     }
     return ret;
+}
+
+vector *select_one(column *col, MaybeInt low, MaybeInt high) {
+    int l = (low.present) ? low.val : MIN_DATA;
+    int h = (high.present) ? high.val : MAX_DATA;
+
+    switch (col->index.type) {
+        case (UNSORTED):
+            return select_one_unsorted(col, l, h);
+            break;
+        case (BTREE):
+            return select_one_btree(col->index.index, l, h);
+            break;
+        case (SORTED):
+            return select_one_sorted(col->index.index, l, h);
+            break;
+    }
+    return NULL;
 }
 

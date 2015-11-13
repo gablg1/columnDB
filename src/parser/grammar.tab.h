@@ -50,17 +50,18 @@
      MAX_T = 266,
      BEGIN_COMMENT = 267,
      SORTED_T = 268,
-     UNSORTED_T = 269,
-     REL_INSERT = 270,
-     SELECT = 271,
-     FETCH = 272,
-     TUPLE = 273,
-     LOAD = 274,
-     SHUTDOWN = 275,
-     NULL_T = 276,
-     WORD = 277,
-     DOTTED_WORD = 278,
-     INT = 279
+     BTREE_T = 269,
+     UNSORTED_T = 270,
+     REL_INSERT = 271,
+     SELECT = 272,
+     FETCH = 273,
+     TUPLE = 274,
+     LOAD = 275,
+     SHUTDOWN = 276,
+     NULL_T = 277,
+     WORD = 278,
+     DOTTED_WORD = 279,
+     INT = 280
    };
 #endif
 /* Tokens.  */
@@ -75,17 +76,18 @@
 #define MAX_T 266
 #define BEGIN_COMMENT 267
 #define SORTED_T 268
-#define UNSORTED_T 269
-#define REL_INSERT 270
-#define SELECT 271
-#define FETCH 272
-#define TUPLE 273
-#define LOAD 274
-#define SHUTDOWN 275
-#define NULL_T 276
-#define WORD 277
-#define DOTTED_WORD 278
-#define INT 279
+#define BTREE_T 269
+#define UNSORTED_T 270
+#define REL_INSERT 271
+#define SELECT 272
+#define FETCH 273
+#define TUPLE 274
+#define LOAD 275
+#define SHUTDOWN 276
+#define NULL_T 277
+#define WORD 278
+#define DOTTED_WORD 279
+#define INT 280
 
 
 
@@ -101,7 +103,7 @@ typedef union YYSTYPE
     void *ptr;
 }
 /* Line 1529 of yacc.c.  */
-#line 105 "grammar.tab.h"
+#line 107 "grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

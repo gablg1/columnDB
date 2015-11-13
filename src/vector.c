@@ -2,19 +2,20 @@
 #include <assert.h>
 #include <string.h>
 
-#include "vector.h"
+#include "cs165_api.h"
 
-#define INITIAL_length 32
 
 // Here we implement a basic int vector that grows dinamically
 
 vector *create_vector(void) {
     vector *v = malloc(sizeof(vector));
+    assert(v != NULL);
 
     // Allocates some initial space
-    v->buf = malloc(INITIAL_length * sizeof(int));
+    v->buf = malloc(INITIAL_LENGTH * sizeof(int));
+    assert(v->buf != NULL);
     v->length = 0;
-    v->max_length = INITIAL_length;
+    v->max_length = INITIAL_LENGTH;
     return v;
 }
 
