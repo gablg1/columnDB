@@ -53,7 +53,7 @@ typedef enum DataType {
 typedef enum IndexType {
     UNSORTED,
     SORTED,
-    B_PLUS_TREE,
+    BTREE,
 } IndexType;
 
 /**

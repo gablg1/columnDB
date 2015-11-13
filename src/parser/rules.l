@@ -37,6 +37,7 @@ tbl { return TBL; }
 col { return COL; }
 unsorted { return UNSORTED_T; }
 sorted {return SORTED_T; }
+btree {return BTREE_T; }
 
 
 [\t ]     /* spaces just signify end of token */

@@ -37,6 +37,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token MAX_T
 %token BEGIN_COMMENT
 %token SORTED_T
+%token BTREE_T
 %token UNSORTED_T
 %token REL_INSERT
 %token SELECT
@@ -355,6 +356,7 @@ arb_ints: INT {
 
 index_type: UNSORTED_T { $$ = UNSORTED; }
           | SORTED_T { $$ = SORTED; }
+          | BTREE_T { $$ = BTREE; }
 
 name: WORD { $$ = $1; }
 ;
