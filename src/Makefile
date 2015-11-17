@@ -60,6 +60,9 @@ client: client.o utils.o
 server: server.o utils.o message.o dbs.o cs165_api.o parser/grammar.tab.o parser/lex.yy.o list.o variables.o agnostic_vector.o vector.o persist.o btree.o sorted.o
 	$(CC) $(CFLAGS) $(DEPCFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
+cleandb:
+	rm -f persist/*
+
 clean:
 	rm -f client server *.o *~ *.bak core *.core cs165_unix_socket
 	rm -rf .deps
