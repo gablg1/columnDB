@@ -52,16 +52,17 @@
      SORTED_T = 268,
      BTREE_T = 269,
      UNSORTED_T = 270,
-     REL_INSERT = 271,
-     SELECT = 272,
-     FETCH = 273,
-     TUPLE = 274,
-     LOAD = 275,
-     SHUTDOWN = 276,
-     NULL_T = 277,
-     WORD = 278,
-     DOTTED_WORD = 279,
-     INT = 280
+     PRIMARY_T = 271,
+     REL_INSERT = 272,
+     SELECT = 273,
+     FETCH = 274,
+     TUPLE = 275,
+     LOAD = 276,
+     SHUTDOWN = 277,
+     NULL_T = 278,
+     WORD = 279,
+     DOTTED_WORD = 280,
+     INT = 281
    };
 #endif
 /* Tokens.  */
@@ -78,16 +79,17 @@
 #define SORTED_T 268
 #define BTREE_T 269
 #define UNSORTED_T 270
-#define REL_INSERT 271
-#define SELECT 272
-#define FETCH 273
-#define TUPLE 274
-#define LOAD 275
-#define SHUTDOWN 276
-#define NULL_T 277
-#define WORD 278
-#define DOTTED_WORD 279
-#define INT 280
+#define PRIMARY_T 271
+#define REL_INSERT 272
+#define SELECT 273
+#define FETCH 274
+#define TUPLE 275
+#define LOAD 276
+#define SHUTDOWN 277
+#define NULL_T 278
+#define WORD 279
+#define DOTTED_WORD 280
+#define INT 281
 
 
 
@@ -103,7 +105,7 @@ typedef union YYSTYPE
     void *ptr;
 }
 /* Line 1529 of yacc.c.  */
-#line 107 "grammar.tab.h"
+#line 109 "grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

@@ -13,6 +13,10 @@
 
 void newline_to_null(char *buf);
 
+unsigned long upper_power_of_two(unsigned long v);
+
+int binary_search(int *buf, int n, size_t length);
+
 void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, void *b);
 
 // cs165_log(out, format, ...)

@@ -59,6 +59,7 @@ typedef enum DataType {
  * Additonal types are encouraged as extra.
  **/
 typedef enum IndexType {
+    PRIMARY,
     UNSORTED,
     SORTED,
     BTREE,

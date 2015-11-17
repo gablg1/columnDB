@@ -126,6 +126,7 @@ vector *select_one_btree(bt_node *root, int low, int high) {
     bt_node *hl = bt_search_node(root, high);
     (void) ll, hl;
 
-    vector *ret = create_vector();
+    vector *ret = create_vector(0);
+    // TODO
     return ret;
 }

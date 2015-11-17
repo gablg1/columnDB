@@ -65,7 +65,7 @@ status create_column(table *table, const char* name, IndexType type) {
 
     // creates column
     strncpy(col->name, name, NAME_SIZE);
-    col->vector = create_vector();
+    col->vector = create_vector(0);
 
     col->index.type = type;
     switch (type) {
@@ -74,6 +74,8 @@ status create_column(table *table, const char* name, IndexType type) {
             break;
         case (BTREE):
             col->index.index = create_btree_index();
+            break;
+        case (PRIMARY):
             break;
         case (SORTED):
             col->index.index = create_sorted_index();
@@ -178,6 +180,9 @@ status insert(column *col, int data) {
         case (SORTED):
             insert_sorted(col->index.index, data, pos);
             break;
+        case (PRIMARY):
+            insert_sorted(col->index.index, data, pos);
+            break;
     }
 
     return OK_STATUS;
@@ -188,6 +193,24 @@ status insert_vector(column *col, vector *v) {
     vector_cat(v, col->vector);
 
     return OK_STATUS;
+}
+
+
+void sort_table_by_primary_column(table *tbl) {
+    // if the table has a primary index, find it
+    int primary_index = -1;
+    for (size_t i = 0; i < tbl->col_count; i++) {
+        if (tbl->cols[i].index.type == PRIMARY) {
+            primary_index = i;
+            break;
+        }
+    }
+    vector *sorted_pos = sort_vector(tbl->cols[primary_index].vector);
+    for (size_t i = 0; i < tbl->col_count; i++) {
+        if (i != (size_t) primary_index)
+            sort_vector_from_positions(&(tbl->cols[i].vector), sorted_pos);
+    }
+
 }
 
 status load(const char *filename) {
@@ -222,7 +245,7 @@ status load(const char *filename) {
         agnostic_vector_insert(&col, ag_cols);
 
         // each v will hold the values to be inserted in each column
-        vector *v = create_vector();
+        vector *v = create_vector(0);
         assert(v != NULL);
         agnostic_vector_insert(&v, values);
 
@@ -244,16 +267,19 @@ status load(const char *filename) {
     }
 
     for (size_t i = 0; i < values->length; i++) {
-        insert_vector(cols[i], vals[i]);
+        vector_cat(cols[i]->vector, vals[i]);
     }
+
+    sort_table_by_primary_column(tbl);
 
     fclose(fp);
     destroy_agnostic_vector(ag_cols);
+    destroy_agnostic_vector(values);
     return OK_STATUS;
 }
 
 vector *fetch(column *col, vector *positions) {
-    vector *ret = create_vector();
+    vector *ret = create_vector(0);
 
     for (size_t i = 0; i < positions->length; i++) {
         size_t pos = positions->buf[i];
@@ -264,7 +290,7 @@ vector *fetch(column *col, vector *positions) {
 
 vector *add(vector *v1, vector *v2) {
     assert(v1->length == v2->length);
-    vector *ret = create_vector();
+    vector *ret = create_vector(v1->length);
     vector_cat(v1, ret);
     assert(v1->length == ret->length);
     for (size_t i = 0; i < v2->length; i++)
@@ -275,7 +301,7 @@ vector *add(vector *v1, vector *v2) {
 
 vector *sub(vector *v1, vector *v2) {
     assert(v1->length == v2->length);
-    vector *ret = create_vector();
+    vector *ret = create_vector(v1->length);
     vector_cat(v1, ret);
     assert(v1->length == ret->length);
     for (size_t i = 0; i < v2->length; i++)
@@ -388,7 +414,20 @@ status tuple(variable *var, message *msg) {
 
 vector *select_one_unsorted(column *col, int l, int h) {
     // right now we create the vector with no name
-    vector *ret = create_vector();
+    vector *ret = create_vector(0);
+    vector *data = col->vector;
+
+    // performing the select;
+    for (size_t i = 0; i < data->length; i++) {
+        if (data->buf[i] >= l && data->buf[i] < h)
+            vector_insert(i, ret);
+    }
+    return ret;
+}
+
+vector *select_one_primary(column *col, int l, int h) {
+    // right now we create the vector with no name
+    vector *ret = create_vector(0);
     vector *data = col->vector;
 
     // performing the select;
@@ -412,6 +451,9 @@ vector *select_one(column *col, MaybeInt low, MaybeInt high) {
             break;
         case (SORTED):
             return select_one_sorted(col->index.index, l, h);
+            break;
+        case (PRIMARY):
+            return select_one_primary(col, l, h);
             break;
     }
     return NULL;

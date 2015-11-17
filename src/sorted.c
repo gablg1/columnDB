@@ -1,6 +1,7 @@
 
 #include "cs165_api.h"
 #include "sorted.h"
+#include "utils.h"
 
 #include <string.h>
 
@@ -19,24 +20,32 @@ sorted_index *create_sorted_index(void) {
 }
 
 void destroy_sorted_index(sorted_index *index) {
+    assert(index != NULL);
+    assert(index->data != NULL);
+    assert(index->positions != NULL);
+    free(index->data);
+    free(index->positions);
+    free(index);
 }
 
 // search where n is or where n should be
 size_t search_sorted(sorted_index *index, int n) {
+    int ret = binary_search(index->data, n, index->length);
+    if (ret >= 0)
+        return ret;
+
+    // In case binary_search didn't find anything
     if (n <= index->data[0])
         return 0;
-    for (size_t i = 0; i < index->length; i++) {
-        if (index->data[i] >= n)
-            return i;
-    }
-    return index->length;
+    else
+        return index->length;
 }
 
 vector *select_one_sorted(sorted_index *index, int low, int high) {
     size_t lp = search_sorted(index, low);
     size_t hp = search_sorted(index, high);
 
-    vector *ret = create_vector();
+    vector *ret = create_vector(hp - lp);
 
     // performing the select
     for (size_t i = lp; i < hp; i++)

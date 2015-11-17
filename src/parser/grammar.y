@@ -39,6 +39,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token SORTED_T
 %token BTREE_T
 %token UNSORTED_T
+%token PRIMARY_T
 %token REL_INSERT
 %token SELECT
 %token FETCH
@@ -182,6 +183,12 @@ var : name {
 query: CREATE '(' DB ',' quoted_name ')'
         {
             char *db_name = $5;
+            db *found = get_db_by_name(db_name);
+            if (found != NULL) {
+                op->type = ERROR_OP;
+                add_payload(send_msg, "DB %s already exists", db_name);
+                YYERROR;
+            }
 
             // Creating a DB needs no query plan
             op->type = NOOP;
@@ -206,6 +213,14 @@ query: CREATE '(' DB ',' quoted_name ')'
             // Creating a DB needs no query plan
             op->type = NOOP;
 
+            table *found = get_table_from_db_by_name(db, tbl_name);
+            if (found != NULL) {
+                op->type = ERROR_OP;
+                add_payload(send_msg, "Table %s already exists", tbl_name);
+                YYERROR;
+            }
+
+
             // create_db will allocate the memory of the db for us
             status st = create_table(db, tbl_name, cols);
             if (st.code == OK) {
@@ -223,6 +238,13 @@ query: CREATE '(' DB ',' quoted_name ')'
 
             // Creating a column needs no query plan
             op->type = NOOP;
+
+            column *found = get_column_from_table_by_name(tbl, col_name);
+            if (found != NULL) {
+                op->type = ERROR_OP;
+                add_payload(send_msg, "Column %s already exists", col_name);
+                YYERROR;
+            }
 
             status st = create_column(tbl, col_name, type);
             if (st.code == OK) {
@@ -357,6 +379,7 @@ arb_ints: INT {
 index_type: UNSORTED_T { $$ = UNSORTED; }
           | SORTED_T { $$ = SORTED; }
           | BTREE_T { $$ = BTREE; }
+          | PRIMARY_T { $$ = PRIMARY; }
 
 name: WORD { $$ = $1; }
 ;

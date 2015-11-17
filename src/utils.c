@@ -21,6 +21,19 @@ void newline_to_null(char *buf) {
     strsep(&p, "\n");
 }
 
+// Adapted from the "Bit twidling hacks" http://graphics.stanford.edu/~seander/bithacks.html
+unsigned long upper_power_of_two(unsigned long v) {
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v++;
+    return v;
+
+}
+
 void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, void *b) {
     void **buf = b;
     assert(buf != NULL);
@@ -35,6 +48,26 @@ void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, 
     // if sizeof(char) != 1 the whole world breaks
     assert(sizeof(char) == 1);
     return (char *) *buf + size * ((*count)++);
+}
+
+// Inspired on http://www.programmingsimplified.com/c/source-code/c-program-binary-search
+// binary_search returns an int instead of a size_t because we want to indicate -1 for elements not
+// in array
+int binary_search(int *buf, int n, size_t length) {
+    size_t first = 0;
+    size_t last = length - 1;
+    size_t mid = (first + last) / 2;
+    while (first <= last) {
+        if (buf[mid] < n)
+            first = mid + 1;
+        else if (buf[mid] == n)
+            return mid;
+        else
+            last = mid - 1;
+        mid = (first + last) / 2;
+    }
+    // in case we didn't find it
+    return -1;
 }
 
 

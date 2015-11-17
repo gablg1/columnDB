@@ -27,8 +27,7 @@ db *get_db_by_name(const char *lookup_name) {
     return NULL;
 }
 
-table *get_table_by_name(const char *db_name, const char *tbl_name) {
-    db *db = get_db_by_name(db_name);
+table *get_table_from_db_by_name(db *db, const char *tbl_name) {
     if (db == NULL)
         return NULL;
 
@@ -39,9 +38,12 @@ table *get_table_by_name(const char *db_name, const char *tbl_name) {
 
     return NULL;
 }
+table *get_table_by_name(const char *db_name, const char *tbl_name) {
+    db *db = get_db_by_name(db_name);
+    return get_table_from_db_by_name(db, tbl_name);
+}
 
-column *get_column_by_name(const char *db_name, const char *tbl_name, const char *col_name) {
-    table *tbl = get_table_by_name(db_name, tbl_name);
+column *get_column_from_table_by_name(table *tbl, const char *col_name) {
     if (tbl == NULL)
         return NULL;
 
@@ -49,8 +51,13 @@ column *get_column_by_name(const char *db_name, const char *tbl_name, const char
     for (size_t i = 0; i < tbl->col_count; i++)
         if (strcmp(cols[i].name, col_name) == 0)
             return &cols[i];
-
     return NULL;
+}
+
+column *get_column_by_name(const char *db_name, const char *tbl_name, const char *col_name) {
+    table *tbl = get_table_by_name(db_name, tbl_name);
+
+    return get_column_from_table_by_name(tbl, col_name);
 }
 
 void load_dbs(void) {

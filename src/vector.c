@@ -3,19 +3,24 @@
 #include <string.h>
 
 #include "cs165_api.h"
+#include "utils.h"
 
 
 // Here we implement a basic int vector that grows dinamically
 
-vector *create_vector(void) {
+vector *create_vector(size_t length) {
     vector *v = malloc(sizeof(vector));
     assert(v != NULL);
+    if (length < INITIAL_LENGTH)
+        length = INITIAL_LENGTH;
+    else
+        length = upper_power_of_two(length);
 
     // Allocates some initial space
-    v->buf = malloc(INITIAL_LENGTH * sizeof(int));
+    v->buf = malloc(length * sizeof(int));
     assert(v->buf != NULL);
     v->length = 0;
-    v->max_length = INITIAL_LENGTH;
+    v->max_length = length;
     return v;
 }
 
@@ -51,6 +56,46 @@ size_t vector_insert(int val, vector *v) {
     // actually inserts val and increments the length
     v->buf[v->length++] = val;
     return v->length - 1;
+}
+
+
+int compare_ints(const void *a, const void *b) {
+    if (*(int *)a < *(int *)b)
+        return -1;
+    else if (*(int *)a == *(int *)b)
+        return 0;
+    else
+        return 1;
+}
+
+void sort_vector_from_positions(vector **vp, vector *positions) {
+    vector *v = *vp;
+    assert(v->length == positions->length);
+    vector *ret = create_vector(v->length);
+    for (size_t i = 0; i < v->length; i++) {
+        size_t pos = positions->buf[i];
+        ret->buf[pos] = v->buf[i];
+    }
+    destroy_vector(*vp);
+    *vp = ret;
+}
+
+// returns a vector with the mapping of unsorted => sorted
+// pos[i] = j indicates that value in position i should be at position j
+vector *sort_vector(vector *v) {
+    vector *ret = create_vector(v->length);
+
+    // copies v to ret
+    vector_cat(v, ret);
+
+    qsort(v->buf, v->length, sizeof(int), compare_ints);
+
+    for (size_t i = 0; i < ret->length; i++) {
+        size_t pos = binary_search(v->buf, ret->buf[i], v->length);
+        ret->buf[i] = pos;
+    }
+
+    return ret;
 }
 
 void destroy_vector(vector *v) {

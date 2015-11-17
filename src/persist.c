@@ -64,6 +64,8 @@ void load_column(const char *filename, column *col) {
     switch (col->index.type) {
         case (UNSORTED):
             break;
+        case (PRIMARY):
+            break;
         case (BTREE):
             load_btree_index(col, fp);
             break;
@@ -154,6 +156,8 @@ void persist_column(db *db, table *tbl, column *col) {
 
     switch (col->index.type) {
         case (UNSORTED):
+            break;
+        case (PRIMARY):
             break;
         case (BTREE):
             persist_btree_index(col->index.index, fp);
