@@ -1,12 +1,10 @@
 
 typedef struct sorted_index {
-	size_t length;
-	size_t max_length;
-	data *data;
-	size_t *positions;
+	vector *data;
+	vector *positions;
 } sorted_index;
 
-sorted_index *create_sorted_index(void);
+sorted_index *create_sorted_index(vector *v);
 
 size_t search_sorted(sorted_index *index, data n);
 

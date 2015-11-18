@@ -18,24 +18,22 @@ sorted_index *create_sorted_index(vector *v) {
 
 void destroy_sorted_index(sorted_index *index) {
     assert(index != NULL);
-    assert(index->data != NULL);
-    assert(index->positions != NULL);
-    free(index->data);
-    free(index->positions);
+    destroy_vector(index->data);
+    destroy_vector(index->positions);
     free(index);
 }
 
 // search where n is or where n should be
 size_t search_sorted(sorted_index *index, data n) {
-    data ret = binary_search(index->data, n, index->length);
+    int ret = vector_binary_search(index->data, n);
     if (ret >= 0)
         return ret;
 
     // In case binary_search didn't find anything
-    if (n <= index->data[0])
+    if (n <= index->data->buf[0])
         return 0;
     else
-        return index->length;
+        return index->data->length;
 }
 
 vector *select_one_sorted(sorted_index *index, data low, data high) {
@@ -46,7 +44,7 @@ vector *select_one_sorted(sorted_index *index, data low, data high) {
 
     // performing the select
     for (size_t i = lp; i < hp; i++)
-        vector_insert(index->positions[i], ret);
+        vector_insert(index->positions->buf[i], ret);
     return ret;
 }
 
@@ -54,10 +52,10 @@ vector *select_one_sorted(sorted_index *index, data low, data high) {
 void insert_sorted(sorted_index *index, data n, size_t pos) {
     // where n will be inserted
     size_t i = search_sorted(index, n);
-    if (index->length >= index->max_length) {
-        index->max_length *= 2;
-        index->data = realloc(index->data, index->max_length * sizeof(data));
-        index->positions = realloc(index->positions, index->max_length * sizeof(size_t));
+   /* if (index->data->length >= index->data->max_length) {
+        index->data->max_length *= 2;
+        index->data = realloc(index->data, index->data->max_length * sizeof(data));
+        index->positions = realloc(index->positions, index->data->max_length * sizeof(size_t));
         assert(index->data != NULL);
         assert(index->positions != NULL);
     }
@@ -69,5 +67,5 @@ void insert_sorted(sorted_index *index, data n, size_t pos) {
     // finally insert it
     index->data[i] = n;
     index->positions[i] = pos;
-    index->length++;
+    index->length++; */
 }

@@ -13,6 +13,8 @@ vector *create_vector(size_t length);
 
 vector *duplicate_vector(vector *v);
 
+int vector_binary_search(vector *v, data n);
+
 void vector_cat(vector *from, vector *to);
 
 size_t vector_insert(data val, vector *v);

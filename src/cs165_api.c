@@ -78,7 +78,7 @@ status create_column(table *table, const char* name, IndexType type) {
         case (PRIMARY):
             break;
         case (SORTED):
-            col->index.index = create_sorted_index();
+            col->index.index = create_sorted_index(col->vector);
             break;
     }
 

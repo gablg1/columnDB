@@ -19,21 +19,30 @@ FILE *persist_fopen(const char *restrict filename, const char *restrict mode) {
     return fp;
 }
 
-void load_sorted_index(column *col, FILE *fp) {
-    col->index.type = SORTED;
-    col->index.index = malloc(sizeof(sorted_index));
-    sorted_index *index = col->index.index;
+vector *load_vector(FILE *fp) {
+    vector *v = malloc(sizeof(vector));
+    assert(v != NULL);
+    fread(v, sizeof(vector), 1, fp);
+
+    data *d = malloc(sizeof(data) * v->max_length);
+    assert(d != NULL);
+    fread(d, sizeof(data), v->length, fp);
+    v->buf = d;
+    return v;
+}
+
+column_index load_sorted_index(FILE *fp) {
+    column_index i;
+    i.type = SORTED;
+    i.index = malloc(sizeof(sorted_index));
+    sorted_index *index = i.index;
 
     assert(index != NULL);
-    fread(index, sizeof(sorted_index), 1, fp);
+    //fread(index, sizeof(sorted_index), 1, fp); // no need anymore
 
-    index->positions = malloc(sizeof(size_t) * index->max_length);
-    assert(index->positions != NULL);
-    fread(index->positions, sizeof(size_t), index->length, fp);
-
-    index->data = malloc(sizeof(data) * index->max_length);
-    assert(index->data != NULL);
-    fread(index->data, sizeof(data), index->length, fp);
+    index->positions = load_vector(fp);
+    index->data = load_vector(fp);
+    return i;
 }
 
 void load_btree_index(column *col, FILE *fp) {
@@ -52,14 +61,7 @@ void load_column(const char *filename, column *col) {
     assert(fp != NULL);
 
     fread(col, sizeof(column), 1, fp);
-    col->vector = malloc(sizeof(vector));
-    assert(col->vector != NULL);
-    fread(col->vector, sizeof(vector), 1, fp);
-
-    data *data = malloc(sizeof(data) * col->vector->max_length);
-    assert(data != NULL);
-    fread(data, sizeof(data), col->vector->length, fp);
-    col->vector->buf = data;
+    col->vector = load_vector(fp);
 
     switch (col->index.type) {
         case (UNSORTED):
@@ -70,7 +72,7 @@ void load_column(const char *filename, column *col) {
             load_btree_index(col, fp);
             break;
         case (SORTED):
-            load_sorted_index(col, fp);
+            col->index = load_sorted_index(fp);
             break;
     }
 
@@ -134,11 +136,17 @@ void persist_btree_index(bt_node *root, FILE *fp) {
     // TODO: implement me
 }
 
-void persist_sorted_index(sorted_index *index, FILE *fp) {
-    fwrite(index, sizeof(sorted_index), 1, fp);
-    fwrite(index->positions, sizeof(size_t), index->length, fp);
-    fwrite(index->data, sizeof(data), index->length, fp);
+void persist_vector(vector *v, FILE *fp) {
+    fwrite(v, sizeof(vector), 1, fp);
+    fwrite(v->buf, sizeof(data), v->length, fp);
 }
+
+void persist_sorted_index(sorted_index *index, FILE *fp) {
+    // fwrite(index, sizeof(sorted_index), 1, fp); // not needed anymore
+    persist_vector(index->positions, fp);
+    persist_vector(index->data, fp);
+}
+
 
 void persist_column(db *db, table *tbl, column *col) {
     assert(db != NULL && tbl != NULL && col != NULL);
@@ -151,8 +159,7 @@ void persist_column(db *db, table *tbl, column *col) {
 
     // here we persist both the column struct and the data
     fwrite(col, sizeof(column), 1, fp);
-    fwrite(col->vector, sizeof(vector), 1, fp);
-    fwrite(col->vector->buf, sizeof(data), col->vector->length, fp);
+    persist_vector(col->vector, fp);
 
     switch (col->index.type) {
         case (UNSORTED):

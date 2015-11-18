@@ -77,6 +77,11 @@ int compare_data(const void *a, const void *b) {
         return 1;
 }
 
+
+int vector_binary_search(vector *v, data n) {
+    return binary_search(v->buf, n, v->length);
+}
+
 // positions->buf[i] = j indicates that you can find sorted[i] in unsorted[j]
 void sort_vector_from_positions(vector **vp, vector *positions) {
     vector *v = *vp;
@@ -106,6 +111,7 @@ vector *sort_vector(vector *v) {
 }
 
 void destroy_vector(vector *v) {
+    assert(v != NULL);
     if (v->buf != NULL)
         free(v->buf);
 
