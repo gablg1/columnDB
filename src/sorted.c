@@ -5,16 +5,13 @@
 
 #include <string.h>
 
-sorted_index *create_sorted_index(void) {
+sorted_index *create_sorted_index(vector *v) {
     sorted_index *index = malloc(sizeof(sorted_index));
     assert(index != NULL);
 
-    index->length = 0;
-    index->max_length = INITIAL_LENGTH;
-    index->data = malloc(sizeof(data) * index->max_length);
-    assert(index->data != NULL);
-    index->positions = malloc(sizeof(size_t) * index->max_length);
-    assert(index->positions != NULL);
+    index->data = duplicate_vector(v);
+    index->positions = sort_vector(index->data);
+    assert(index->data->length == index->positions->length);
 
     return index;
 }

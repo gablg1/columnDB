@@ -11,6 +11,8 @@ void destroy_vector(vector *v);
 
 vector *create_vector(size_t length);
 
+vector *duplicate_vector(vector *v);
+
 void vector_cat(vector *from, vector *to);
 
 size_t vector_insert(data val, vector *v);

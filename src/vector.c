@@ -24,6 +24,15 @@ vector *create_vector(size_t length) {
     return v;
 }
 
+vector *duplicate_vector(vector *v) {
+    vector *ret = create_vector(v->length);
+    vector_cat(ret, v);
+    assert(ret->length == v->length);
+    if (ret->length > 0)
+        assert(ret->buf[0] == v->buf[0]);
+    return ret;
+}
+
 void vector_cat(vector *to, vector *from) {
     size_t new_length = to->length;
     if (new_length == 0)
@@ -68,31 +77,29 @@ int compare_data(const void *a, const void *b) {
         return 1;
 }
 
+// positions->buf[i] = j indicates that you can find sorted[i] in unsorted[j]
 void sort_vector_from_positions(vector **vp, vector *positions) {
     vector *v = *vp;
     assert(v->length == positions->length);
     vector *ret = create_vector(v->length);
     for (size_t i = 0; i < v->length; i++) {
-        size_t pos = positions->buf[i];
-        ret->buf[pos] = v->buf[i];
+        size_t j = positions->buf[i];
+        ret->buf[i] = v->buf[j];
     }
     destroy_vector(*vp);
     *vp = ret;
 }
 
 // returns a vector with the mapping of unsorted => sorted
-// pos[i] = j indicates that value in position i should be at position j
+// ret->buf[i] = j indicates that you can find sorted[i] in unsorted[j]
 vector *sort_vector(vector *v) {
-    vector *ret = create_vector(v->length);
-
-    // copies v to ret
-    vector_cat(ret, v);
+    vector *ret = duplicate_vector(v);
 
     qsort(v->buf, v->length, sizeof(data), compare_data);
 
-    for (size_t i = 0; i < ret->length; i++) {
-        size_t pos = binary_search(v->buf, ret->buf[i], v->length);
-        ret->buf[i] = pos;
+    for (size_t j = 0; j < ret->length; j++) {
+        size_t pos = binary_search(v->buf, ret->buf[j], v->length);
+        ret->buf[pos] = j;
     }
 
     return ret;
