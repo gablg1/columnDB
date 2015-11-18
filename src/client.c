@@ -28,7 +28,7 @@
 #define DEFAULT_STDIN_BUFFER_SIZE 1024
 
 // uncomment this if you want to compile for production
-//#define IMPORTANT_ONLY
+#define IMPORTANT_ONLY
 
 /**
  * connect_client()
@@ -125,9 +125,9 @@ int main(void)
                         payload[num_bytes] = '\0';
 #ifdef IMPORTANT_ONLY
                         if (recv_message.status == OK_IMPORTANT)
-                            printf("%s\n", payload);
+                            printf("%s", payload);
 #else
-                        printf("%s\n", payload);
+                        printf("%s", payload);
 #endif
                     }
                 }

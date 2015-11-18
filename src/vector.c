@@ -91,6 +91,7 @@ void sort_vector_from_positions(vector **vp, vector *positions) {
         size_t j = positions->buf[i];
         ret->buf[i] = v->buf[j];
     }
+    ret->length = v->length;
     destroy_vector(*vp);
     *vp = ret;
 }

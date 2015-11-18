@@ -362,6 +362,9 @@ status tuple_vector(vector *values, message *msg) {
         // also prdata it on the server
         printf("%lld\n", values->buf[i]);
     }
+    //strip the last \n
+    buf[pos--] = '\0';
+
     if (values->length <= 0) {
         snprintf(buf, MAX_MSG_SIZE, "Empty vector");
         msg->status = OK_WAIT_FOR_RESPONSE;
@@ -390,7 +393,7 @@ status tuple_long(long long n, message *msg) {
         return BUF_ERR;
     }
     add_payload(msg, buf);
-    printf("%lld\n", n);
+    printf("%lld", n);
     return OK_STATUS;
 }
 
@@ -402,7 +405,7 @@ status tuple_float(double f, message *msg) {
         return BUF_ERR;
     }
     add_payload(msg, buf);
-    printf("%.12f\n", f);
+    printf("%.12f", f);
     return OK_STATUS;
 }
 
