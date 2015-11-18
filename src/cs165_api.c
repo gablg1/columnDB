@@ -157,7 +157,7 @@ status relational_insert(table *tbl, list *values) {
     // Insert each respective value into a row
     size_t last_count = 0;
     for (size_t i = 0; i < tbl->col_count; i++) {
-        int val = pop_front(values);
+        data val = pop_front(values);
         insert(&tbl->cols[i], val);
 
         // check that all counts end up being the same for integrity
@@ -168,7 +168,7 @@ status relational_insert(table *tbl, list *values) {
     return OK_STATUS;
 }
 
-status insert(column *col, int data) {
+status insert(column *col, data data) {
     size_t pos = vector_insert(data, col->vector);
 
     switch (col->index.type) {
@@ -196,20 +196,24 @@ status insert_vector(column *col, vector *v) {
 }
 
 
-void sort_table_by_primary_column(table *tbl) {
+bool sort_table_by_primary_column(table *tbl) {
     // if the table has a primary index, find it
-    int primary_index = -1;
+    data primary_index = -1;
     for (size_t i = 0; i < tbl->col_count; i++) {
         if (tbl->cols[i].index.type == PRIMARY) {
             primary_index = i;
             break;
         }
     }
+    if (primary_index == -1)
+        return false;
+
     vector *sorted_pos = sort_vector(tbl->cols[primary_index].vector);
     for (size_t i = 0; i < tbl->col_count; i++) {
         if (i != (size_t) primary_index)
             sort_vector_from_positions(&(tbl->cols[i].vector), sorted_pos);
     }
+    return true;
 
 }
 
@@ -260,7 +264,7 @@ status load(const char *filename) {
         size_t count = 0;
         char *token;
         while ((token = strsep(&line, ",")) != NULL) {
-            int val = atoi(token);
+            data val = atoi(token);
             vector_insert(val, vals[count++]);
         }
         assert(count == ag_cols->length);
@@ -291,7 +295,7 @@ vector *fetch(column *col, vector *positions) {
 vector *add(vector *v1, vector *v2) {
     assert(v1->length == v2->length);
     vector *ret = create_vector(v1->length);
-    vector_cat(v1, ret);
+    vector_cat(ret, v1);
     assert(v1->length == ret->length);
     for (size_t i = 0; i < v2->length; i++)
         ret->buf[i] += v2->buf[i];
@@ -302,7 +306,7 @@ vector *add(vector *v1, vector *v2) {
 vector *sub(vector *v1, vector *v2) {
     assert(v1->length == v2->length);
     vector *ret = create_vector(v1->length);
-    vector_cat(v1, ret);
+    vector_cat(ret, v1);
     assert(v1->length == ret->length);
     for (size_t i = 0; i < v2->length; i++)
         ret->buf[i] -= v2->buf[i];
@@ -318,9 +322,9 @@ double avg(vector *values) {
     return (double) sum / values->length;
 }
 
-int min(vector *values) {
+data min(vector *values) {
     assert(values->length >= 1);
-    int min = values->buf[0];
+    data min = values->buf[0];
     for (size_t i = 1; i < values->length; i++) {
         if (min > values->buf[i])
             min = values->buf[i];
@@ -328,9 +332,9 @@ int min(vector *values) {
     return min;
 }
 
-int max(vector *values) {
+data max(vector *values) {
     assert(values->length >= 1);
-    int max = values->buf[0];
+    data max = values->buf[0];
     for (size_t i = 1; i < values->length; i++) {
         if (max < values->buf[i])
             max = values->buf[i];
@@ -341,36 +345,40 @@ int max(vector *values) {
 status tuple_vector(vector *values, message *msg) {
     assert(values != NULL);
     char buf[MAX_MSG_SIZE];
-    int pos = 0;
+    data pos = 0;
     for (size_t i = 0; i < values->length; i++) {
-        pos += snprintf(&buf[pos], MAX_MSG_SIZE - pos, "%d\n", values->buf[i]);
+        pos += snprintf(&buf[pos], MAX_MSG_SIZE - pos, "%lld\n", values->buf[i]);
         if (pos >= MAX_MSG_SIZE) {
             add_payload(msg, "Not enough space in buffer");
             return BUF_ERR;
         }
 
-        // also print it on the server
-        printf("%d\n", values->buf[i]);
+        // also prdata it on the server
+        printf("%lld\n", values->buf[i]);
+    }
+    if (values->length <= 0) {
+        snprintf(buf, MAX_MSG_SIZE, "Empty vector");
+        msg->status = OK_WAIT_FOR_RESPONSE;
     }
     add_payload(msg, buf);
     return OK_STATUS;
 }
 
-status tuple_int(int n, message *msg) {
+status tuple_int(data n, message *msg) {
     char buf[MAX_MSG_SIZE];
-    int ret = snprintf(buf, MAX_MSG_SIZE, "%d\n", n);
+    data ret = snprintf(buf, MAX_MSG_SIZE, "%lld\n", n);
     if (ret >= MAX_MSG_SIZE) {
         add_payload(msg, "Not enough space in buffer");
         return BUF_ERR;
     }
     add_payload(msg, buf);
-    printf("%d\n", n);
+    printf("%lld\n", n);
     return OK_STATUS;
 }
 
 status tuple_long(long long n, message *msg) {
     char buf[MAX_MSG_SIZE];
-    int ret = snprintf(buf, MAX_MSG_SIZE, "%lld\n", n);
+    data ret = snprintf(buf, MAX_MSG_SIZE, "%lld\n", n);
     if (ret >= MAX_MSG_SIZE) {
         add_payload(msg, "Not enough space in buffer");
         return BUF_ERR;
@@ -382,7 +390,7 @@ status tuple_long(long long n, message *msg) {
 
 status tuple_float(double f, message *msg) {
     char buf[MAX_MSG_SIZE];
-    int ret = snprintf(buf, MAX_MSG_SIZE, "%.12f\n", f);
+    data ret = snprintf(buf, MAX_MSG_SIZE, "%.12f\n", f);
     if (ret >= MAX_MSG_SIZE) {
         add_payload(msg, "Not enough space in buffer");
         return BUF_ERR;
@@ -394,6 +402,7 @@ status tuple_float(double f, message *msg) {
 
 status tuple(variable *var, message *msg) {
     assert(var != NULL);
+    msg->status = OK_IMPORTANT;
 
     switch (var->type) {
         case VECTOR_N:
@@ -412,7 +421,7 @@ status tuple(variable *var, message *msg) {
     return OK_STATUS;
 }
 
-vector *select_one_unsorted(column *col, int l, int h) {
+vector *select_one_unsorted(column *col, data l, data h) {
     // right now we create the vector with no name
     vector *ret = create_vector(0);
     vector *data = col->vector;
@@ -425,7 +434,7 @@ vector *select_one_unsorted(column *col, int l, int h) {
     return ret;
 }
 
-vector *select_one_primary(column *col, int l, int h) {
+vector *select_one_primary(column *col, data l, data h) {
     // right now we create the vector with no name
     vector *ret = create_vector(0);
     vector *data = col->vector;
@@ -439,8 +448,8 @@ vector *select_one_primary(column *col, int l, int h) {
 }
 
 vector *select_one(column *col, MaybeInt low, MaybeInt high) {
-    int l = (low.present) ? low.val : MIN_DATA;
-    int h = (high.present) ? high.val : MAX_DATA;
+    data l = (low.present) ? low.val : MIN_DATA;
+    data h = (high.present) ? high.val : MAX_DATA;
 
     switch (col->index.type) {
         case (UNSORTED):

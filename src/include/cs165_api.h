@@ -19,9 +19,11 @@ SOFTWARE.
 
 #ifndef CS165_H
 #define CS165_H
+typedef long long data;
 
 #include <assert.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "list.h"
 #include "vector.h"
 #include "variables.h"
@@ -30,8 +32,10 @@ SOFTWARE.
 #define NAME_SIZE 64
 
 // Used by select_one
-#define MIN_DATA - 1 << 31
-#define MAX_DATA 1 << 31
+
+
+#define MIN_DATA INT_MIN
+#define MAX_DATA INT_MAX
 
 // used by dynamically allocated arrays
 #define INITIAL_LENGTH 32
@@ -164,8 +168,8 @@ typedef enum ComparatorType {
 } ComparatorType;
 
 typedef struct MaybeInt {
-    int present;
-    int val;
+    data present;
+    data val;
 } MaybeInt;
 
 /**
@@ -201,7 +205,7 @@ typedef enum Junction {
  * See the example in Junction
  **/
 typedef struct comparator {
-    int p_val;
+    data p_val;
     column *col;
     ComparatorType type;
     struct comparator *next_comparator;
@@ -210,7 +214,7 @@ typedef struct comparator {
 
 typedef struct result {
     size_t num_tuples;
-    int *payload;
+    data *payload;
 } result;
 
 typedef enum Aggr {
@@ -273,15 +277,15 @@ typedef struct db_operator {
     column* col;
 
     // Internmediaties used for PROJECT, DELETE, HASH_JOIN
-    int *pos1;
+    data *pos1;
     // Needed for HASH_JOIN
-    int *pos2;
+    data *pos2;
 
     // For insert/delete operations, we only use value1;
     // For update operations, we update value1 -> value2;
-    //int *values1;
+    //data *values1;
     list *values1;
-    int *values2;
+    data *values2;
 
     // This includes several possible fields that may be used in the operation.
     Aggr agg;
@@ -424,9 +428,9 @@ status drop_column(table* table, column *col);
 status create_index(column* col, IndexType type);
 
 status relational_insert(table *tbl, list *data);
-status insert(column *col, int data);
-status delete(column *col, int *pos);
-status update(column *col, int *pos, int new_val);
+status insert(column *col, data data);
+status delete(column *col, data *pos);
+status update(column *col, data *pos, data new_val);
 status col_scan(comparator *f, column *col, result **r);
 status index_scan(comparator *f, column *col, result **r);
 
@@ -438,8 +442,8 @@ status load(const char *filename);
 
 status tuple(variable *var, message *msg);
 
-int min(vector *values);
-int max(vector *values);
+data min(vector *values);
+data max(vector *values);
 vector *add(vector *v1, vector *v2);
 vector *sub(vector *v1, vector *v2);
 double avg(vector *values);

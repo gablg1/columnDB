@@ -10,7 +10,7 @@
 #define PERSIST_DIR "persist"
 
 /*
- * Opens file withint PERSIST_DIR
+ * Opens file withdata PERSIST_DIR
  */
 FILE *persist_fopen(const char *restrict filename, const char *restrict mode) {
     char buf[NAME_SIZE];
@@ -31,9 +31,9 @@ void load_sorted_index(column *col, FILE *fp) {
     assert(index->positions != NULL);
     fread(index->positions, sizeof(size_t), index->length, fp);
 
-    index->data = malloc(sizeof(int) * index->max_length);
+    index->data = malloc(sizeof(data) * index->max_length);
     assert(index->data != NULL);
-    fread(index->data, sizeof(int), index->length, fp);
+    fread(index->data, sizeof(data), index->length, fp);
 }
 
 void load_btree_index(column *col, FILE *fp) {
@@ -56,9 +56,9 @@ void load_column(const char *filename, column *col) {
     assert(col->vector != NULL);
     fread(col->vector, sizeof(vector), 1, fp);
 
-    int *data = malloc(sizeof(int) * col->vector->max_length);
+    data *data = malloc(sizeof(data) * col->vector->max_length);
     assert(data != NULL);
-    fread(data, sizeof(int), col->vector->length, fp);
+    fread(data, sizeof(data), col->vector->length, fp);
     col->vector->buf = data;
 
     switch (col->index.type) {
@@ -137,7 +137,7 @@ void persist_btree_index(bt_node *root, FILE *fp) {
 void persist_sorted_index(sorted_index *index, FILE *fp) {
     fwrite(index, sizeof(sorted_index), 1, fp);
     fwrite(index->positions, sizeof(size_t), index->length, fp);
-    fwrite(index->data, sizeof(int), index->length, fp);
+    fwrite(index->data, sizeof(data), index->length, fp);
 }
 
 void persist_column(db *db, table *tbl, column *col) {
@@ -152,7 +152,7 @@ void persist_column(db *db, table *tbl, column *col) {
     // here we persist both the column struct and the data
     fwrite(col, sizeof(column), 1, fp);
     fwrite(col->vector, sizeof(vector), 1, fp);
-    fwrite(col->vector->buf, sizeof(int), col->vector->length, fp);
+    fwrite(col->vector->buf, sizeof(data), col->vector->length, fp);
 
     switch (col->index.type) {
         case (UNSORTED):

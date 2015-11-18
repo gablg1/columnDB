@@ -6,7 +6,7 @@
 #include "utils.h"
 
 
-// Here we implement a basic int vector that grows dinamically
+// Here we implement a basic data vector that grows dinamically
 
 vector *create_vector(size_t length) {
     vector *v = malloc(sizeof(vector));
@@ -17,14 +17,14 @@ vector *create_vector(size_t length) {
         length = upper_power_of_two(length);
 
     // Allocates some initial space
-    v->buf = malloc(length * sizeof(int));
+    v->buf = malloc(length * sizeof(data));
     assert(v->buf != NULL);
     v->length = 0;
     v->max_length = length;
     return v;
 }
 
-void vector_cat(vector *from, vector *to) {
+void vector_cat(vector *to, vector *from) {
     size_t new_length = to->length;
     if (new_length == 0)
         new_length = 64;
@@ -34,22 +34,22 @@ void vector_cat(vector *from, vector *to) {
     }
 
     if (new_length > to->length) {
-        to->buf = realloc(to->buf, new_length * sizeof(int));
+        to->buf = realloc(to->buf, new_length * sizeof(data));
         assert(to->buf != NULL);
         to->max_length = new_length;
     }
     // after here, to has enough space to get the elements from from
-    memcpy(to->buf + to->length, from->buf, from->length * sizeof(int));
+    memcpy(to->buf + to->length, from->buf, from->length * sizeof(data));
     to->length += from->length;
 
 }
 
 // returns the position where the val was inserted
-size_t vector_insert(int val, vector *v) {
+size_t vector_insert(data val, vector *v) {
     assert(v != NULL);
     if (v->length >= v->max_length) {
         v->max_length *= 2;
-        v->buf = realloc(v->buf, v->max_length * sizeof(int));
+        v->buf = realloc(v->buf, v->max_length * sizeof(data));
         assert(v->buf != NULL);
     }
 
@@ -59,10 +59,10 @@ size_t vector_insert(int val, vector *v) {
 }
 
 
-int compare_ints(const void *a, const void *b) {
-    if (*(int *)a < *(int *)b)
+int compare_data(const void *a, const void *b) {
+    if (*(data *)a < *(data *)b)
         return -1;
-    else if (*(int *)a == *(int *)b)
+    else if (*(data *)a == *(data *)b)
         return 0;
     else
         return 1;
@@ -86,9 +86,9 @@ vector *sort_vector(vector *v) {
     vector *ret = create_vector(v->length);
 
     // copies v to ret
-    vector_cat(v, ret);
+    vector_cat(ret, v);
 
-    qsort(v->buf, v->length, sizeof(int), compare_ints);
+    qsort(v->buf, v->length, sizeof(data), compare_data);
 
     for (size_t i = 0; i < ret->length; i++) {
         size_t pos = binary_search(v->buf, ret->buf[i], v->length);

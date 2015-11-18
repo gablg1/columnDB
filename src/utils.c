@@ -53,7 +53,7 @@ void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, 
 // Inspired on http://www.programmingsimplified.com/c/source-code/c-program-binary-search
 // binary_search returns an int instead of a size_t because we want to indicate -1 for elements not
 // in array
-int binary_search(int *buf, int n, size_t length) {
+data binary_search(data *buf, data n, size_t length) {
     size_t first = 0;
     size_t last = length - 1;
     size_t mid = (first + last) / 2;

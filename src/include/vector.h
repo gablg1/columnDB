@@ -1,6 +1,8 @@
+#include "cs165_api.h"
+
 // a vector used to store results
 typedef struct vector {
-    int *buf;
+    data *buf;
     size_t length;
     size_t max_length;
 } vector;
@@ -11,7 +13,7 @@ vector *create_vector(size_t length);
 
 void vector_cat(vector *from, vector *to);
 
-size_t vector_insert(int val, vector *v);
+size_t vector_insert(data val, vector *v);
 
 void sort_vector_from_positions(vector **vp, vector *positions);
 

@@ -11,7 +11,7 @@ sorted_index *create_sorted_index(void) {
 
     index->length = 0;
     index->max_length = INITIAL_LENGTH;
-    index->data = malloc(sizeof(int) * index->max_length);
+    index->data = malloc(sizeof(data) * index->max_length);
     assert(index->data != NULL);
     index->positions = malloc(sizeof(size_t) * index->max_length);
     assert(index->positions != NULL);
@@ -29,8 +29,8 @@ void destroy_sorted_index(sorted_index *index) {
 }
 
 // search where n is or where n should be
-size_t search_sorted(sorted_index *index, int n) {
-    int ret = binary_search(index->data, n, index->length);
+size_t search_sorted(sorted_index *index, data n) {
+    data ret = binary_search(index->data, n, index->length);
     if (ret >= 0)
         return ret;
 
@@ -41,7 +41,7 @@ size_t search_sorted(sorted_index *index, int n) {
         return index->length;
 }
 
-vector *select_one_sorted(sorted_index *index, int low, int high) {
+vector *select_one_sorted(sorted_index *index, data low, data high) {
     size_t lp = search_sorted(index, low);
     size_t hp = search_sorted(index, high);
 
@@ -54,19 +54,19 @@ vector *select_one_sorted(sorted_index *index, int low, int high) {
 }
 
 
-void insert_sorted(sorted_index *index, int n, size_t pos) {
+void insert_sorted(sorted_index *index, data n, size_t pos) {
     // where n will be inserted
     size_t i = search_sorted(index, n);
     if (index->length >= index->max_length) {
         index->max_length *= 2;
-        index->data = realloc(index->data, index->max_length * sizeof(int));
+        index->data = realloc(index->data, index->max_length * sizeof(data));
         index->positions = realloc(index->positions, index->max_length * sizeof(size_t));
         assert(index->data != NULL);
         assert(index->positions != NULL);
     }
 
 
-    memmove(&index->data[i+1], &index->data[i], (index->length - i) * sizeof(int));
+    memmove(&index->data[i+1], &index->data[i], (index->length - i) * sizeof(data));
     memmove(&index->positions[i+1], &index->positions[i], (index->length - i) * sizeof(size_t));
 
     // finally insert it

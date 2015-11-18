@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -25,6 +26,7 @@
 #include "utils.h"
 
 #define DEFAULT_STDIN_BUFFER_SIZE 1024
+#define IMPORTANT_ONLY true
 
 /**
  * connect_client()
@@ -110,7 +112,7 @@ int main(void)
 
             // Always wait for server response (even if it is just an OK message)
             if ((len = recv(client_socket, &(recv_message), sizeof(message), 0)) > 0) {
-                if (recv_message.status == OK_WAIT_FOR_RESPONSE &&
+                if ((recv_message.status == OK_WAIT_FOR_RESPONSE || recv_message.status == OK_IMPORTANT) &&
                     (int) recv_message.length > 0) {
                     // Calculate number of bytes in response package
                     int num_bytes = (int) recv_message.length;
@@ -119,7 +121,8 @@ int main(void)
                     // Receive the payload and print it out
                     if ((len = recv(client_socket, payload, num_bytes, 0)) > 0) {
                         payload[num_bytes] = '\0';
-                        printf("%s\n", payload);
+                        if (IMPORTANT_ONLY && recv_message.status == OK_IMPORTANT)
+                            printf("%s\n", payload);
                     }
                 }
 

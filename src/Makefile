@@ -70,6 +70,9 @@ clean:
 distclean: clean
 	rm -rf $(DEPSDIR)
 
+load:
+	./client < ../project_tests/ddl.txt
+
 test%:
 	./client < ../project_tests/$@.dsl
 
