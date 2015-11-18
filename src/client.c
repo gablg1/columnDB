@@ -26,7 +26,9 @@
 #include "utils.h"
 
 #define DEFAULT_STDIN_BUFFER_SIZE 1024
-#define IMPORTANT_ONLY true
+
+// uncomment this if you want to compile for production
+//#define IMPORTANT_ONLY
 
 /**
  * connect_client()
@@ -121,8 +123,12 @@ int main(void)
                     // Receive the payload and print it out
                     if ((len = recv(client_socket, payload, num_bytes, 0)) > 0) {
                         payload[num_bytes] = '\0';
-                        if (IMPORTANT_ONLY && recv_message.status == OK_IMPORTANT)
+#ifdef IMPORTANT_ONLY
+                        if (recv_message.status == OK_IMPORTANT)
                             printf("%s\n", payload);
+#else
+                        printf("%s\n", payload);
+#endif
                     }
                 }
 
