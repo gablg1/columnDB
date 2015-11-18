@@ -1,0 +1,15 @@
+create(db,"awesomebase") -- create db with name "awesomebase"
+create(tbl,"grades",awesomebase,6) -- create table "grades" with 6 columns in the "awesomebase"
+create(col,"project",awesomebase.grades,primary) -- create column 1 with name "project"
+create(col,"midterm1",awesomebase.grades,unsorted) -- create column 2 with name "midterm1"
+create(col,"midterm2",awesomebase.grades,unsorted) -- create column 3 with name "midterm2"
+create(col,"class",awesomebase.grades,unsorted) -- create column 4 with name "class"
+create(col,"quizzes",awesomebase.grades,unsorted) -- create column 5 with name "quizzes"
+create(col,"student_id",awesomebase.grades,unsorted) -- create column 6 with name "student_id"
+relational_insert(awesomebase.grades,107,80,75,95,93,1)
+relational_insert(awesomebase.grades,92,75,82,90,85,2)
+relational_insert(awesomebase.grades,110,95,90,100,95,3)
+relational_insert(awesomebase.grades,88,70,75,85,95,4)
+relational_insert(awesomebase.grades,93,70,75,85,95,4)
+a_plus=select(awesomebase.grades.project,90,100) -- Find the students (rows) with project grade between 90 and 100
+ids_of_students_with_top_project=fetch(awesomebase.grades.student_id,a_plus) -- Find the student id of the students

@@ -181,7 +181,6 @@ status insert(column *col, data data) {
             insert_sorted(col->index.index, data, pos);
             break;
         case (PRIMARY):
-            insert_sorted(col->index.index, data, pos);
             break;
     }
 
