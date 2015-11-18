@@ -53,10 +53,10 @@ void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, 
 // Inspired on http://www.programmingsimplified.com/c/source-code/c-program-binary-search
 // binary_search returns an int instead of a size_t because we want to indicate -1 for elements not
 // in array
-data binary_search(data *buf, data n, size_t length) {
-    size_t first = 0;
-    size_t last = length - 1;
-    size_t mid = (first + last) / 2;
+int binary_search(data *buf, data n, size_t length) {
+    int first = 0;
+    int last = length - 1;
+    int mid = (first + last) / 2;
     while (first <= last) {
         if (buf[mid] < n)
             first = mid + 1;
@@ -70,6 +70,36 @@ data binary_search(data *buf, data n, size_t length) {
     return -1;
 }
 
+// returns where n should be if it were to be inserted on the left as opposed to
+// a negative number
+size_t binary_search_left(data *buf, data n, size_t length) {
+    int first = 0;
+    int last = length - 1;
+    int mid = (first + last) / 2;
+    while (first <= last) {
+        if (buf[mid] >= n)
+            last = mid - 1;
+        else
+            first = mid + 1;
+        mid = (first + last) / 2;
+    }
+    return first;
+}
+
+// same as above but on the right
+size_t binary_search_right(data *buf, data n, size_t length) {
+    int first = 0;
+    int last = length - 1;
+    int mid = (first + last) / 2;
+    while (first <= last) {
+        if (buf[mid] > n)
+            last = mid - 1;
+        else
+            first = mid + 1;
+        mid = (first + last) / 2;
+    }
+    return first;
+}
 
 void cs165_log(FILE* out, const char *format, ...) {
 #ifdef LOG

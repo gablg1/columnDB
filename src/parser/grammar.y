@@ -30,6 +30,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token DB
 %token TBL
 %token COL
+%token IDX
 %token MIN_T
 %token AVG
 %token ADD
@@ -253,6 +254,28 @@ query: CREATE '(' DB ',' quoted_name ')'
                 op->type = ERROR_OP;
                 add_payload(send_msg, "Creation of column failed");
             }
+        }
+     | CREATE '(' IDX ',' col ',' index_type ')'
+        {
+            column *col = $5;
+            IndexType type = $7;
+
+            // Creating a column needs no query plan
+            op->type = NOOP;
+
+            if (col->index.type != UNSORTED) {
+                add_payload(send_msg, "Index already exists");
+                YYERROR;
+            }
+
+            status st = create_index(col, type);
+            if (st.code == OK) {
+                add_payload(send_msg, "Index created successfuly");
+            } else {
+                op->type = ERROR_OP;
+                add_payload(send_msg, "Creation of index failed");
+            }
+
         }
      | REL_INSERT '(' tbl ',' arb_ints ')' {
             table *tbl = $3;

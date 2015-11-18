@@ -43,26 +43,27 @@
      DB = 259,
      TBL = 260,
      COL = 261,
-     MIN_T = 262,
-     AVG = 263,
-     ADD = 264,
-     SUB = 265,
-     MAX_T = 266,
-     BEGIN_COMMENT = 267,
-     SORTED_T = 268,
-     BTREE_T = 269,
-     UNSORTED_T = 270,
-     PRIMARY_T = 271,
-     REL_INSERT = 272,
-     SELECT = 273,
-     FETCH = 274,
-     TUPLE = 275,
-     LOAD = 276,
-     SHUTDOWN = 277,
-     NULL_T = 278,
-     WORD = 279,
-     DOTTED_WORD = 280,
-     INT = 281
+     IDX = 262,
+     MIN_T = 263,
+     AVG = 264,
+     ADD = 265,
+     SUB = 266,
+     MAX_T = 267,
+     BEGIN_COMMENT = 268,
+     SORTED_T = 269,
+     BTREE_T = 270,
+     UNSORTED_T = 271,
+     PRIMARY_T = 272,
+     REL_INSERT = 273,
+     SELECT = 274,
+     FETCH = 275,
+     TUPLE = 276,
+     LOAD = 277,
+     SHUTDOWN = 278,
+     NULL_T = 279,
+     WORD = 280,
+     DOTTED_WORD = 281,
+     INT = 282
    };
 #endif
 /* Tokens.  */
@@ -70,26 +71,27 @@
 #define DB 259
 #define TBL 260
 #define COL 261
-#define MIN_T 262
-#define AVG 263
-#define ADD 264
-#define SUB 265
-#define MAX_T 266
-#define BEGIN_COMMENT 267
-#define SORTED_T 268
-#define BTREE_T 269
-#define UNSORTED_T 270
-#define PRIMARY_T 271
-#define REL_INSERT 272
-#define SELECT 273
-#define FETCH 274
-#define TUPLE 275
-#define LOAD 276
-#define SHUTDOWN 277
-#define NULL_T 278
-#define WORD 279
-#define DOTTED_WORD 280
-#define INT 281
+#define IDX 262
+#define MIN_T 263
+#define AVG 264
+#define ADD 265
+#define SUB 266
+#define MAX_T 267
+#define BEGIN_COMMENT 268
+#define SORTED_T 269
+#define BTREE_T 270
+#define UNSORTED_T 271
+#define PRIMARY_T 272
+#define REL_INSERT 273
+#define SELECT 274
+#define FETCH 275
+#define TUPLE 276
+#define LOAD 277
+#define SHUTDOWN 278
+#define NULL_T 279
+#define WORD 280
+#define DOTTED_WORD 281
+#define INT 282
 
 
 
@@ -105,7 +107,7 @@ typedef union YYSTYPE
     void *ptr;
 }
 /* Line 1529 of yacc.c.  */
-#line 109 "grammar.tab.h"
+#line 111 "grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

@@ -35,6 +35,7 @@ shutdown { return SHUTDOWN; }
 db { return DB; }
 tbl { return TBL; }
 col { return COL; }
+idx { return IDX; }
 unsorted { return UNSORTED_T; }
 sorted {return SORTED_T; }
 primary {return PRIMARY_T; }

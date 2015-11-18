@@ -67,6 +67,13 @@ status create_column(table *table, const char* name, IndexType type) {
     strncpy(col->name, name, NAME_SIZE);
     col->vector = create_vector(0);
 
+    // creates column index if present
+    create_index(col, type);
+
+    return OK_STATUS;
+}
+
+status create_index(column *col, IndexType type) {
     col->index.type = type;
     switch (type) {
         case (UNSORTED):
@@ -76,12 +83,12 @@ status create_column(table *table, const char* name, IndexType type) {
             col->index.index = create_btree_index();
             break;
         case (PRIMARY):
+            col->index.index = NULL;
             break;
         case (SORTED):
             col->index.index = create_sorted_index(col->vector);
             break;
     }
-
     return OK_STATUS;
 }
 

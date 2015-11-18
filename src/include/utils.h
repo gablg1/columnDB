@@ -17,7 +17,10 @@ void newline_to_null(char *buf);
 
 unsigned long upper_power_of_two(unsigned long v);
 
-data binary_search(data *buf, data n, size_t length);
+int binary_search(data *buf, data n, size_t length);
+
+size_t binary_search_left(data *buf, data n, size_t length);
+size_t binary_search_right(data *buf, data n, size_t length);
 
 void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, void *b);
 

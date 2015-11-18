@@ -23,22 +23,11 @@ void destroy_sorted_index(sorted_index *index) {
     free(index);
 }
 
-// search where n is or where n should be
-size_t search_sorted(sorted_index *index, data n) {
-    int ret = vector_binary_search(index->data, n);
-    if (ret >= 0)
-        return ret;
-
-    // In case binary_search didn't find anything
-    if (n <= index->data->buf[0])
-        return 0;
-    else
-        return index->data->length;
-}
-
 vector *select_one_sorted(sorted_index *index, data low, data high) {
-    size_t lp = search_sorted(index, low);
-    size_t hp = search_sorted(index, high);
+    // lp is the left most element >= than low
+    size_t lp = binary_search_left(index->data->buf, low, index->data->length);
+    // hp is the rightmost element <= than high
+    size_t hp = binary_search_right(index->data->buf, high, index->data->length);
 
     vector *ret = create_vector(hp - lp);
 
@@ -46,6 +35,10 @@ vector *select_one_sorted(sorted_index *index, data low, data high) {
     for (size_t i = lp; i < hp; i++)
         vector_insert(index->positions->buf[i], ret);
     return ret;
+}
+
+size_t search_sorted(sorted_index *index, data n) {
+    return binary_search_left(index->data->buf, n, index->data->length);
 }
 
 
