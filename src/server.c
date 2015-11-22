@@ -105,7 +105,6 @@ void persist(void) {
  */
 void cleanup_globals(void) {
     drop_dbs();
-    destroy_vars();
 }
 
 /**
@@ -113,7 +112,7 @@ void cleanup_globals(void) {
  * This is the execution routine after a client has connected.
  * It will continually listen for messages from the client and execute queries.
  **/
-void handle_client(int client_socket) {
+int handle_client(int client_socket) {
     int done = 0;
     int length = 0;
 
@@ -125,6 +124,7 @@ void handle_client(int client_socket) {
 
     // recv_message will live on the stack, so we don't need to init it
     message recv_message;
+    int shutdown = 0;
 
     // Continually receive messages from client and execute queries.
     // 1. Parse the command
@@ -148,8 +148,10 @@ void handle_client(int client_socket) {
 
             // 1. Parse command
             db_operator* query = parse_command(&recv_message, &send_message);
-            if (query->type == SHUTDOWN_OP)
+            if (query->type == SHUTDOWN_OP) {
                 done = 1;
+                shutdown = 1;
+            }
 
             // 2. Handle request
             execute_db_operator(query, &send_message);
@@ -174,7 +176,8 @@ void handle_client(int client_socket) {
     close(client_socket);
 
     persist();
-    cleanup_globals();
+    destroy_vars();
+    return shutdown;
 }
 
 
@@ -234,21 +237,28 @@ int main(void)
         exit(1);
     }
 
-    log_info("Waiting for a connection %d ...\n", server_socket);
-
-    struct sockaddr_un remote;
-    socklen_t t = sizeof(remote);
-    int client_socket = 0;
-
-    if ((client_socket = accept(server_socket, (struct sockaddr *)&remote, &t)) == -1) {
-        log_err("L%d: Failed to accept a new connection.\n", __LINE__);
-        exit(1);
-    }
-
     // tries to load persisted databases from file
     load_dbs();
 
-    handle_client(client_socket);
+    int done = 0;
+    while (!done) {
+        log_info("Waiting for a connection %d ...\n", server_socket);
+
+        struct sockaddr_un remote;
+        socklen_t t = sizeof(remote);
+        int client_socket = 0;
+
+        if ((client_socket = accept(server_socket, (struct sockaddr *)&remote, &t)) == -1) {
+            log_err("L%d: Failed to accept a new connection.\n", __LINE__);
+            exit(1);
+        }
+
+
+        done = handle_client(client_socket);
+    }
+
+    // drop global variable containing the dbs
+    drop_dbs();
 
     return 0;
 }

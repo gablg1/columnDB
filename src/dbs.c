@@ -107,4 +107,5 @@ void drop_dbs(void) {
 
     if (dbs != NULL)
         free(dbs);
+    dbs = NULL;
 }

@@ -99,4 +99,5 @@ void destroy_vars(void) {
     }
 
     destroy_agnostic_vector(vars);
+    vars = NULL;
 }
