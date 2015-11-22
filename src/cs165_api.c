@@ -288,12 +288,12 @@ status load(const char *filename) {
     return OK_STATUS;
 }
 
-vector *fetch(column *col, vector *positions) {
+vector *fetch(vector *values, vector *positions) {
     vector *ret = create_vector(0);
 
     for (size_t i = 0; i < positions->length; i++) {
         size_t pos = positions->buf[i];
-        vector_insert(col->vector->buf[pos], ret);
+        vector_insert(values->buf[pos], ret);
     }
     return ret;
 }
@@ -430,28 +430,40 @@ status tuple(variable *var, message *msg) {
     return OK_STATUS;
 }
 
-vector *select_one_unsorted(column *col, data l, data h) {
+vector *select_one_unsorted(vector *v, data l, data h) {
     // right now we create the vector with no name
     vector *ret = create_vector(0);
-    vector *data = col->vector;
 
     // performing the select;
-    for (size_t i = 0; i < data->length; i++) {
-        if (data->buf[i] >= l && data->buf[i] < h)
+    for (size_t i = 0; i < v->length; i++) {
+        if (v->buf[i] >= l && v->buf[i] < h)
             vector_insert(i, ret);
     }
     return ret;
 }
 
-vector *select_one_primary(column *col, data l, data h) {
+vector *select_one_primary(vector *v, data l, data h) {
     // right now we create the vector with no name
     vector *ret = create_vector(0);
-    vector *data = col->vector;
 
     // performing the select;
-    for (size_t i = 0; i < data->length; i++) {
-        if (data->buf[i] >= l && data->buf[i] < h)
+    for (size_t i = 0; i < v->length; i++) {
+        if (v->buf[i] >= l && v->buf[i] < h)
             vector_insert(i, ret);
+    }
+    return ret;
+}
+
+vector *select_two(vector *pos_vec, vector *val_vec, MaybeInt low, MaybeInt high) {
+    data l = (low.present) ? low.val : MIN_DATA;
+    data h = (high.present) ? high.val : MAX_DATA;
+
+    vector *ret = create_vector(0);
+
+    // performing the select;
+    for (size_t i = 0; i < val_vec->length; i++) {
+        if (val_vec->buf[i] >= l && val_vec->buf[i] < h)
+            vector_insert(pos_vec->buf[i], ret);
     }
     return ret;
 }
@@ -462,7 +474,7 @@ vector *select_one(column *col, MaybeInt low, MaybeInt high) {
 
     switch (col->index.type) {
         case (UNSORTED):
-            return select_one_unsorted(col, l, h);
+            return select_one_unsorted(col->vector, l, h);
             break;
         case (BTREE):
             return select_one_btree(col->index.index, l, h);
@@ -471,7 +483,7 @@ vector *select_one(column *col, MaybeInt low, MaybeInt high) {
             return select_one_sorted(col->index.index, l, h);
             break;
         case (PRIMARY):
-            return select_one_primary(col, l, h);
+            return select_one_primary(col->vector, l, h);
             break;
     }
     return NULL;

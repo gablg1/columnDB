@@ -435,8 +435,8 @@ status col_scan(comparator *f, column *col, result **r);
 status index_scan(comparator *f, column *col, result **r);
 
 vector *select_one(column *col, MaybeInt low, MaybeInt high);
-vector *select_two(vector *positions, column *col, MaybeInt low, MaybeInt high);
-vector *fetch(column *col, vector *positions);
+vector *fetch(vector *values, vector *positions);
+vector *select_two(vector *pos_vec, vector *val_vec, MaybeInt low, MaybeInt high);
 
 status load(const char *filename);
 

@@ -127,7 +127,7 @@ int main(void)
                         if (recv_message.status == OK_IMPORTANT)
                             printf("%s", payload);
 #else
-                        printf("%s", payload);
+                        printf("%s\n", payload);
 #endif
                     }
                 }

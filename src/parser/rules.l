@@ -23,6 +23,7 @@ SYMBOL [,();=]
 create {return CREATE;}
 relational_insert {return REL_INSERT;}
 select {return SELECT;}
+selectv {return SELECTV;}
 fetch {return FETCH;}
 tuple {return TUPLE;}
 load { return LOAD;}

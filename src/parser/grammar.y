@@ -43,6 +43,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token PRIMARY_T
 %token REL_INSERT
 %token SELECT
+%token SELECTV
 %token FETCH
 %token TUPLE
 %token LOAD
@@ -62,6 +63,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %type <ptr> col
 %type <ptr> var_or_col
 %type <ptr> var
+%type <ptr> vector_var
 
 
 %%
@@ -181,6 +183,12 @@ var : name {
     }
 ;
 
+vector_var : var {
+           variable *var = $1;
+           $$ = var->v;
+    }
+;
+
 query: CREATE '(' DB ',' quoted_name ')'
         {
             char *db_name = $5;
@@ -290,6 +298,24 @@ query: CREATE '(' DB ',' quoted_name ')'
             op->values1 = root;
             op->tbl = tbl;
      }
+     | name '=' SELECTV '(' vector_var ',' vector_var ',' maybe_int ',' maybe_int ')' {
+            char *var_name = $1;
+            vector *pos_vec = $5;
+            vector *val_vec = $7;
+            MaybeInt low = $9;
+            MaybeInt high = $11;
+
+            op->type = NOOP;
+
+            // select returns a vector of positions
+            vector *v = select_two(pos_vec, val_vec, low, high);
+
+            // now we just give a name and add it to our pool of variables
+            add_vector_var(v, var_name);
+
+            add_payload(send_msg, "Selected %d positions succesfully", v->length);
+
+     }
      | name '=' SELECT '(' col ',' maybe_int ',' maybe_int ')' {
             char *var_name = $1;
             column *col = $5;
@@ -315,7 +341,7 @@ query: CREATE '(' DB ',' quoted_name ')'
             op->type = NOOP;
 
             // fetch returns a vector of values
-            vector *v = fetch(col, pos_vec);
+            vector *v = fetch(col->vector, pos_vec);
 
             // now we just give a name and add it to our pool of variables
             add_vector_var(v, var_name);
