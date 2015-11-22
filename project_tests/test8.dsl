@@ -22,8 +22,8 @@ create(col,"col7",db1.tbl2,primary)
 load("/Users/gablg/165/project_tests/data1.csv")
 --
 -- Create two secondary indexes on col1 and col2 - They are expected to get bulk loaded with all the data we have already.
---create(idx,db1.tbl2.col1,btree)
---create(idx,db1.tbl2.col2,btree)
+----create(idx,db1.tbl2.col1,btree)
+----create(idx,db1.tbl2.col2,btree)
 --
 -- Testing that the data and their indexes are durable on disk.
 shutdown

@@ -99,17 +99,25 @@ void sort_vector_from_positions(vector **vp, vector *positions) {
 // returns a vector with the mapping of unsorted => sorted
 // ret->buf[i] = j indicates that you can find sorted[i] in unsorted[j]
 vector *sort_vector(vector *v) {
-    vector *tmp = duplicate_vector(v);
+    vector *unsorted = duplicate_vector(v);
     vector *ret = duplicate_vector(v);
 
     qsort(v->buf, v->length, sizeof(data), compare_data);
 
-    for (size_t j = 0; j < ret->length; j++) {
-        int pos = vector_binary_search(v, tmp->buf[j]);
-        assert(pos >= 0);
-        ret->buf[pos] = j;
+    // This can be done in O(N log N) instead of O(N^2)
+    for (size_t i = 0; i < ret->length; i++) {
+        int j = - 1;
+        for (size_t k = 0; k < unsorted->length; k++) {
+            if (unsorted->buf[k] == v->buf[i]) {
+                j = k;
+                break;
+            }
+        }
+
+        assert(j >= 0);
+        ret->buf[i] = j;
     }
-    destroy_vector(tmp);
+    destroy_vector(unsorted);
 
     return ret;
 }
