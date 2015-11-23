@@ -80,7 +80,7 @@ status create_index(column *col, IndexType type) {
             col->index.index = NULL;
             break;
         case (BTREE):
-            col->index.index = create_btree_index();
+            col->index.index = create_btree_index(col->vector);
             break;
         case (PRIMARY):
             col->index.index = NULL;
@@ -178,11 +178,14 @@ status relational_insert(table *tbl, list *values) {
 status insert(column *col, data data) {
     size_t pos = vector_insert(data, col->vector);
 
+    record r;
     switch (col->index.type) {
         case (UNSORTED):
             break;
         case (BTREE):
-            bt_insert(col->index.index, data);
+            r.val = data;
+            r.pos = pos;
+            bt_insert(col->index.index, r);
             break;
         case (SORTED):
             insert_sorted(col->index.index, data, pos);
