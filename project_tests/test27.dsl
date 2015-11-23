@@ -1,0 +1,10 @@
+-- Needs test25.dsl to have been executed first.
+-- Testing for correctness - simple hashjoin between two tables. Columns other than those on which we join
+-- are filtered upon. 
+-- 
+-- Query in SQL:
+-- SELECT tbl4.col4, tbl5.col5
+-- FROM tbl4, tbl5
+-- WHERE tbl4.col1 = tbl5.col1
+-- AND tbl4.col2 >= 10000 AND tbl4.col2 < 14000
+-- AND tbl5.col3 >= 15000 AND tbl5.col3 < 62000;
