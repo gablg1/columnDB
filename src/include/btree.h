@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <cs165_api.h>
 
-#define FANOUT 256 
+#define FANOUT 256
 #define NODE_SIZE (FANOUT-1)
 
 typedef struct record {

@@ -27,6 +27,7 @@
 #include "message.h"
 #include "utils.h"
 #include "list.h"
+#include "btree.h"
 
 // includes that use global structures
 #include "dbs.h"
@@ -232,6 +233,7 @@ int setup_server() {
 // and remain running until it receives a shut-down command.
 int main(void)
 {
+    log_info("Size of btree node is: %d.\n", sizeof(bt_node));
     int server_socket = setup_server();
     if (server_socket < 0) {
         exit(1);
