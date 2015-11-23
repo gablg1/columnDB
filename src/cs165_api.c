@@ -301,6 +301,32 @@ vector *fetch(vector *values, vector *positions) {
     return ret;
 }
 
+void nested_join(vector **r1, vector **r2, vector *pos1, vector *val1, vector *pos2, vector *val2) {
+    // we have no a priori knowledge of what the vector sizes should be
+    *r1 = create_vector(0);
+    *r2 = create_vector(0);
+
+    for (size_t i = 0; i < pos1->length; i += PAGESIZE) {
+        for (size_t j = 0; j < pos2->length; j += PAGESIZE) {
+            for (size_t r = i; r < i + PAGESIZE; r++) {
+                for (size_t m = j; m < j + PAGESIZE; m++) {
+                    size_t p1 = pos1->buf[r];
+                    size_t p2 = pos2->buf[m];
+                    if (val1->buf[p1] == val2->buf[p2]) {
+                       vector_insert(p1, *r1);
+                       vector_insert(p2, *r2);
+                    }
+                }
+            }
+        }
+    }
+    assert((*r1)->length == (*r2)->length);
+}
+
+void hashjoin(vector **r1, vector **r2, vector *pos1, vector *val1, vector *pos2, vector *val2) {
+    nested_join(r1, r2, pos1, val1, pos2, val2);
+}
+
 vector *add(vector *v1, vector *v2) {
     assert(v1->length == v2->length);
     vector *ret = create_vector(v1->length);

@@ -55,7 +55,6 @@ void vector_cat(vector *to, vector *from) {
 
 // returns the position where the val was inserted
 size_t vector_insert(data val, vector *v) {
-    assert(v != NULL);
     if (v->length >= v->max_length) {
         v->max_length *= 2;
         v->buf = realloc(v->buf, v->max_length * sizeof(data));

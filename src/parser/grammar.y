@@ -43,6 +43,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token PRIMARY_T
 %token REL_INSERT
 %token SELECT
+%token HASHJOIN
 %token SELECTV
 %token FETCH
 %token TUPLE
@@ -331,6 +332,21 @@ query: CREATE '(' DB ',' quoted_name ')'
             add_vector_var(v, var_name);
 
             add_payload(send_msg, "Selected %d positions succesfully", v->length);
+     }
+     | name ',' name '=' HASHJOIN '(' vector_var ',' var_or_col ',' vector_var ',' var_or_col ')' {
+            char *var1_name = $1;
+            char *var2_name = $3;
+            vector *positions1 = $7;
+            vector *values1 = $9;
+            vector *positions2 = $11;
+            vector *values2 = $13;
+
+            vector *r1, *r2;
+            hashjoin(&r1, &r2, positions1, values1, positions2, values2);
+
+            add_vector_var(r1, var1_name);
+            add_vector_var(r2, var2_name);
+            add_payload(send_msg, "Joined %d positions succesfully", r1->length);
      }
      | name '=' FETCH '(' col ',' var ')' {
             char *var_name = $1;

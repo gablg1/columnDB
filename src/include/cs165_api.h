@@ -37,6 +37,8 @@ typedef long long data;
 #define MIN_DATA INT_MIN
 #define MAX_DATA INT_MAX
 
+#define PAGESIZE 4096
+
 // used by dynamically allocated arrays
 #define INITIAL_LENGTH 32
 
@@ -437,6 +439,7 @@ status index_scan(comparator *f, column *col, result **r);
 vector *select_one(column *col, MaybeInt low, MaybeInt high);
 vector *fetch(vector *values, vector *positions);
 vector *select_two(vector *pos_vec, vector *val_vec, MaybeInt low, MaybeInt high);
+void hashjoin(vector **r1, vector **r2, vector *pos1, vector *val1, vector *pos2, vector *val2);
 
 status load(const char *filename);
 
