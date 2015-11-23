@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <cs165_api.h>
 
-#define FANOUT 256
+#define FANOUT 170
 #define NODE_SIZE (FANOUT-1)
 
 typedef struct record {
@@ -15,12 +15,15 @@ typedef struct record {
  * and smaller than node->data[i].
  *
  * node->children[node->length] is the last pointer
+ *
+ * Size of bt_node struct is
+ * F * 8 +  16 * (F - 1) + 16
  */
 typedef struct bt_node {
 	struct bt_node *children[FANOUT];
 	int length;
 	record records[NODE_SIZE];
-	bool leaf;
+	int leaf;
 	struct bt_node *next;
 } bt_node;
 
