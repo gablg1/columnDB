@@ -70,11 +70,12 @@ bt_node *load_btree_node(bt_node *bro_last, bt_node **my_last, FILE *fp) {
                 tmp->next = ret->children[i];
             tmp = ret->children[i];
         }
+
+        // updates my last child
+        if (my_last != NULL)
+            *my_last = ret->children[ret->length];
     }
 
-    // updates my last child
-    if (my_last != NULL)
-        *my_last = ret->children[ret->length];
     return ret;
 }
 
