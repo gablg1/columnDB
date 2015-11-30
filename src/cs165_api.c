@@ -1,4 +1,5 @@
 #include <string.h>
+#include <sys/socket.h>
 
 #include "cs165_api.h"
 #include "utils.h"
@@ -226,8 +227,13 @@ bool sort_table_by_primary_column(table *tbl) {
 
 }
 
-status load(const char *filename) {
-    FILE* fp = fopen(filename, "r");
+status load(int client_fd) {
+    off_t size;
+    int length = recv(client_fd, &size, sizeof(off_t), 0);
+    if (length < 1)
+        exit(1);
+
+    FILE* fp = fdopen(client_fd, "r");
     if (fp == NULL)
         return FILE_ERR;
 
@@ -269,6 +275,10 @@ status load(const char *filename) {
 
     while (fgets(buf, 1024, fp))
     {
+        // this signals that we're done
+        if (strcmp(buf, "feedface\n") == 0)
+            break;
+
         line = buf;
         size_t count = 0;
         char *token;
@@ -285,7 +295,6 @@ status load(const char *filename) {
 
     sort_table_by_primary_column(tbl);
 
-    fclose(fp);
     destroy_agnostic_vector(ag_cols);
     destroy_agnostic_vector(values);
     return OK_STATUS;

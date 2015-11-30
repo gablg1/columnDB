@@ -63,11 +63,17 @@ db_operator* parse_command(message* recv_message, message* send_message) {
  * on what the return type should be, maybe a result struct, and then have
  * a serialization into a string message).
  **/
-void execute_db_operator(db_operator* query, message *send_msg) {
+void execute_db_operator(db_operator* query, message *send_msg, int client_fd) {
     switch (query->type) {
-        case NOOP:
+        case NOOP: {
             // in this case the payload was already added by parse_dsl
             break;
+                   }
+        case LOAD_OP: {
+             load(client_fd);
+            add_payload(send_msg, "Values loaded successfuly");
+            break;
+        }
         case INSERT: {
             list *values = query->values1;
             table *tbl = query->tbl;
@@ -155,7 +161,7 @@ int handle_client(int client_socket) {
             }
 
             // 2. Handle request
-            execute_db_operator(query, &send_message);
+            execute_db_operator(query, &send_message, client_socket);
 
             // 3. Send status of the received message (OK, UNKNOWN_QUERY, etc)
             if (send(client_socket, &(send_message), sizeof(message), 0) == -1) {

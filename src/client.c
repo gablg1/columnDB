@@ -16,6 +16,12 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/uio.h>
+#include <sys/stat.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -100,6 +106,34 @@ int main(void)
         // payload directly to the server.
         send_message.length = strlen(read_buffer);
         if (send_message.length > 1) {
+            char loading = false;
+            int load_fd = -1;
+
+            // if the message is load(something) we need some preprocessing
+            char *tmp = strdup(send_message.payload);
+            int LOAD_OFFSET = 5;
+            tmp[LOAD_OFFSET] = '\0';
+            char *filepath;
+            struct stat filestat;
+            if (strcmp(tmp, "load(") == 0) {
+                char *filename = tmp + LOAD_OFFSET + 1;
+                filepath = strsep(&filename, "\"");
+                if (filename == NULL)
+                    continue;
+
+                // first we grab the file's length
+                load_fd = open(filepath, O_RDONLY);
+                if (load_fd < 0)
+                    continue;
+                int r = fstat(load_fd, &filestat);
+                if (r < 0)
+                    continue;
+
+                loading = true;
+            }
+            free(tmp);
+
+
             // Send the message_header, which tells server payload size
             if (send(client_socket, &(send_message), sizeof(message), 0) == -1) {
                 log_err("Failed to send message header.");
@@ -107,9 +141,25 @@ int main(void)
             }
 
             // Send the payload (query) to server
-            if (send(client_socket, send_message.payload, send_message.length, 0) == -1) {
-                log_err("Failed to send query payload.");
+            if (send(client_socket, send_message.payload, send_message.length, 0) == -1) { log_err("Failed to send query payload.");
                 exit(1);
+            }
+
+            if (loading) {
+                if (send(client_socket, &(filestat.st_size), sizeof(off_t), 0) == -1) { log_err("Failed to send load file size.");
+                    exit(1);
+                }
+
+                if (sendfile(load_fd, client_socket, 0, &(filestat.st_size), NULL, 0) == -1) {
+                    log_err("Failed to send file. Error: %s", strerror(errno));
+                    exit(1);
+                }
+                // sends token telling server file is done
+                char *token = "feedface\n";
+                if (send(client_socket, token, strlen(token), 0) == -1) { log_err("Failed to send token.");
+                    exit(1);
+                }
+                close(load_fd);
             }
 
             // Always wait for server response (even if it is just an OK message)

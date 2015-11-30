@@ -410,17 +410,7 @@ query: CREATE '(' DB ',' quoted_name ')'
             op->type = NOOP;
 
      } | LOAD '(' quoted_name ')' {
-        char *file_name = $3;
-        op->type = NOOP;
-
-        status st = load(file_name);
-        if (st.code == OK) {
-            add_payload(send_msg, "Values loaded successfuly");
-        } else {
-            op->type = ERROR_OP;
-            add_payload(send_msg, st.error_message);
-        }
-
+        op->type = LOAD_OP;
      } | SHUTDOWN {
         op->type = SHUTDOWN_OP;
         add_payload(send_msg, "Shutting down DB");

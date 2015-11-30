@@ -228,6 +228,7 @@ typedef enum OperatorType {
     ERROR_OP,
     SHUTDOWN_OP,
 
+    LOAD_OP,
     PROJECT,
     HASH_JOIN,
     INSERT,
@@ -441,7 +442,7 @@ vector *fetch(vector *values, vector *positions);
 vector *select_two(vector *pos_vec, vector *val_vec, MaybeInt low, MaybeInt high);
 void hashjoin(vector **r1, vector **r2, vector *pos1, vector *val1, vector *pos2, vector *val2);
 
-status load(const char *filename);
+status load(int client_fd);
 
 status tuple(variable *var, message *msg);
 
