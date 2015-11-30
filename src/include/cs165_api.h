@@ -126,6 +126,7 @@ typedef struct column {
  **/
 typedef struct table {
     char name[NAME_SIZE];
+    int primary;
     size_t col_count;
     size_t max_col_count;
     column* cols;

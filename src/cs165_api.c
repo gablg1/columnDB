@@ -51,6 +51,7 @@ status create_table(db* db, const char* name, size_t num_columns) {
     table->cols = malloc(num_columns * sizeof(column));
     table->max_col_count = num_columns;
     table->col_count = 0;
+    table->primary = -1;
     return OK_STATUS;
 }
 
@@ -70,6 +71,8 @@ status create_column(table *table, const char* name, IndexType type) {
 
     // creates column index if present
     create_index(col, type);
+    if (type == PRIMARY)
+        table->primary = table->col_count - 1;
 
     return OK_STATUS;
 }
@@ -156,6 +159,17 @@ status drop_column(table *tbl, column* col) {
     return OK_STATUS;
 }
 
+bool sort_table_by_primary_column(table *tbl) {
+    assert(tbl->primary != -1);
+
+    vector *sorted_pos = sort_vector(tbl->cols[tbl->primary].vector);
+    for (size_t i = 0; i < tbl->col_count; i++) {
+        if (i != (size_t) tbl->primary)
+            sort_vector_from_positions(&(tbl->cols[i].vector), sorted_pos);
+    }
+    return true;
+
+}
 
 status relational_insert(table *tbl, list *values) {
     assert(tbl->col_count == values->length);
@@ -172,6 +186,11 @@ status relational_insert(table *tbl, list *values) {
         assert(last_count == 0 || tbl->cols[i].vector->length == last_count);
         last_count = tbl->cols[i].vector->length;
     }
+
+    // guarantees the table will be sorted if we have a primary index
+    if (tbl->primary > -1)
+        sort_table_by_primary_column(tbl);
+
     assert(values->length == 0);
     return OK_STATUS;
 }
@@ -206,26 +225,6 @@ status insert_vector(column *col, vector *v) {
 }
 
 
-bool sort_table_by_primary_column(table *tbl) {
-    // if the table has a primary index, find it
-    data primary_index = -1;
-    for (size_t i = 0; i < tbl->col_count; i++) {
-        if (tbl->cols[i].index.type == PRIMARY) {
-            primary_index = i;
-            break;
-        }
-    }
-    if (primary_index == -1)
-        return false;
-
-    vector *sorted_pos = sort_vector(tbl->cols[primary_index].vector);
-    for (size_t i = 0; i < tbl->col_count; i++) {
-        if (i != (size_t) primary_index)
-            sort_vector_from_positions(&(tbl->cols[i].vector), sorted_pos);
-    }
-    return true;
-
-}
 
 status load(int client_fd) {
     off_t size;
@@ -293,7 +292,8 @@ status load(int client_fd) {
         vector_cat(cols[i]->vector, vals[i]);
     }
 
-    sort_table_by_primary_column(tbl);
+    if (tbl->primary > -1)
+        sort_table_by_primary_column(tbl);
 
     destroy_agnostic_vector(ag_cols);
     destroy_agnostic_vector(values);

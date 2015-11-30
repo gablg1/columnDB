@@ -140,6 +140,9 @@ void load_table(const char* filename, table *tbl) {
         load_column(buf, &(tbl->cols[i]));
     }
     fclose(fp);
+
+    if (tbl->primary > -1)
+        assert(tbl->cols[tbl->primary].index.type == PRIMARY);
 }
 
 void load_db(const char* filename, db *dbp) {
