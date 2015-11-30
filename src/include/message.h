@@ -1,7 +1,7 @@
 #ifndef MESSAGE_H__
 #define MESSAGE_H__
 
-#define MAX_MSG_SIZE 1024
+#define MAX_MSG_SIZE 4096
 
 // mesage_status defines the status of the previous request.
 typedef enum message_status {

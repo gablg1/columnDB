@@ -149,12 +149,25 @@ bt_node *bt_search_node(bt_node *root, data d) {
 }
 
 
-vector *select_one_btree(bt_node *root, int low, int high) {
+vector *select_one_btree(bt_node *root, data low, data high) {
     bt_node *ll = bt_search_node(root, low);
     bt_node *hl = bt_search_node(root, high);
-    (void) ll, hl;
 
     vector *ret = create_vector(0);
-    // TODO
+    bt_node *cur = ll;
+    while (true) {
+        assert(cur->leaf);
+        for (int i = 0; i < cur->length; i++) {
+            // if we passed high, we are done
+            if (cur->records[i].val > high)
+                return ret;
+
+            if (cur->records[i].val >= low)
+                vector_insert(cur->records[i].pos, ret);
+        }
+        if (cur == hl)
+            break;
+        cur = cur->next;
+    }
     return ret;
 }

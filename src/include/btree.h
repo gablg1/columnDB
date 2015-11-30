@@ -47,4 +47,4 @@ void bt_split_child(bt_node *parent, bt_node *node, size_t i);
 // returns the node where n is or the leaf where n should be inserted
 bt_node *bt_search_node(bt_node *root, data d);
 
-vector *select_one_btree(bt_node *root, int low, int high);
+vector *select_one_btree(bt_node *root, data low, data high);
