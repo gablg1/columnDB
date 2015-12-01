@@ -164,6 +164,10 @@ int main(void)
 
             // Always wait for server response (even if it is just an OK message)
             if ((len = recv(client_socket, &(recv_message), sizeof(message), 0)) > 0) {
+                if (recv_message.status == OK_SHUTDOWN) {
+                    break;
+                }
+
                 if ((recv_message.status == OK_WAIT_FOR_RESPONSE || recv_message.status == OK_IMPORTANT) &&
                     (int) recv_message.length > 0) {
                     // Calculate number of bytes in response package

@@ -413,6 +413,7 @@ query: CREATE '(' DB ',' quoted_name ')'
         op->type = LOAD_OP;
      } | SHUTDOWN {
         op->type = SHUTDOWN_OP;
+        send_msg->status = OK_SHUTDOWN;
         add_payload(send_msg, "Shutting down DB");
      }
 ;

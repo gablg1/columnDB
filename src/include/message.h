@@ -8,6 +8,7 @@ typedef enum message_status {
     OK_DONE,
     OK_WAIT_FOR_RESPONSE,
     OK_IMPORTANT,
+    OK_SHUTDOWN,
 } message_status;
 
 // message is a single packet of information sent between client/server.
