@@ -61,7 +61,7 @@ server: server.o utils.o message.o dbs.o cs165_api.o parser/grammar.tab.o parser
 	$(CC) $(CFLAGS) $(DEPCFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 cleandb:
-	rm -f persist/*
+	rm -f data/*
 
 clean:
 	rm -f client server *.o *~ *.bak core *.core cs165_unix_socket

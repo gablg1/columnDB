@@ -7,7 +7,7 @@
 #include "sorted.h"
 #include "btree.h"
 
-#define PERSIST_DIR "persist"
+#define PERSIST_DIR "data"
 
 /*
  * Opens file withdata PERSIST_DIR
