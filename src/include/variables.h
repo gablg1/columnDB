@@ -17,7 +17,7 @@ typedef struct variable {
     char *name;
     NodeType type;
     vector *v;
-    int i;
+    data i;
     long long l;
     double f;
 } variable;
@@ -25,7 +25,7 @@ typedef struct variable {
 void add_vector_var(vector *v, const char *name);
 void add_float_var(double f, const char *name);
 void add_long_var(long long n, const char *name);
-void add_int_var(int n, const char *name);
+void add_data_var(data n, const char *name);
 variable *get_var_by_name(const char *lookup_name);
 void destroy_vars(void);
 

@@ -16,7 +16,7 @@
 // <var1>=select(...)
 AgnosticVector *vars = NULL;
 
-void add_int_var(int n, const char *name) {
+void add_data_var(data n, const char *name) {
     assert(name != NULL);
     // creates the AgnosticVector if it doesn't exist yet
     if (vars == NULL)

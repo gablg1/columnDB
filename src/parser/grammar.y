@@ -367,16 +367,16 @@ query: CREATE '(' DB ',' quoted_name ')'
             char *var_name = $1;
             vector *val_vec = $5;
             op->type = NOOP;
-            int m = min(val_vec);
-            add_int_var(m, var_name);
-            add_payload(send_msg, "Minimum of %d calculated", m);
+            data m = min(val_vec);
+            add_data_var(m, var_name);
+            add_payload(send_msg, "Minimum of %lld calculated", m);
     } | name '=' MAX_T '(' var_or_col ')' {
             char *var_name = $1;
             vector *val_vec = $5;
             op->type = NOOP;
-            int m = max(val_vec);
-            add_int_var(m, var_name);
-            add_payload(send_msg, "Maximum of %d calculated", m);
+            data m = max(val_vec);
+            add_data_var(m, var_name);
+            add_payload(send_msg, "Maximum of %lld calculated", m);
      } | name '=' AVG '(' var_or_col ')' {
             char *var_name = $1;
             vector *v = $5;

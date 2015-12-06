@@ -315,20 +315,41 @@ void nested_join(vector **r1, vector **r2, vector *pos1, vector *val1, vector *p
     *r1 = create_vector(0);
     *r2 = create_vector(0);
 
-    for (size_t i = 0; i < pos1->length; i += PAGESIZE) {
-        for (size_t j = 0; j < pos2->length; j += PAGESIZE) {
-            for (size_t r = i; r < i + PAGESIZE; r++) {
-                for (size_t m = j; m < j + PAGESIZE; m++) {
-                    size_t p1 = pos1->buf[r];
-                    size_t p2 = pos2->buf[m];
-                    if (val1->buf[p1] == val2->buf[p2]) {
-                       vector_insert(p1, *r1);
-                       vector_insert(p2, *r2);
+    // we probe the smaller vector hoping for faster join
+    if (val2->length > val1->length) {
+        for (size_t i = 0; i < pos2->length; i += PAGESIZE) {
+            for (size_t j = 0; j < pos1->length; j += PAGESIZE) {
+                for (size_t r = i; r < i + PAGESIZE; r++) {
+                    for (size_t m = j; m < j + PAGESIZE; m++) {
+                        size_t p2 = pos2->buf[r];
+                        size_t p1 = pos1->buf[m];
+                        if (val1->buf[p1] == val2->buf[p2]) {
+                            vector_insert(p1, *r1);
+                            vector_insert(p2, *r2);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+    else {
+        for (size_t i = 0; i < pos1->length; i += PAGESIZE) {
+            for (size_t j = 0; j < pos2->length; j += PAGESIZE) {
+                for (size_t r = i; r < i + PAGESIZE; r++) {
+                    for (size_t m = j; m < j + PAGESIZE; m++) {
+                        size_t p1 = pos1->buf[r];
+                        size_t p2 = pos2->buf[m];
+                        if (val1->buf[p1] == val2->buf[p2]) {
+                        vector_insert(p1, *r1);
+                        vector_insert(p2, *r2);
+                        }
                     }
                 }
             }
         }
     }
+
     assert((*r1)->length == (*r2)->length);
 }
 
