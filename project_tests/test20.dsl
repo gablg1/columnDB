@@ -21,8 +21,8 @@ load("data6.csv")
 --
 -- SELECT MAX(col2 + col3) FROM tbl6 WHERE col7 >= 127 AND col7 < 123456789;
 s1=select(db1.tbl6.col7,127,123456789)
-f1=fetch(col2,s1)
-f2=fetch(col3,s1)
+f1=fetch(db1.tbl6.col2,s1)
+f2=fetch(db1.tbl6.col3,s1)
 a1=add(f1,f2)
 m=max(a1)
 tuple(m)
