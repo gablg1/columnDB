@@ -5,7 +5,7 @@
 -- The table also has two secondary indexes on col1 and col2; both secondary indexes are b-trees.
 --
 -- Create Table4
-create(tbl,"tbl4",db1,10)
+create(tbl,"tbl4",db1,7)
 create(col,"col1",db1.tbl4,unsorted)
 create(col,"col2",db1.tbl4,unsorted)
 create(col,"col3",db1.tbl4,unsorted)
@@ -16,7 +16,7 @@ create(col,"col6",db1.tbl4,unsorted)
 create(col,"col7",db1.tbl4,sorted)
 --
 -- Create Table5
-create(tbl,"tbl5",db1,10)
+create(tbl,"tbl5",db1,7)
 create(col,"col1",db1.tbl5,unsorted)
 create(col,"col2",db1.tbl5,unsorted)
 create(col,"col3",db1.tbl5,unsorted)
