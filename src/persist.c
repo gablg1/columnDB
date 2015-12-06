@@ -59,21 +59,32 @@ bt_node *load_btree_node(FILE *fp) {
         for (int i = 0; i < ret->length + 1; i++) {
             ret->children[i] = load_btree_node(fp);
         }
-
-        for (int i = 0; i < ret->length; i++) {
-            ret->children[i]->next = ret->children[i + 1];
-        }
-        ret->children[ret->length]->next = NULL;
-
     }
 
     return ret;
+}
+
+void place_btree_nexts(bt_node *root) {
+    if (!root->leaf) {
+        for (int i = 0; i < root->length; i++)
+            root->children[i]->next = root->children[i + 1];
+
+        if (root->next != NULL)
+            root->children[root->length]->next = root->next->children[0];
+        else
+            root->children[root->length]->next = NULL;
+
+        for (int i = 0; i < root->length + 1; i++)
+            place_btree_nexts(root->children[i]);
+    }
+
 }
 
 column_index load_btree_index(FILE *fp) {
     column_index i;
     i.type = BTREE;
     i.index = load_btree_node(fp);
+    place_btree_nexts(i.index);
     return i;
 }
 

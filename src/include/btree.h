@@ -20,6 +20,7 @@ typedef struct record {
  * F * 8 +  16 * (F - 1) + 16
  */
 typedef struct bt_node {
+    struct bt_node *parent;
 	struct bt_node *children[FANOUT];
 	int length;
 	record records[NODE_SIZE];

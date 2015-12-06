@@ -12,6 +12,7 @@ bt_node *create_bt_node(bool leaf) {
 	new->length = 0;
 	new->next = NULL;
 	new->leaf = leaf;
+	new->parent = NULL;
 	return new;
 }
 
@@ -85,6 +86,7 @@ void bt_insert(bt_node **root, record n) {
 		bt_insert_non_full(new_root->children[i], n);
 
 		// change the root
+		(*root)->parent = new_root;
 		*root = new_root;
 	}
 	else {
@@ -126,8 +128,9 @@ void bt_split_child(bt_node *parent, bt_node *node, size_t i) {
 	memcpy(&new->children[0], &node->children[median_i], (new->length + 1) * sizeof(bt_node *));
 
 	// update the left node
-	node->length = median_i;
+	node->length = median_i-1;
 	new->next = node->next;
+	new->parent = node->parent;
 	node->next = new;
 
     // update the parent
