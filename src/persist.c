@@ -49,31 +49,22 @@ column_index load_sorted_index(FILE *fp) {
 // bro_last is the last child of the brother node to my immediate left
 // my_last is where this function will place this node's last child
 // These are both used to correctly load bt_node->next
-bt_node *load_btree_node(bt_node *bro_last, bt_node **my_last, FILE *fp) {
+bt_node *load_btree_node(FILE *fp) {
     bt_node *ret = malloc(sizeof(bt_node));
     assert(ret != NULL);
 
     fread(ret, sizeof(bt_node), 1, fp);
 
-    // bro is coming from the left
-    if (bro_last != NULL)
-        bro_last->next = ret->children[0];
-
     if (!ret->leaf) {
-        bt_node *last = NULL;
-        bt_node *tmp = NULL;
         for (int i = 0; i < ret->length + 1; i++) {
-            ret->children[i] = load_btree_node(last, &last, fp);
-
-            // the last child points to this one
-            if (tmp != NULL)
-                tmp->next = ret->children[i];
-            tmp = ret->children[i];
+            ret->children[i] = load_btree_node(fp);
         }
 
-        // updates my last child
-        if (my_last != NULL)
-            *my_last = ret->children[ret->length];
+        for (int i = 0; i < ret->length; i++) {
+            ret->children[i]->next = ret->children[i + 1];
+        }
+        ret->children[ret->length]->next = NULL;
+
     }
 
     return ret;
@@ -82,7 +73,7 @@ bt_node *load_btree_node(bt_node *bro_last, bt_node **my_last, FILE *fp) {
 column_index load_btree_index(FILE *fp) {
     column_index i;
     i.type = BTREE;
-    i.index = load_btree_node(NULL, NULL, fp);
+    i.index = load_btree_node(fp);
     return i;
 }
 

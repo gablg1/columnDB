@@ -26,6 +26,7 @@ select {return SELECT;}
 selectv {return SELECTV;}
 fetch {return FETCH;}
 tuple {return TUPLE;}
+tuple_vectors {return TUPLE_VECTORS;}
 load { return LOAD;}
 min {return MIN_T;}
 avg {return AVG;}

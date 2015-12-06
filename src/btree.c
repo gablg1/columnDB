@@ -155,7 +155,7 @@ vector *select_one_btree(bt_node *root, data low, data high) {
 
     vector *ret = create_vector(0);
     bt_node *cur = ll;
-    while (true) {
+    while (cur != NULL) {
         assert(cur->leaf);
         for (int i = 0; i < cur->length; i++) {
             // if we passed high, we are done

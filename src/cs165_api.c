@@ -407,6 +407,31 @@ data max(vector *values) {
     return max;
 }
 
+status tuple_vectors(vector *val1, vector* val2, message *msg) {
+    assert(val1 != NULL && val2 != NULL);
+    char buf[MAX_MSG_SIZE];
+    data pos = 0;
+    assert(val1->length == val2->length);
+    for (size_t i = 0; i < val1->length; i++) {
+        pos += snprintf(&buf[pos], MAX_MSG_SIZE - pos, "%lld,%lld\n", val1->buf[i], val2->buf[i]);
+        if (pos >= MAX_MSG_SIZE) {
+            add_payload(msg, "Not enough space in buffer");
+            return BUF_ERR;
+        }
+
+        // also prdata it on the server
+        printf("%lld,%lld\n", val1->buf[i], val2->buf[i]);
+    }
+    //strip the last \n
+    buf[pos--] = '\0';
+
+    if (val1->length <= 0) {
+        snprintf(buf, MAX_MSG_SIZE, "Empty vector");
+        msg->status = OK_WAIT_FOR_RESPONSE;
+    }
+    add_payload(msg, buf);
+    return OK_STATUS;
+}
 status tuple_vector(vector *values, message *msg) {
     assert(values != NULL);
     char buf[MAX_MSG_SIZE];

@@ -47,6 +47,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token SELECTV
 %token FETCH
 %token TUPLE
+%token TUPLE_VECTORS
 %token LOAD
 %token SHUTDOWN
 %token NULL_T
@@ -404,6 +405,12 @@ query: CREATE '(' DB ',' quoted_name ')'
             vector *diff = sub(v1, v2);
             add_vector_var(diff, var_name);
             add_payload(send_msg, "Difference of vectors calculated");
+     } | TUPLE_VECTORS '(' var ',' var ')' {
+            variable *var1 = $3;
+            variable *var2 = $5;
+            tuple_vectors(var1->v, var2->v, send_msg);
+            op->type = NOOP;
+
      } | TUPLE '(' var ')' {
             variable *var = $3;
             tuple(var, send_msg);
