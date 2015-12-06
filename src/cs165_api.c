@@ -316,39 +316,21 @@ void nested_join(vector **r1, vector **r2, vector *pos1, vector *val1, vector *p
     *r2 = create_vector(0);
 
     // we probe the smaller vector hoping for faster join
-    if (val2->length > val1->length) {
-        for (size_t i = 0; i < pos2->length; i += PAGESIZE) {
-            for (size_t j = 0; j < pos1->length; j += PAGESIZE) {
-                for (size_t r = i; r < i + PAGESIZE; r++) {
-                    for (size_t m = j; m < j + PAGESIZE; m++) {
-                        size_t p2 = pos2->buf[r];
-                        size_t p1 = pos1->buf[m];
-                        if (val1->buf[p1] == val2->buf[p2]) {
-                            vector_insert(p1, *r1);
-                            vector_insert(p2, *r2);
+        for (size_t i = 0; i < pos1->length; i += PAGESIZE) {
+            for (size_t j = 0; j < pos2->length; j += PAGESIZE) {
+                size_t lim_r = (i + PAGESIZE > pos1->length) ? pos1->length : i + PAGESIZE;
+                for (size_t r = i; r < lim_r; r++) {
+                    size_t lim_j = (j + PAGESIZE > pos2->length) ? pos2->length : j + PAGESIZE;
+                    for (size_t m = j; m < lim_j; m++) {
+                        if (val1->buf[r] == val2->buf[m]) {
+                            vector_insert(pos1->buf[r], *r1);
+                            vector_insert(pos2->buf[m], *r2);
                         }
                     }
                 }
             }
         }
 
-    }
-    else {
-        for (size_t i = 0; i < pos1->length; i += PAGESIZE) {
-            for (size_t j = 0; j < pos2->length; j += PAGESIZE) {
-                for (size_t r = i; r < i + PAGESIZE; r++) {
-                    for (size_t m = j; m < j + PAGESIZE; m++) {
-                        size_t p1 = pos1->buf[r];
-                        size_t p2 = pos2->buf[m];
-                        if (val1->buf[p1] == val2->buf[p2]) {
-                        vector_insert(p1, *r1);
-                        vector_insert(p2, *r2);
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     assert((*r1)->length == (*r2)->length);
 }

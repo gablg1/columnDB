@@ -127,6 +127,7 @@ void bt_split_child(bt_node *parent, bt_node *node, size_t i) {
 
 	// update the left node
 	node->length = median_i;
+	new->next = node->next;
 	node->next = new;
 
     // update the parent

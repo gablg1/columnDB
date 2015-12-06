@@ -42,6 +42,7 @@ unsorted { return UNSORTED_T; }
 sorted {return SORTED_T; }
 primary {return PRIMARY_T; }
 btree {return BTREE_T; }
+hashjoin {return HASHJOIN; }
 
 
 [\t ]     /* spaces just signify end of token */

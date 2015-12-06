@@ -37,4 +37,5 @@ create(idx,db1.tbl5.col1,btree)
 create(idx,db1.tbl5.col2,btree)
 --
 -- Testing that the data and indexes are durable on disk.
+positions1=select(db1.tbl4.col1,20000,40000)
 shutdown

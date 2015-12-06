@@ -13,7 +13,7 @@ positions1=select(db1.tbl4.col1,20000,40000)
 positions2=select(db1.tbl5.col1,30000,70000)
 values1=fetch(db1.tbl4.col1, positions1)
 values2=fetch(db1.tbl5.col1, positions2)
-r1, r2 = hashjoin(positions1,values1,positions2,values2)
+r1,r2=hashjoin(positions1,values1,positions2,values2)
 
 final1=fetch(db1.tbl4.col1, r1)
 final2=fetch(db1.tbl5.col1, r2)
