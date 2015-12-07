@@ -15,6 +15,7 @@
 FILE *persist_fopen(const char *restrict filename, const char *restrict mode) {
     char buf[NAME_SIZE];
     snprintf(buf, NAME_SIZE, "%s/%s", PERSIST_DIR, filename);
+
     FILE *fp = fopen(buf, mode);
     return fp;
 }

@@ -208,7 +208,7 @@ status insert(column *col, data data) {
             bt_insert(col->index.index, r);
             break;
         case (SORTED):
-            insert_sorted(col->index.index, data, pos);
+            //insert_sorted(col->index.index, data, pos);
             break;
         case (PRIMARY):
             break;

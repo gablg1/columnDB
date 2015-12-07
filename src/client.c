@@ -34,7 +34,7 @@
 #define DEFAULT_STDIN_BUFFER_SIZE 1024
 
 // uncomment this if you want to compile for production
-#define IMPORTANT_ONLY
+//#define IMPORTANT_ONLY
 
 /**
  * connect_client()

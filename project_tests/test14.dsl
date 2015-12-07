@@ -28,3 +28,4 @@ create(idx,db1.tbl3.col4,btree)
 --
 -- Load data in the clustered index and populate all secondary indexes as well. 
 load("data2.csv")
+shutdown

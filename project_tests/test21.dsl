@@ -12,7 +12,7 @@ create(col,"col7",db1.tbl7,sorted)
 
 
 -- Load data immediately in the form of a clustered index
-load("data7.csv")
+load("../project_tests/data7.csv")
 
 -- Execute a large range query (similar to test 10)
 --
