@@ -1,0 +1,10 @@
+-- Needs test14.dsl and test29.dsl to have been executed first.
+-- Correctness test: Update values and run a simple query
+-- 
+-- UPDATE tbl2 SET col1 = -10 WHERE col1 = -1;
+-- UPDATE tbl2 SET col1 = -20 WHERE col2 = -22;
+-- UPDATE tbl2 SET col1 = -30 WHERE col1 = -3;
+-- UPDATE tbl2 SET col1 = -40 WHERE col3 = -444;
+-- UPDATE tbl2 SET col1 = -50 WHERE col1 = -5;
+--
+-- SELECT col1 FROM tbl2 WHERE col7 > -100 AND col7 < 100000000;
