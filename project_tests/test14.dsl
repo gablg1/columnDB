@@ -18,6 +18,8 @@ create(col,"col5",db1.tbl3,unsorted)
 create(col,"col6",db1.tbl3,unsorted)
 create(col,"col7",db1.tbl3,unsorted)
 --
+-- Load data in the clustered index and populate all secondary indexes as well. 
+load("../project_tests/data2.csv")
 --
 -- Create two secondary indexes: a sorted secondary index on col1 and b-tree secondary index on col3
 create(idx,db1.tbl3.col1,sorted)
@@ -26,6 +28,4 @@ create(idx,db1.tbl3.col3,btree)
 create(idx,db1.tbl3.col4,btree)
 --
 --
--- Load data in the clustered index and populate all secondary indexes as well. 
-load("data2.csv")
 shutdown

@@ -19,7 +19,7 @@ create(col,"col7",db1.tbl2,primary)
 --
 --
 -- Load data immediately in the form of a clustered index
-load("/Users/gablg/165/project_tests/data1.csv")
+load("../project_tests/data1.csv")
 --
 -- Create two secondary indexes on col1 and col2 - They are expected to get bulk loaded with all the data we have already.
 create(idx,db1.tbl2.col1,btree)

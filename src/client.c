@@ -34,7 +34,7 @@
 #define DEFAULT_STDIN_BUFFER_SIZE 1024
 
 // uncomment this if you want to compile for production
-//#define IMPORTANT_ONLY
+#define IMPORTANT_ONLY
 
 /**
  * connect_client()
@@ -125,11 +125,15 @@ int main(void)
 
                 // first we grab the file's length
                 load_fd = open(filepath, O_RDONLY);
-                if (load_fd < 0)
+                if (load_fd < 0) {
+                    printf("Could not open file %s\n", filepath);
                     continue;
+                }
                 int r = fstat(load_fd, &filestat);
-                if (r < 0)
+                if (r < 0) {
+                    printf("Could not stat file w/ fd %d\n", load_fd);
                     continue;
+                }
 
                 loading = true;
             }

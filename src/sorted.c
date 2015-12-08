@@ -42,6 +42,7 @@ size_t search_sorted(sorted_index *index, data n) {
 }
 
 void insert_sorted(sorted_index *index, data n, size_t pos) {
+    assert(0);
     // where n will be inserted
     size_t i = search_sorted(index, n);
    /* if (index->data->length >= index->data->max_length) {

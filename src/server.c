@@ -70,8 +70,13 @@ void execute_db_operator(db_operator* query, message *send_msg, int client_fd) {
             break;
                    }
         case LOAD_OP: {
-             load(client_fd);
-            add_payload(send_msg, "Values loaded successfuly");
+             status st = load(client_fd);
+             if (st.code == OK)
+                add_payload(send_msg, "Values loaded successfuly");
+             else if (st.code == ERROR) {
+                 add_payload(send_msg, st.error_message);
+                 send_msg->status = OK_IMPORTANT;
+             }
             break;
         }
         case INSERT: {
@@ -182,8 +187,6 @@ int handle_client(int client_socket) {
     log_info("Connection closed at socket %d!\n", client_socket);
     close(client_socket);
 
-    log_info("Persisting data\n");
-    persist();
     destroy_vars();
     return shutdown;
 }
@@ -264,6 +267,9 @@ int main(void)
 
         done = handle_client(client_socket);
     }
+
+    log_info("Persisting data\n");
+    persist();
 
     // drop global variable containing the dbs
     drop_dbs();
