@@ -41,7 +41,6 @@ size_t search_sorted(sorted_index *index, data n) {
     return binary_search_left(index->data->buf, n, index->data->length);
 }
 
-
 void insert_sorted(sorted_index *index, data n, size_t pos) {
     // where n will be inserted
     size_t i = search_sorted(index, n);

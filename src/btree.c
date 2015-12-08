@@ -92,7 +92,6 @@ void bt_insert(bt_node **root, record n) {
 	else {
 		bt_insert_non_full(*root, n);
 	}
-
 }
 
 

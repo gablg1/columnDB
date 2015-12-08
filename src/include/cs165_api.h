@@ -58,15 +58,20 @@ typedef enum DataType {
 } DataType;
 **/
 
+// Primary indices are declared as column types
+typedef enum ColumnType {
+    PRIMARY,
+    UNSORTED,
+} ColumnType;
 
 /**
  * IndexType
- * Flag to identify index type. Defines an enum for the different possible column indices.
+ * Flag to identify index type. Defines an enum for the different possible column indices. This is only for secondary
+ * indices. Primary are above.
  * Additonal types are encouraged as extra.
  **/
 typedef enum IndexType {
-    PRIMARY,
-    UNSORTED,
+    NO_INDEX,
     SORTED,
     BTREE,
 } IndexType;
@@ -106,6 +111,7 @@ typedef struct column_index {
  **/
 typedef struct column {
     char name[NAME_SIZE];
+    ColumnType type;
     vector *vector;
     column_index index;
 } column;
@@ -417,7 +423,7 @@ status drop_table(db* db, table* table);
  *      // Something went wrong
  *  }
  **/
-status create_column(table *table, const char* name, IndexType type);
+status create_column(table *table, const char* name, ColumnType type);
 
 status drop_column(table* table, column *col);
 /**

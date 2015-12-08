@@ -12,7 +12,7 @@ create(col,"col1",db1.tbl3,unsorted)
 create(col,"col2",db1.tbl3,unsorted)
 create(col,"col3",db1.tbl3,unsorted)
 -- sorted column (it can be only one)
-create(col,"col4",db1.tbl3,sorted)
+create(col,"col4",db1.tbl3,primary)
 --
 create(col,"col5",db1.tbl3,unsorted)
 create(col,"col6",db1.tbl3,unsorted)

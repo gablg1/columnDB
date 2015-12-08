@@ -103,10 +103,14 @@ void load_column(const char *filename, column *col) {
     fread(col, sizeof(column), 1, fp);
     col->vector = load_vector(fp);
 
-    switch (col->index.type) {
+    switch (col->type) {
         case (UNSORTED):
             break;
         case (PRIMARY):
+            break;
+    }
+    switch (col->index.type) {
+        case (NO_INDEX):
             break;
         case (BTREE):
             col->index = load_btree_index(fp);
@@ -145,7 +149,7 @@ void load_table(const char* filename, table *tbl) {
     fclose(fp);
 
     if (tbl->primary > -1)
-        assert(tbl->cols[tbl->primary].index.type == PRIMARY);
+        assert(tbl->cols[tbl->primary].type == PRIMARY);
 }
 
 void load_db(const char* filename, db *dbp) {
@@ -209,10 +213,14 @@ void persist_column(db *db, table *tbl, column *col) {
     fwrite(col, sizeof(column), 1, fp);
     persist_vector(col->vector, fp);
 
-    switch (col->index.type) {
+    switch (col->type) {
         case (UNSORTED):
             break;
         case (PRIMARY):
+            break;
+    }
+    switch (col->index.type) {
+        case (NO_INDEX):
             break;
         case (BTREE):
             persist_btree_index(col->index.index, fp);

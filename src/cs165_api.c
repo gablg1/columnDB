@@ -57,7 +57,7 @@ status create_table(db* db, const char* name, size_t num_columns) {
 
 
 
-status create_column(table *table, const char* name, IndexType type) {
+status create_column(table *table, const char* name, ColumnType type) {
     if (table == NULL)
         return NULL_PTR;
 
@@ -70,9 +70,10 @@ status create_column(table *table, const char* name, IndexType type) {
     col->vector = create_vector(0);
 
     // creates column index if present
-    create_index(col, type);
+    col->type = type;
     if (type == PRIMARY)
         table->primary = table->col_count - 1;
+    create_index(col, NO_INDEX);
 
     return OK_STATUS;
 }
@@ -80,14 +81,11 @@ status create_column(table *table, const char* name, IndexType type) {
 status create_index(column *col, IndexType type) {
     col->index.type = type;
     switch (type) {
-        case (UNSORTED):
+        case (NO_INDEX):
             col->index.index = NULL;
             break;
         case (BTREE):
             col->index.index = create_btree_index(col->vector);
-            break;
-        case (PRIMARY):
-            col->index.index = NULL;
             break;
         case (SORTED):
             col->index.index = create_sorted_index(col->vector);
@@ -200,7 +198,7 @@ status insert(column *col, data data) {
 
     record r;
     switch (col->index.type) {
-        case (UNSORTED):
+        case (NONE):
             break;
         case (BTREE):
             r.val = data;
@@ -208,9 +206,8 @@ status insert(column *col, data data) {
             bt_insert(col->index.index, r);
             break;
         case (SORTED):
+            assert(false);
             //insert_sorted(col->index.index, data, pos);
-            break;
-        case (PRIMARY):
             break;
     }
 
@@ -541,18 +538,22 @@ vector *select_one(column *col, MaybeInt low, MaybeInt high) {
     data l = (low.present) ? low.val : MIN_DATA;
     data h = (high.present) ? high.val : MAX_DATA;
 
-    switch (col->index.type) {
-        case (UNSORTED):
-            return select_one_unsorted(col->vector, l, h);
-            break;
-        case (BTREE):
-            return select_one_btree(col->index.index, l, h);
-            break;
-        case (SORTED):
-            return select_one_sorted(col->index.index, l, h);
-            break;
+    switch (col->type) {
         case (PRIMARY):
             return select_one_primary(col->vector, l, h);
+            break;
+        case (UNSORTED):
+            switch (col->index.type) {
+                case (NO_INDEX):
+                    return select_one_unsorted(col->vector, l, h);
+                    break;
+                case (BTREE):
+                    return select_one_btree(col->index.index, l, h);
+                    break;
+                case (SORTED):
+                    return select_one_sorted(col->index.index, l, h);
+                    break;
+            }
             break;
     }
     return NULL;

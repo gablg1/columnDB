@@ -59,6 +59,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %type <str> quoted_name
 %type <maybe_val> maybe_int
 %type <val> index_type
+%type <val> col_type
 %type <list> arb_ints
 %type <ptr> db
 %type <ptr> tbl
@@ -241,11 +242,11 @@ query: CREATE '(' DB ',' quoted_name ')'
                 add_payload(send_msg, "Creation of table failed");
             }
         }
-     | CREATE '(' COL ',' quoted_name ',' tbl ',' index_type ')'
+     | CREATE '(' COL ',' quoted_name ',' tbl ',' col_type ')'
         {
             char *col_name = $5;
             table *tbl = $7;
-            IndexType type = $9;
+            ColumnType type = $9;
 
             // Creating a column needs no query plan
             op->type = NOOP;
@@ -273,7 +274,7 @@ query: CREATE '(' DB ',' quoted_name ')'
             // Creating a column needs no query plan
             op->type = NOOP;
 
-            if (col->index.type != UNSORTED) {
+            if (col->index.type != NO_INDEX) {
                 add_payload(send_msg, "Index already exists");
                 YYERROR;
             }
@@ -439,10 +440,13 @@ arb_ints: INT {
         }
 ;
 
-index_type: UNSORTED_T { $$ = UNSORTED; }
-          | SORTED_T { $$ = SORTED; }
+index_type: SORTED_T { $$ = SORTED; }
           | BTREE_T { $$ = BTREE; }
+;
+
+col_type: UNSORTED_T { $$ = UNSORTED; }
           | PRIMARY_T { $$ = PRIMARY; }
+;
 
 name: WORD { $$ = $1; }
 ;

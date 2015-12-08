@@ -182,6 +182,7 @@ int handle_client(int client_socket) {
     log_info("Connection closed at socket %d!\n", client_socket);
     close(client_socket);
 
+    log_info("Persisting data\n");
     persist();
     destroy_vars();
     return shutdown;
