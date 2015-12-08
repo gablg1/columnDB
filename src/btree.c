@@ -117,17 +117,19 @@ void bt_split_child(bt_node *parent, bt_node *node, size_t i) {
 	new->leaf = node->leaf;
 
     // in a B+ tree we also put the median in the right child
-	int old_length = node->length - median_i - 1;
-	new->length = old_length + 1;
+	int old_length = node->length;
+	new->length = old_length - median_i;
 	assert(new->length > 0);
-	new->records[0] = median;
 
 	// then we copy records from the left child to the right childt
-	memcpy(&new->records[1], &node->records[median_i + 1], old_length * sizeof(record));
+	// new is right. node is left
+	memcpy(&new->records[0], &node->records[median_i], new->length * sizeof(record));
 	memcpy(&new->children[0], &node->children[median_i], (new->length + 1) * sizeof(bt_node *));
 
 	// update the left node
-	node->length = median_i-1;
+	node->length = median_i;
+	assert(old_length == node->length + new->length);
+
 	new->next = node->next;
 	new->parent = node->parent;
 	node->next = new;
