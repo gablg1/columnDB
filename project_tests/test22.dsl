@@ -14,7 +14,7 @@ f2=fetch(db1.tbl3.col6,s2)
 tuple(f2)
 
 -- Q3: SELECT tbl3.col4 FROM tbl3 WHERE tbl3.col3 >= -250003324 and tbl3.col3 < -153542055--
-s3=select(db1.tbl3.col3,-25003324,-153542055)
+s3=select(db1.tbl3.col3,-250003324,-153542055)
 f3=fetch(db1.tbl3.col4,s3)
 tuple(f3)
 
@@ -30,7 +30,7 @@ tuple(f5)
 
 -- Q6: SELECT tbl3.col5 FROM tbl3 WHERE tbl3.col5 >= -367021856 and tbl3.col5 < -284434020--
 s6=select(db1.tbl3.col5,-367021856,-284434020)
-f6=fetch(db1.tbl3.col6,s6)
+f6=fetch(db1.tbl3.col5,s6)
 tuple(f6)
 
 -- Q7: SELECT tbl3.col7 FROM tbl3 WHERE tbl3.col7 >= 113326821 and tbl3.col7 < 141646368--
