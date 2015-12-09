@@ -103,17 +103,9 @@ vector *sort_vector(vector *v) {
 
     qsort(v->buf, v->length, sizeof(data), compare_data);
 
-    // This can be done in O(N log N) instead of O(N^2)
-    for (size_t i = 0; i < ret->length; i++) {
-        int j = - 1;
-        for (size_t k = 0; k < unsorted->length; k++) {
-            if (unsorted->buf[k] == v->buf[i]) {
-                j = k;
-                break;
-            }
-        }
-
-        assert(j >= 0);
+    for (size_t j = 0; j < unsorted->length; j++) {
+        int i = vector_binary_search(v, unsorted->buf[j]);
+        assert(i >= 0);
         ret->buf[i] = j;
     }
     destroy_vector(unsorted);
