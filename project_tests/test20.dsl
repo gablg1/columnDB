@@ -13,7 +13,7 @@ create(col,"col8",db1.tbl6,unsorted)
 create(col,"col9",db1.tbl6,unsorted)
 create(col,"col10",db1.tbl6,unsorted)
 -- Load data
-load("/Users/gablg/165/project_tests/data6.csv")
+load("../project_tests/data6.csv")
 --
 -- Execute test
 --

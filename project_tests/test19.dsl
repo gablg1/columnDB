@@ -12,9 +12,9 @@
 
 s1=select(db1.tbl2.col1,21000000,510000000)
 f1=fetch(db1.tbl2.col7,s1)
-s2=select(s1,f1,61000000,1010000000)
+s2=selectv(s1,f1,61000000,1010000000)
 f2=fetch(db1.tbl2.col6,s2)
-s3=select(s2,f2,410000000,8100000000)
+s3=selectv(s2,f2,410000000,8100000000)
 
 c1=fetch(db1.tbl2.col1,s3)
 c5=fetch(db1.tbl2.col5,s3)
