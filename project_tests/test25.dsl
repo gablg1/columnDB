@@ -13,7 +13,7 @@ create(col,"col4",db1.tbl4,unsorted)
 create(col,"col5",db1.tbl4,unsorted)
 create(col,"col6",db1.tbl4,unsorted)
 -- sorted column (it can be only one. the table should be maintained ordered on column 7 throughout execution)
-create(col,"col7",db1.tbl4,sorted)
+create(col,"col7",db1.tbl4,primary)
 --
 -- Create Table5
 create(tbl,"tbl5",db1,7)
@@ -24,7 +24,7 @@ create(col,"col4",db1.tbl5,unsorted)
 create(col,"col5",db1.tbl5,unsorted)
 create(col,"col6",db1.tbl5,unsorted)
 -- sorted column (it can be only one. the table should be maintained ordered on column 7 throughout execution)
-create(col,"col7",db1.tbl5,sorted)
+create(col,"col7",db1.tbl5,primary)
 --
 -- Load data immediately in the form of a clustered index
 load("../project_tests/data4.csv")
