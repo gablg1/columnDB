@@ -8,7 +8,7 @@ create(col,"col3",db1.tbl7,unsorted)
 create(col,"col4",db1.tbl7,unsorted)
 create(col,"col5",db1.tbl7,unsorted)
 create(col,"col6",db1.tbl7,unsorted)
-create(col,"col7",db1.tbl7,sorted)
+create(col,"col7",db1.tbl7,primary)
 
 
 -- Load data immediately in the form of a clustered index
