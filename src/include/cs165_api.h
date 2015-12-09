@@ -452,6 +452,7 @@ void hashjoin(vector **r1, vector **r2, vector *pos1, vector *val1, vector *pos2
 status load(int client_fd);
 
 status tuple(variable *var, message *msg);
+status tuple_vectors(vector *v1, vector *v2, message *msg);
 
 data min(vector *values);
 data max(vector *values);

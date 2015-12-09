@@ -160,10 +160,9 @@ status drop_column(table *tbl, column* col) {
 bool sort_table_by_primary_column(table *tbl) {
     assert(tbl->primary != -1);
 
-    vector *sorted_pos = sort_vector(tbl->cols[tbl->primary].vector);
+    vector *sorted_pos = get_sorted_positions(tbl->cols[tbl->primary].vector);
     for (size_t i = 0; i < tbl->col_count; i++) {
-        if (i != (size_t) tbl->primary)
-            sort_vector_from_positions(&(tbl->cols[i].vector), sorted_pos);
+        sort_vector_from_positions(tbl->cols[i].vector, sorted_pos);
     }
     return true;
 

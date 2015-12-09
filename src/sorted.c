@@ -41,24 +41,3 @@ size_t search_sorted(sorted_index *index, data n) {
     return binary_search_left(index->data->buf, n, index->data->length);
 }
 
-void insert_sorted(sorted_index *index, data n, size_t pos) {
-    assert(0);
-    // where n will be inserted
-    size_t i = search_sorted(index, n);
-   /* if (index->data->length >= index->data->max_length) {
-        index->data->max_length *= 2;
-        index->data = realloc(index->data, index->data->max_length * sizeof(data));
-        index->positions = realloc(index->positions, index->data->max_length * sizeof(size_t));
-        assert(index->data != NULL);
-        assert(index->positions != NULL);
-    }
-
-
-    memmove(&index->data[i+1], &index->data[i], (index->length - i) * sizeof(data));
-    memmove(&index->positions[i+1], &index->positions[i], (index->length - i) * sizeof(size_t));
-
-    // finally insert it
-    index->data[i] = n;
-    index->positions[i] = pos;
-    index->length++; */
-}

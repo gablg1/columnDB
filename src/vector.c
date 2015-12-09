@@ -76,40 +76,59 @@ int compare_data(const void *a, const void *b) {
         return 1;
 }
 
+data *aux;
+int compare_pos(const void *a, const void *b) {
+    int pos_a = *(int *)a;
+    int pos_b = *(int *)b;
+    if (aux[pos_a] < aux[pos_b])
+        return -1;
+    else if (aux[pos_a] == aux[pos_b])
+        return 0;
+    else
+        return 1;
+}
+
 
 int vector_binary_search(vector *v, data n) {
-    return binary_search(v->buf, n, v->length);
+    return binary_search_left(v->buf, n, v->length);
 }
 
 // positions->buf[i] = j indicates that you can find sorted[i] in unsorted[j]
-void sort_vector_from_positions(vector **vp, vector *positions) {
-    vector *v = *vp;
+void sort_vector_from_positions(vector *v, vector *positions) {
     assert(v->length == positions->length);
-    vector *ret = create_vector(v->length);
+
+    // creates temporary buffer to store the vector data
+    data *tmp_buf = malloc(v->length * sizeof(data));
+    assert(tmp_buf != NULL);
+    memcpy(tmp_buf, v->buf, v->length * sizeof(data));
+
     for (size_t i = 0; i < v->length; i++) {
         size_t j = positions->buf[i];
-        ret->buf[i] = v->buf[j];
+        v->buf[i] = tmp_buf[j];
     }
-    ret->length = v->length;
-    destroy_vector(*vp);
-    *vp = ret;
+    free(tmp_buf);
 }
+
 
 // returns a vector with the mapping of unsorted => sorted
 // ret->buf[i] = j indicates that you can find sorted[i] in unsorted[j]
-vector *sort_vector(vector *v) {
-    vector *unsorted = duplicate_vector(v);
+vector *get_sorted_positions(vector *v) {
     vector *ret = duplicate_vector(v);
+    for (size_t j = 0; j < v->length; j++)
+        ret->buf[j] = j;
 
-    qsort(v->buf, v->length, sizeof(data), compare_data);
+    // This is dangerous since we're using a global aux variable.
+    // Threads aren't supported. Right now it's fine because we only use this
+    // on Bulk Load. This stuff should all be moved into the sort implementation
+    aux = v->buf;
+    qsort(ret->buf, ret->length, sizeof(data), compare_pos);
 
-    for (size_t j = 0; j < unsorted->length; j++) {
-        int i = vector_binary_search(v, unsorted->buf[j]);
-        assert(i >= 0);
-        ret->buf[i] = j;
-    }
-    destroy_vector(unsorted);
+    return ret;
+}
 
+vector *sort_vector(vector *v) {
+    vector *ret = get_sorted_positions(v);
+    sort_vector_from_positions(v, ret);
     return ret;
 }
 

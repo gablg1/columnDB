@@ -1,5 +1,6 @@
 #include "cs165_api.h"
 #include "btree.h"
+#include "utils.h"
 #include <string.h>
 
 /*
