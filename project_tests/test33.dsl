@@ -1,0 +1,11 @@
+-- Needs test14.dsl and test29.dsl to have been executed first.
+-- Correctness test: Delete values and run a simple query
+-- 
+-- DELETE FROM tbl2 WHERE col1 = -10;
+-- DELETE FROM tbl2 WHERE col2 = -22;
+-- DELETE FROM tbl2 WHERE col1 = -30;
+-- DELETE FROM tbl2 WHERE col3 = -444;
+-- DELETE FROM tbl2 WHERE col1 = -50;
+--
+-- SELECT col1 FROM tbl2 WHERE col7 > -100 AND col7 < 100000000;
+--
