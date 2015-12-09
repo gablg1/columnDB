@@ -510,9 +510,9 @@ vector *select_one_unsorted(vector *v, data l, data h) {
 
 vector *select_one_primary(vector *v, data l, data h) {
     // lp is the left most element >= than low
-    size_t lp = binary_search_left(index->data->buf, low, index->data->length);
+    size_t lp = binary_search_left(v->buf, l, v->length);
     // hp is the rightmost element <= than high
-    size_t hp = binary_search_right(index->data->buf, high, index->data->length);
+    size_t hp = binary_search_right(v->buf, h, v->length);
 
     vector *ret = create_vector(hp - lp);
 
