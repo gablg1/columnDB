@@ -7,6 +7,12 @@
  * Implementation based on Cormen's "Introduction to Algorithms"
  */
 
+void assert_increasing(bt_node *n) {
+    for (int i = 0; i < n->length - 1; i++) {
+        assert(n->records[i].val <= n->records[i+1].val);
+    }
+}
+
 bt_node *create_bt_node(bool leaf) {
 	bt_node *new = malloc(sizeof(bt_node));
 	assert(new != NULL);
@@ -125,7 +131,11 @@ void bt_split_child(bt_node *parent, bt_node *node, size_t i) {
 	// then we copy records from the left child to the right childt
 	// new is right. node is left
 	memcpy(&new->records[0], &node->records[median_i], new->length * sizeof(record));
-	memcpy(&new->children[0], &node->children[median_i], (new->length + 1) * sizeof(bt_node *));
+	if (!node->leaf)
+	    memcpy(&new->children[0], &node->children[median_i], (new->length + 1) * sizeof(bt_node *));
+
+    assert_increasing(node);
+    assert_increasing(new);
 
 	// update the left node
 	node->length = median_i;
@@ -165,7 +175,7 @@ vector *select_one_btree(bt_node *root, data low, data high) {
         assert(cur->leaf);
         for (int i = 0; i < cur->length; i++) {
             // if we passed high, we are done
-            if (cur->records[i].val > high)
+            if (cur->records[i].val >= high)
                 return ret;
 
             if (cur->records[i].val >= low)

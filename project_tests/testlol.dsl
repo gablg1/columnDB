@@ -4,6 +4,7 @@
 -- The clustered index has the form of a sorted column.
 -- The table also has two secondary indexes on col1 and col2; both secondary indexes are b-trees.
 --
+create(db,"db1")
 -- Create Table4
 create(tbl,"tbl4",db1,7)
 create(col,"col1",db1.tbl4,unsorted)
@@ -27,18 +28,16 @@ create(col,"col6",db1.tbl5,unsorted)
 create(col,"col7",db1.tbl5,primary)
 --
 -- Load data immediately in the form of a clustered index
-load("../project_tests/data4.csv")
+load("../project_tests/datalol2.csv")
 load("../project_tests/data5.csv")
 --
 -- Create two secondary indexes on col1 and col2 - They are expected to get bulk loaded with all the data we have already.
-positions1=select(db1.tbl4.col1,20000,40000)
-positions2=select(db1.tbl5.col1,30000,70000)
+positions1=select(db1.tbl4.col1,1,2)
 create(idx,db1.tbl4.col1,btree)
 create(idx,db1.tbl4.col2,btree)
 create(idx,db1.tbl5.col1,btree)
 create(idx,db1.tbl5.col2,btree)
 --
 -- Testing that the data and indexes are durable on disk.
-positions11=select(db1.tbl4.col1,20000,40000)
-positions22=select(db1.tbl5.col1,30000,70000)
+positions11=select(db1.tbl4.col1,1,2)
 shutdown
