@@ -352,6 +352,7 @@ query: CREATE '(' DB ',' quoted_name ')'
      }
      | EXECUTE {
             execute_scheduled();
+            add_payload(send_msg, "All executed");
      }
      | name ',' name '=' HASHJOIN '(' vector_var ',' var_or_col ',' vector_var ',' var_or_col ')' {
             char *var1_name = $1;

@@ -38,20 +38,26 @@ void unschedule_all(void) {
 }
 
 void schedule_select(char *var_name, column *col, MaybeInt l, MaybeInt h) {
+    assert(col != NULL);
     sc_node *new = malloc(sizeof(sc_node));
     assert(new != NULL);
     new->col = col;
     new->l = l;
     new->h = h;
     new->next = root;
-    new->length = root->length + 1;
+    if (root != NULL)
+        new->length = root->length + 1;
+    else
+        new->length = 0;
     new->result_name = strdup(var_name);
     root = new;
 }
 
 void *thr_func(void *arg) {
     sc_node *node = arg;
+    assert(node->col != NULL);
     vector *v = select_one(node->col, node->l, node->h);
+    printf("Done with thread\n");
     pthread_exit(v);
 }
 
@@ -61,18 +67,18 @@ void execute_scheduled(void) {
     if (root == NULL)
         return;
 
-    sc_node *cur = root;
-    while (cur != NULL) {
+    for (sc_node *cur = root; cur != NULL; cur = cur->next) {
+        assert(cur->col != NULL);
         pthread_create(&cur->thread, NULL, thr_func, cur);
-        cur = cur->next;
     }
 
     // Blocks until we get all results
-    while (cur != NULL) {
+    for (sc_node *cur = root; cur != NULL; cur = cur->next) {
         vector *result;
         pthread_join(cur->thread, (void **) &result);
         add_vector_var(result, cur->result_name);
     }
 
+    printf("Got here\n");
     unschedule_all();
 }
