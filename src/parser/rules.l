@@ -22,6 +22,8 @@ SYMBOL [,();=]
 -- {comment();}
 create {return CREATE;}
 relational_insert {return REL_INSERT;}
+schedule_select {return SCHEDULE_SELECT;}
+executed {return EXECUTE;}
 select {return SELECT;}
 selectv {return SELECTV;}
 fetch {return FETCH;}

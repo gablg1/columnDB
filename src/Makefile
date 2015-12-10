@@ -57,7 +57,7 @@ parse: list.o
 client: client.o utils.o
 	$(CC) $(CFLAGS) $(DEPCFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
-server: server.o utils.o message.o dbs.o cs165_api.o parser/grammar.tab.o parser/lex.yy.o list.o variables.o agnostic_vector.o vector.o persist.o btree.o sorted.o
+server: server.o utils.o message.o dbs.o cs165_api.o parser/grammar.tab.o parser/lex.yy.o list.o variables.o agnostic_vector.o vector.o persist.o btree.o sorted.o scheduler.o
 	$(CC) $(CFLAGS) $(DEPCFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 cleandb:

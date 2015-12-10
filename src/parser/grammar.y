@@ -7,6 +7,7 @@
 #include "../include/dbs.h"
 #include "../include/list.h"
 #include "../include/variables.h"
+#include "../include/scheduler.h"
 
 #include "lex.yy.h"
 
@@ -43,6 +44,8 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token PRIMARY_T
 %token REL_INSERT
 %token SELECT
+%token SCHEDULE_SELECT
+%token EXECUTE
 %token HASHJOIN
 %token SELECTV
 %token FETCH
@@ -334,6 +337,21 @@ query: CREATE '(' DB ',' quoted_name ')'
             add_vector_var(v, var_name);
 
             add_payload(send_msg, "Selected %d positions succesfully", v->length);
+            }
+     | name '=' SCHEDULE_SELECT '(' col ',' maybe_int ',' maybe_int ')' {
+            char *var_name = $1;
+            column *col = $5;
+            MaybeInt low = $7;
+            MaybeInt high = $9;
+
+            op->type = NOOP;
+
+            schedule_select(var_name, col, low, high);
+
+            add_payload(send_msg, "Select scheduled succesfully");
+     }
+     | EXECUTE {
+            execute_scheduled();
      }
      | name ',' name '=' HASHJOIN '(' vector_var ',' var_or_col ',' vector_var ',' var_or_col ')' {
             char *var1_name = $1;
