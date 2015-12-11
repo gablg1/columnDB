@@ -133,7 +133,6 @@ void bt_make_room(bt_node *node, int i) {
 
 void bt_split_child(bt_node *parent, bt_node *node, size_t i) {
 	size_t median_i = node->length / 2;
-	record median = node->records[median_i];
 	bt_node *new = malloc(sizeof(bt_node));
 	new->leaf = node->leaf;
 
