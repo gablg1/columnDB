@@ -153,8 +153,8 @@ void bt_split_child(bt_node *parent, bt_node *node, size_t i) {
 	if (!node->leaf)
 	    memcpy(&new->children[0], &node->children[median_i], new->length * sizeof(bt_node *));
 
-    assert_increasing(node);
-    assert_increasing(new);
+    //assert_increasing(node);
+    //assert_increasing(new);
 
 	new->next = node->next;
 	new->parent = node->parent;
