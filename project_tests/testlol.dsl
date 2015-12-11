@@ -28,7 +28,7 @@ create(col,"col6",db1.tbl5,unsorted)
 create(col,"col7",db1.tbl5,primary)
 --
 -- Load data immediately in the form of a clustered index
-load("../project_tests/datalol2.csv")
+load("../project_tests/datalol.csv")
 load("../project_tests/data5.csv")
 --
 -- Create two secondary indexes on col1 and col2 - They are expected to get bulk loaded with all the data we have already.

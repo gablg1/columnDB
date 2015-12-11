@@ -167,12 +167,21 @@ void bt_split_child(bt_node *parent, bt_node *node, size_t i) {
 	parent->length++;
 }
 
+size_t bt_search_left(bt_node *node, data d) {
+	int i;
+	for (i = 0; i < node->length; i++) {
+		if (node->records[i].val >= d)
+			break;
+	}
+
+    return i;
+}
 
 // returns the leaf where n is/should be
 bt_node *bt_search_node(bt_node *root, data d) {
 	if (root->leaf)
 		return root;
-	int i = bt_search_inner(root, d);
+	int i = bt_search_left(root, d);
 	if (i > 0)
 	    i--;
 
