@@ -1,8 +1,7 @@
 #include <stdbool.h>
 #include <cs165_api.h>
 
-#define FANOUT 9//170
-#define NODE_SIZE (FANOUT-1)
+#define NODE_SIZE 169
 
 typedef struct record {
     size_t pos;
@@ -27,6 +26,7 @@ typedef struct bt_node {
 	int leaf;
 	int total_length;
 	struct bt_node *next;
+	char padding[8];
 } bt_node;
 
 bt_node *create_btree_index(vector *v);

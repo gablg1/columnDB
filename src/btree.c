@@ -25,7 +25,6 @@ bt_node *create_bt_node(bool leaf) {
 
 bt_node *create_btree_index(vector *v) {
     bt_node *ret = create_bt_node(true);
-    log_info("Size of btree node is: %d.\n", sizeof(bt_node));
 
     bt_insert_bulk(&ret, v);
     return ret;

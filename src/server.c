@@ -248,6 +248,8 @@ int main(void)
         exit(1);
     }
 
+    log_info("Size of btree node is: %d.\n", sizeof(bt_node));
+
     // tries to load persisted databases from file
     load_dbs();
 
