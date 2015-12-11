@@ -548,9 +548,12 @@ vector *select_one(column *col, MaybeInt low, MaybeInt high) {
                 case (NO_INDEX):
                     return select_one_unsorted(col->vector, l, h);
                     break;
-                case (BTREE):
+                case (BTREE): {
+                    //int siz = bt_size(col->index.index);
+                    //printf("Size of column: %d. Size of btree %d\n", col->vector->length, siz);
                     return select_one_btree(col->index.index, l, h);
                     break;
+                              }
                 case (SORTED):
                     return select_one_sorted(col->index.index, l, h);
                     break;

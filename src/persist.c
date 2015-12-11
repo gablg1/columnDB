@@ -57,7 +57,7 @@ bt_node *load_btree_node(FILE *fp) {
     fread(ret, sizeof(bt_node), 1, fp);
 
     if (!ret->leaf) {
-        for (int i = 0; i < ret->length + 1; i++) {
+        for (int i = 0; i < ret->length; i++) {
             ret->children[i] = load_btree_node(fp);
         }
     }
@@ -71,11 +71,11 @@ void place_btree_nexts(bt_node *root) {
             root->children[i]->next = root->children[i + 1];
 
         if (root->next != NULL)
-            root->children[root->length]->next = root->next->children[0];
+            root->children[root->length - 1]->next = root->next->children[0];
         else
-            root->children[root->length]->next = NULL;
+            root->children[root->length - 1]->next = NULL;
 
-        for (int i = 0; i < root->length + 1; i++)
+        for (int i = 0; i < root->length; i++)
             place_btree_nexts(root->children[i]);
     }
 
@@ -183,7 +183,7 @@ void persist_btree_index(bt_node *root, FILE *fp) {
     assert(root != NULL);
     fwrite(root, sizeof(bt_node), 1, fp);
     if (!root->leaf) {
-        for (int i = 0; i < root->length + 1; i++)
+        for (int i = 0; i < root->length; i++)
             persist_btree_index(root->children[i], fp);
     }
 }

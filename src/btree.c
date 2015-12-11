@@ -43,12 +43,13 @@ void bt_insert_bulk(bt_node **root, vector *v) {
 // returns i s.t record[i] >= n is tightest
 // returns i = node->length if n > record[i] for all i
 size_t bt_search_inner(bt_node *node, data d) {
-	int i = 0;
+	int i;
 	for (i = 0; i < node->length; i++) {
 		if (node->records[i].val > d)
 			break;
 	}
-	return i;
+
+    return i;
 }
 
 void bt_insert_non_full(bt_node *x, record n) {
@@ -62,9 +63,16 @@ void bt_insert_non_full(bt_node *x, record n) {
 		x->records[i] = n;
 		x->length++;
 	} else {
+	    // in this case, the lowest value of our child will change
+	    // so we update the first record of x to keep our main invariant
+	    if (i == 0)
+	        x->records[0] = n;
+        else
+	        i--;
+
 		bt_node *y = x->children[i];
 		if (bt_is_full(y)) {
-			bt_split_child(x, y, i);
+			bt_split_child(x, y, i + 1);
 
 			// after splitting, the middle key of the child
 			// comes up to x
@@ -83,14 +91,20 @@ void bt_insert(bt_node **root, record n) {
 		// allocate new root and split the old one
 		bt_node *new_root = create_bt_node(false);
 		new_root->children[0] = *root;
-		bt_split_child(new_root, *root, 0);
+		bt_split_child(new_root, *root, 1);
+
+		// we keep the invariant that node->children[i] points
+		// to a node whose first records is node->records[i]
+		new_root->records[0] = new_root->children[0]->records[0];
+		new_root->length++;
+
 
 		// decide which child will get the n
 		size_t i = 0;
 		if (new_root->records[i].val < n.val)
 			i++;
 
-		bt_insert_non_full(new_root->children[i], n);
+		bt_insert_non_full(new_root->children[0], n);
 
 		// change the root
 		(*root)->parent = new_root;
@@ -112,7 +126,7 @@ void bt_make_room(bt_node *node, int i) {
 
 		// we only move the pointers as well if the node is not a leaf
 		if (!node->leaf)
-			memmove(&node->children[i + 1], &node->children[i], (node->length - i + 1) * sizeof(bt_node *));
+			memmove(&node->children[i + 1], &node->children[i], (node->length - i) * sizeof(bt_node *));
 	}
 }
 
@@ -128,18 +142,19 @@ void bt_split_child(bt_node *parent, bt_node *node, size_t i) {
 	new->length = old_length - median_i;
 	assert(new->length > 0);
 
-	// then we copy records from the left child to the right childt
-	// new is right. node is left
-	memcpy(&new->records[0], &node->records[median_i], new->length * sizeof(record));
-	if (!node->leaf)
-	    memcpy(&new->children[0], &node->children[median_i], (new->length + 1) * sizeof(bt_node *));
-
-    assert_increasing(node);
-    assert_increasing(new);
-
 	// update the left node
 	node->length = median_i;
 	assert(old_length == node->length + new->length);
+
+	// then we copy records from the left child to the right childt
+	// new is right. node is left
+	// new contains median
+	memcpy(&new->records[0], &node->records[median_i], new->length * sizeof(record));
+	if (!node->leaf)
+	    memcpy(&new->children[0], &node->children[median_i], new->length * sizeof(bt_node *));
+
+    assert_increasing(node);
+    assert_increasing(new);
 
 	new->next = node->next;
 	new->parent = node->parent;
@@ -147,21 +162,28 @@ void bt_split_child(bt_node *parent, bt_node *node, size_t i) {
 
     // update the parent
 	bt_make_room(parent, i);
-	parent->children[i + 1] = new;
-	parent->records[i] = median;
+	parent->children[i] = new;
+	parent->records[i] = new->records[0];
 	parent->length++;
 }
 
 
-// returns the node where n is or the leaf where n should be inserted
+// returns the leaf where n is/should be
 bt_node *bt_search_node(bt_node *root, data d) {
 	if (root->leaf)
 		return root;
 	int i = bt_search_inner(root, d);
-	if (i < root->length && root->records[i].val == d)
-		return root;
+	if (i > 0)
+	    i--;
 
 	return bt_search_node(root->children[i], d);
+}
+
+int bt_size(bt_node *root) {
+    vector *v = select_one_btree(root, MIN_DATA, MAX_DATA);
+    int ret = v->length;
+    destroy_vector(v);
+    return ret;
 }
 
 

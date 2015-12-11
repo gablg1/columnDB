@@ -21,7 +21,7 @@ typedef struct record {
  */
 typedef struct bt_node {
     struct bt_node *parent;
-	struct bt_node *children[FANOUT];
+	struct bt_node *children[NODE_SIZE];
 	int length;
 	record records[NODE_SIZE];
 	int leaf;
