@@ -77,7 +77,7 @@ void bt_insert_non_full(bt_node *x, record n) {
 			// after splitting, the middle key of the child
 			// comes up to x
 			// Here we see which of the splitted children will get the element n
-			if (x->records[i].val < n.val)
+			if (x->records[i + 1].val < n.val)
 				y = x->children[i + 1];
 		}
 		bt_insert_non_full(y, n);
@@ -101,10 +101,10 @@ void bt_insert(bt_node **root, record n) {
 
 		// decide which child will get the n
 		size_t i = 0;
-		if (new_root->records[i].val < n.val)
+		if (new_root->records[i + 1].val < n.val)
 			i++;
 
-		bt_insert_non_full(new_root->children[0], n);
+		bt_insert_non_full(new_root->children[i], n);
 
 		// change the root
 		(*root)->parent = new_root;
@@ -202,15 +202,24 @@ vector *select_one_btree(bt_node *root, data low, data high) {
 
     vector *ret = create_vector(0);
     bt_node *cur = ll;
+    int not_counted = 0;
+    int size_big = 0;
     while (cur != NULL) {
+        size_big += cur->length;
         assert(cur->leaf);
         for (int i = 0; i < cur->length; i++) {
             // if we passed high, we are done
-            if (cur->records[i].val >= high)
+            //
+            if (cur->records[i].val >= high) {
+
+                printf("size: %d. Not counted: %d.\n", size_big, not_counted);
                 return ret;
+            }
 
             if (cur->records[i].val >= low)
                 vector_insert(cur->records[i].pos, ret);
+            else
+                not_counted++;
         }
         if (cur == hl)
             break;
