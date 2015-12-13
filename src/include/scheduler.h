@@ -8,6 +8,9 @@ typedef struct sc_node {
     int length;
     struct sc_node *next;
     pthread_t thread;
+    int start;
+    int end;
+    vector *result;
 } sc_node;
 
 

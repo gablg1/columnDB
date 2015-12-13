@@ -495,16 +495,21 @@ status tuple(variable *var, message *msg) {
     return OK_STATUS;
 }
 
-vector *select_one_unsorted(vector *v, data l, data h) {
-    // right now we create the vector with no name
-    vector *ret = create_vector(0);
+void select_one_unsorted(vector *v, data l, data h, int start, int end, vector **result) {
+    assert(result != NULL);
+    if (*result == NULL)
+        *result = create_vector(0);
+
+    if (start < 0)
+        start = 0;
+    if (end < 0 || (size_t) end > v->length)
+        end = v->length;
 
     // performing the select;
-    for (size_t i = 0; i < v->length; i++) {
+    for (size_t i = start; i < (size_t) end; i++) {
         if (v->buf[i] >= l && v->buf[i] < h)
-            vector_insert(i, ret);
+            vector_insert(i, *result);
     }
-    return ret;
 }
 
 vector *select_one_primary(vector *v, data l, data h) {
@@ -535,6 +540,22 @@ vector *select_two(vector *pos_vec, vector *val_vec, MaybeInt low, MaybeInt high
     return ret;
 }
 
+void select_one_block(column *col, MaybeInt low, MaybeInt high, int start, int end, vector ** ret) {
+    data l = (low.present) ? low.val : MIN_DATA;
+    data h = (high.present) ? high.val : MAX_DATA;
+
+    // We treat all columns as unsorted for now
+    /*
+    if (col->type == PRIMARY && col->index.type == NO_INDEX) {
+
+    }
+    else {
+        *ret = select_one(col, low, high);
+    }
+    */
+    select_one_unsorted(col->vector, l, h, start, end, ret);
+}
+
 vector *select_one(column *col, MaybeInt low, MaybeInt high) {
     data l = (low.present) ? low.val : MIN_DATA;
     data h = (high.present) ? high.val : MAX_DATA;
@@ -545,9 +566,12 @@ vector *select_one(column *col, MaybeInt low, MaybeInt high) {
             break;
         case (UNSORTED):
             switch (col->index.type) {
-                case (NO_INDEX):
-                    return select_one_unsorted(col->vector, l, h);
+                case (NO_INDEX): {
+                    vector *result = create_vector(0);
+                    select_one_unsorted(col->vector, l, h, -1, -1, &result);
+                    return result;
                     break;
+                                 }
                 case (BTREE): {
                     //int siz = bt_size(col->index.index);
                     //printf("Size of column: %d. Size of btree %d\n", col->vector->length, siz);

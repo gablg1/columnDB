@@ -444,6 +444,7 @@ status update(column *col, data *pos, data new_val);
 status col_scan(comparator *f, column *col, result **r);
 status index_scan(comparator *f, column *col, result **r);
 
+void select_one_block(column *col, MaybeInt low, MaybeInt high, int start, int end, vector **r);
 vector *select_one(column *col, MaybeInt low, MaybeInt high);
 vector *fetch(vector *values, vector *positions);
 vector *select_two(vector *pos_vec, vector *val_vec, MaybeInt low, MaybeInt high);

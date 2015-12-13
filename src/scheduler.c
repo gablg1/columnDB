@@ -6,16 +6,8 @@
 #include "dbs.h"
 #include "variables.h"
 #include "agnostic_vector.h"
+#include "scheduler.h"
 
-typedef struct sc_node {
-    char *result_name;
-    column *col;
-    MaybeInt l;
-    MaybeInt h;
-    int length;
-    struct sc_node *next;
-    pthread_t thread;
-} sc_node;
 
 sc_node *root;
 
@@ -35,6 +27,7 @@ void unschedule_helper(sc_node *n) {
 
 void unschedule_all(void) {
     unschedule_helper(root);
+    root = NULL;
 }
 
 void schedule_select(char *var_name, column *col, MaybeInt l, MaybeInt h) {
@@ -51,14 +44,21 @@ void schedule_select(char *var_name, column *col, MaybeInt l, MaybeInt h) {
         new->length = 0;
     new->result_name = strdup(var_name);
     root = new;
+
+    // this has to be set on execution
+    new->start = -1;
+    new->end = -1;
+
+    // We leave the return vector initialization to select
+    new->result = NULL;
 }
 
 void *thr_func(void *arg) {
     sc_node *node = arg;
     assert(node->col != NULL);
-    vector *v = select_one(node->col, node->l, node->h);
+    select_one_block(node->col, node->l, node->h, node->start, node->end, &(node->result));
     printf("Done with thread\n");
-    pthread_exit(v);
+    pthread_exit(NULL);
 }
 
 
@@ -67,18 +67,38 @@ void execute_scheduled(void) {
     if (root == NULL)
         return;
 
-    for (sc_node *cur = root; cur != NULL; cur = cur->next) {
-        assert(cur->col != NULL);
-        pthread_create(&cur->thread, NULL, thr_func, cur);
+    // Currently assumes everyone in the LL is on the same column
+    column *col = root->col;
+
+    // Schedule each thread on some pages
+    int n_pages = 1;
+    printf("Vector size: %d\n", col->vector->length);
+    for (size_t i = 0; i < col->vector->length; i += n_pages * PAGESIZE) {
+        int start = i;
+        int end = i + n_pages * PAGESIZE;
+        int j = 0;
+        for (sc_node *cur = root; cur != NULL; cur = cur->next) {
+            assert(cur->col != NULL);
+            cur->start = start;
+            cur->end = end;
+
+            printf("Creating thread %d\n", j++);
+            pthread_create(&cur->thread, NULL, thr_func, cur);
+        }
+
+        printf("About to wait for the threads\n");
+
+        // Blocks until we get all results
+        for (sc_node *cur = root; cur != NULL; cur = cur->next) {
+            pthread_join(cur->thread, NULL);
+        }
+        printf("Done with block %d\n", i);
     }
 
-    // Blocks until we get all results
     for (sc_node *cur = root; cur != NULL; cur = cur->next) {
-        vector *result;
-        pthread_join(cur->thread, (void **) &result);
-        add_vector_var(result, cur->result_name);
+        add_vector_var(cur->result, cur->result_name);
     }
 
-    printf("Got here\n");
+    printf("About to unschedule selects\n");
     unschedule_all();
 }
