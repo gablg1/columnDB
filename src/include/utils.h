@@ -24,6 +24,8 @@ size_t binary_search_right(data *buf, data n, size_t length);
 
 void *get_next_allocated_element(size_t *count, size_t *max_count, size_t size, void *b);
 
+long get_microtime(void);
+
 // cs165_log(out, format, ...)
 // Writes the string from @format to the @out pointer, extendable for
 // additional parameters.

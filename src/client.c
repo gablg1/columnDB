@@ -34,7 +34,7 @@
 #define DEFAULT_STDIN_BUFFER_SIZE 1024
 
 // uncomment this if you want to compile for production
-#define IMPORTANT_ONLY
+//#define IMPORTANT_ONLY
 
 /**
  * connect_client()
@@ -167,9 +167,18 @@ int main(void)
                 }
                 close(load_fd);
             }
+#ifdef IMPORTANT_ONLY
+#else
+            long current = get_microtime();
+#endif
 
             // Always wait for server response (even if it is just an OK message)
             if ((len = recv(client_socket, &(recv_message), sizeof(message), 0)) > 0) {
+#ifdef IMPORTANT_ONLY
+#else
+                long elapsed = get_microtime() - current;
+                printf("Server's response took %ld microseconds\n", elapsed);
+#endif
                 if (recv_message.status == OK_SHUTDOWN) {
                     break;
                 }

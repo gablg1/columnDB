@@ -24,6 +24,7 @@ create {return CREATE;}
 relational_insert {return REL_INSERT;}
 schedule_select {return SCHEDULE_SELECT;}
 execute_scheduled {return EXECUTE;}
+execute_scheduled_sequentially {return EXECUTE_SEQUENTIALLY;}
 select {return SELECT;}
 selectv {return SELECTV;}
 fetch {return FETCH;}

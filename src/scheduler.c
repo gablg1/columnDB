@@ -61,6 +61,25 @@ void *thr_func(void *arg) {
     pthread_exit(NULL);
 }
 
+void execute_scheduled_sequentially(void) {
+    // no threads to be schedules
+    if (root == NULL)
+        return;
+
+    // Currently assumes everyone in the LL is on the same column
+
+    // Schedule each thread on some pages
+    for (sc_node *cur = root; cur != NULL; cur = cur->next) {
+        assert(cur->col != NULL);
+
+        vector *v = select_one(cur->col, cur->l, cur->h);
+        add_vector_var(v, cur->result_name);
+    }
+
+
+    printf("About to unschedule selects\n");
+    unschedule_all();
+}
 
 void execute_scheduled(void) {
     // no threads to be schedules
@@ -71,8 +90,8 @@ void execute_scheduled(void) {
     column *col = root->col;
 
     // Schedule each thread on some pages
-    int n_pages = 1;
-    printf("Vector size: %d\n", col->vector->length);
+    int n_pages = 256;
+    printf("Vector size: %d\n", (int) col->vector->length);
     for (size_t i = 0; i < col->vector->length; i += n_pages * PAGESIZE) {
         int start = i;
         int end = i + n_pages * PAGESIZE;
@@ -92,7 +111,7 @@ void execute_scheduled(void) {
         for (sc_node *cur = root; cur != NULL; cur = cur->next) {
             pthread_join(cur->thread, NULL);
         }
-        printf("Done with block %d\n", i);
+        printf("Done with block %d\n", (int) i);
     }
 
     for (sc_node *cur = root; cur != NULL; cur = cur->next) {

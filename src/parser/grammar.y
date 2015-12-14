@@ -46,6 +46,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token SELECT
 %token SCHEDULE_SELECT
 %token EXECUTE
+%token EXECUTE_SEQUENTIALLY
 %token HASHJOIN
 %token SELECTV
 %token FETCH
@@ -352,7 +353,11 @@ query: CREATE '(' DB ',' quoted_name ')'
      }
      | EXECUTE {
             execute_scheduled();
-            add_payload(send_msg, "All executed");
+            add_payload(send_msg, "All executed in parallel");
+     }
+     | EXECUTE_SEQUENTIALLY {
+            execute_scheduled_sequentially();
+            add_payload(send_msg, "All executed sequentially");
      }
      | name ',' name '=' HASHJOIN '(' vector_var ',' var_or_col ',' vector_var ',' var_or_col ')' {
             char *var1_name = $1;

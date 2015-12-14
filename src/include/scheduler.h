@@ -19,3 +19,5 @@ void unschedule_all(void);
 void schedule_select(char *var_name, column *col, MaybeInt l, MaybeInt h);
 
 void execute_scheduled(void);
+
+void execute_scheduled_sequentially(void);
