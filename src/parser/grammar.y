@@ -7,6 +7,7 @@
 #include "../include/dbs.h"
 #include "../include/list.h"
 #include "../include/variables.h"
+#include "../include/hashjoin.h"
 #include "../include/scheduler.h"
 
 #include "lex.yy.h"
@@ -48,6 +49,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 %token EXECUTE
 %token EXECUTE_SEQUENTIALLY
 %token HASHJOIN
+%token NESTED_JOIN
 %token SELECTV
 %token FETCH
 %token TUPLE
@@ -358,6 +360,21 @@ query: CREATE '(' DB ',' quoted_name ')'
      | EXECUTE_SEQUENTIALLY {
             execute_scheduled_sequentially();
             add_payload(send_msg, "All executed sequentially");
+     }
+     | name ',' name '=' NESTED_JOIN '(' vector_var ',' var_or_col ',' vector_var ',' var_or_col ')' {
+            char *var1_name = $1;
+            char *var2_name = $3;
+            vector *positions1 = $7;
+            vector *values1 = $9;
+            vector *positions2 = $11;
+            vector *values2 = $13;
+
+            vector *r1, *r2;
+            nested_join(&r1, &r2, positions1, values1, positions2, values2);
+
+            add_vector_var(r1, var1_name);
+            add_vector_var(r2, var2_name);
+            add_payload(send_msg, "Joined %d positions succesfully", r1->length);
      }
      | name ',' name '=' HASHJOIN '(' vector_var ',' var_or_col ',' vector_var ',' var_or_col ')' {
             char *var1_name = $1;

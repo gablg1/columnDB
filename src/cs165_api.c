@@ -331,9 +331,6 @@ void nested_join(vector **r1, vector **r2, vector *pos1, vector *val1, vector *p
     assert((*r1)->length == (*r2)->length);
 }
 
-void hashjoin(vector **r1, vector **r2, vector *pos1, vector *val1, vector *pos2, vector *val2) {
-    nested_join(r1, r2, pos1, val1, pos2, val2);
-}
 
 vector *add(vector *v1, vector *v2) {
     assert(v1->length == v2->length);

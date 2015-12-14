@@ -46,6 +46,7 @@ sorted {return SORTED_T; }
 primary {return PRIMARY_T; }
 btree {return BTREE_T; }
 hashjoin {return HASHJOIN; }
+nested_join {return NESTED_JOIN; }
 
 
 [\t ]     /* spaces just signify end of token */

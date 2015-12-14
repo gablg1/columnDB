@@ -448,7 +448,7 @@ void select_one_block(column *col, MaybeInt low, MaybeInt high, int start, int e
 vector *select_one(column *col, MaybeInt low, MaybeInt high);
 vector *fetch(vector *values, vector *positions);
 vector *select_two(vector *pos_vec, vector *val_vec, MaybeInt low, MaybeInt high);
-void hashjoin(vector **r1, vector **r2, vector *pos1, vector *val1, vector *pos2, vector *val2);
+void nested_join(vector **r1, vector **r2, vector *pos1, vector *val1, vector *pos2, vector *val2);
 
 status load(int client_fd);
 
