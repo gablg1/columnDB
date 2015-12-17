@@ -23,8 +23,12 @@
 #include <sys/uio.h>
 #include <sys/stat.h>
 
+char *strdup(const char *s);
+char *strsep(char **stringp, const char *delim);
+
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/sendfile.h>
 #include <sys/un.h>
 
 #include "common.h"
@@ -156,7 +160,7 @@ int main(void)
                     exit(1);
                 }
 
-                if (sendfile(load_fd, client_socket, 0, &(filestat.st_size), NULL, 0) == -1) {
+                if (sendfile(client_socket, load_fd, NULL, filestat.st_size) == -1) {
                     log_err("Failed to send file. Error: %s", strerror(errno));
                     exit(1);
                 }

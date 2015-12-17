@@ -6,7 +6,7 @@
 all: parse client server
 
 # C-compiler settings
-CC = gcc -std=c99 -g -ggdb3
+CC = gcc -std=gnu99 -g -ggdb3
 
 # Default optimization level
 O ?= 0
