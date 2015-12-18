@@ -9,9 +9,9 @@
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-#define LOG
-#define LOG_ERR
-#define LOG_INFO
+//#define LOG
+//#define LOG_ERR
+//#define LOG_INFO
 
 #define TO_ALLOCATE 64
 

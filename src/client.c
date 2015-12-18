@@ -98,7 +98,7 @@ int main(void)
     send_message.payload = read_buffer;
 
     // clear output
-    printf("\n");
+    //printf("\n");
     while (printf("%s", prefix), output_str = fgets(read_buffer,
            DEFAULT_STDIN_BUFFER_SIZE, stdin), !feof(stdin)) {
         if (output_str == NULL) {
