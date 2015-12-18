@@ -355,10 +355,12 @@ query: CREATE '(' DB ',' quoted_name ')'
      }
      | EXECUTE {
             execute_scheduled();
+            op->type = NOOP;
             add_payload(send_msg, "All executed in parallel");
      }
      | EXECUTE_SEQUENTIALLY {
             execute_scheduled_sequentially();
+            op->type = NOOP;
             add_payload(send_msg, "All executed sequentially");
      }
      | name ',' name '=' NESTED_JOIN '(' vector_var ',' var_or_col ',' vector_var ',' var_or_col ')' {
