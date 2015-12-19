@@ -407,7 +407,7 @@ status tuple_vectors(vector *val1, vector* val2, message *msg) {
         snprintf(buf, MAX_MSG_SIZE, "Empty vector");
         msg->status = OK_WAIT_FOR_RESPONSE;
     }
-    add_payload(msg, buf);
+    add_raw_payload(msg, buf);
     return OK_STATUS;
 }
 status tuple_vector(vector *values, message *msg) {
@@ -531,8 +531,11 @@ vector *select_two(vector *pos_vec, vector *val_vec, MaybeInt low, MaybeInt high
 
     // performing the select;
     for (size_t i = 0; i < val_vec->length; i++) {
-        if (val_vec->buf[i] >= l && val_vec->buf[i] < h)
-            vector_insert(pos_vec->buf[i], ret);
+        if (val_vec->buf[i] >= l && val_vec->buf[i] < h) {
+	    int pos = pos_vec->buf[i];
+            vector_insert(pos, ret);
+	}
+
     }
     return ret;
 }

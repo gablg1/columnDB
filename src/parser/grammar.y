@@ -21,7 +21,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 
 %union {
     char *str;
-    int val;
+    data val;
     struct list *list;
     struct MaybeInt maybe_val;
     void *ptr;
@@ -313,6 +313,8 @@ query: CREATE '(' DB ',' quoted_name ')'
             vector *val_vec = $7;
             MaybeInt low = $9;
             MaybeInt high = $11;
+	    if (high.val < low.val)
+   		high.present = 0;
 
             op->type = NOOP;
 
@@ -370,6 +372,7 @@ query: CREATE '(' DB ',' quoted_name ')'
             vector *values1 = $9;
             vector *positions2 = $11;
             vector *values2 = $13;
+            op->type = NOOP;
 
             vector *r1, *r2;
             nested_join(&r1, &r2, positions1, values1, positions2, values2);
@@ -386,6 +389,7 @@ query: CREATE '(' DB ',' quoted_name ')'
             vector *positions2 = $11;
             vector *values2 = $13;
 
+            op->type = NOOP;
             vector *r1, *r2;
             hashjoin(&r1, &r2, positions1, values1, positions2, values2);
 
@@ -501,7 +505,8 @@ quoted_name: '"' WORD '"' { $$ = $2; }
 maybe_int: INT {
         MaybeInt n;
         n.present = 1;
-        n.val = $1;
+	long long d = $1;
+        n.val = d;
         $$ = n;
    } | NULL_T {
         MaybeInt n;

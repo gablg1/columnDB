@@ -22,6 +22,7 @@ typedef struct message {
 } message;
 
 void add_payload(message *m, const char *format, ...);
+void add_raw_payload(message *m, const char *payload);
 
 void init_message(message *m);
 

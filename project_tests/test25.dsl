@@ -31,14 +31,10 @@ load("../project_tests/data4.csv")
 load("../project_tests/data5.csv")
 --
 -- Create two secondary indexes on col1 and col2 - They are expected to get bulk loaded with all the data we have already.
-positions1=select(db1.tbl4.col1,20000,40000)
-positions2=select(db1.tbl5.col1,30000,70000)
 create(idx,db1.tbl4.col1,btree)
 create(idx,db1.tbl4.col2,btree)
 create(idx,db1.tbl5.col1,btree)
 create(idx,db1.tbl5.col2,btree)
 --
 -- Testing that the data and indexes are durable on disk.
-positions11=select(db1.tbl4.col1,20000,40000)
-positions22=select(db1.tbl5.col1,30000,70000)
 shutdown

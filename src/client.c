@@ -38,7 +38,8 @@ char *strsep(char **stringp, const char *delim);
 #define DEFAULT_STDIN_BUFFER_SIZE 1024
 
 // uncomment this if you want to compile for production
-#define IMPORTANT_ONLY
+//#define IMPORTANT_ONLY
+//#define TIME
 
 /**
  * connect_client()
@@ -178,8 +179,7 @@ int main(void)
 
             // Always wait for server response (even if it is just an OK message)
             if ((len = recv(client_socket, &(recv_message), sizeof(message), 0)) > 0) {
-#ifdef IMPORTANT_ONLY
-#else
+#ifdef TIME 
                 long elapsed = get_microtime() - current;
                 printf("Server's response took %ld microseconds\n", elapsed);
 #endif
@@ -194,7 +194,7 @@ int main(void)
                     char payload[num_bytes + 1];
 
                     // Receive the payload and print it out
-                    if ((len = recv(client_socket, payload, num_bytes, 0)) > 0) {
+                    if ((len = recv(client_socket, payload, num_bytes, MSG_WAITALL)) > 0) {
                         payload[num_bytes] = '\0';
 #ifdef IMPORTANT_ONLY
                         if (recv_message.status == OK_IMPORTANT)

@@ -5,6 +5,11 @@
 #include <string.h>
 #include <assert.h>
 
+void add_raw_payload(message *m, const char *payload) {
+    assert(m->payload == NULL);
+    m->payload = payload;
+    m->length = strlen(payload);
+}
 
 void add_payload(message *m, const char *format, ...) {
     va_list v;

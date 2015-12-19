@@ -15,15 +15,16 @@ create(col,"col4",db1.tbl2,unsorted)
 create(col,"col5",db1.tbl2,unsorted)
 create(col,"col6",db1.tbl2,unsorted)
 -- sorted column (it can be only one. the table should be maintained ordered on column 7 throughout execution)
-create(col,"col7",db1.tbl2,primary)
+--create(col,"col7",db1.tbl2,primary)
+create(col,"col7",db1.tbl2,unsorted)
 --
 --
 -- Load data immediately in the form of a clustered index
 load("../project_tests/data1.csv")
 --
 -- Create two secondary indexes on col1 and col2 - They are expected to get bulk loaded with all the data we have already.
-create(idx,db1.tbl2.col1,btree)
-create(idx,db1.tbl2.col2,btree)
+--create(idx,db1.tbl2.col1,btree)
+--create(idx,db1.tbl2.col2,btree)
 --
 -- Testing that the data and their indexes are durable on disk.
 shutdown
