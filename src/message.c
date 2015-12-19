@@ -5,7 +5,7 @@
 #include <string.h>
 #include <assert.h>
 
-void add_raw_payload(message *m, const char *payload) {
+void add_raw_payload(message *m, char *payload) {
     assert(m->payload == NULL);
     m->payload = payload;
     m->length = strlen(payload);

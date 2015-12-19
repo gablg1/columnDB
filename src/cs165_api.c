@@ -383,6 +383,7 @@ data max(vector *values) {
 }
 
 status tuple_vectors(vector *val1, vector* val2, message *msg) {
+    msg->status = OK_IMPORTANT;
     assert(val1 != NULL && val2 != NULL);
     int msg_size = MAX_MSG_SIZE;
     char *buf = malloc(msg_size * sizeof(char));
