@@ -38,8 +38,8 @@ char *strsep(char **stringp, const char *delim);
 #define DEFAULT_STDIN_BUFFER_SIZE 1024
 
 // uncomment this if you want to compile for production
-#define IMPORTANT_ONLY
-//#define TIME
+//#define IMPORTANT_ONLY
+#define TIME
 
 /**
  * connect_client()
