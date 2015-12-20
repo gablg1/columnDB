@@ -11,6 +11,8 @@
  * For more information on unix sockets, refer to:
  * http://beej.us/guide/bgipc/output/html/multipage/unixsock.html
  **/
+//#define LINUX
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -28,8 +30,11 @@ char *strsep(char **stringp, const char *delim);
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/sendfile.h>
 #include <sys/un.h>
+
+#ifdef LINUX
+#include <sys/sendfile.h>
+#endif
 
 #include "common.h"
 #include "message.h"
@@ -38,7 +43,7 @@ char *strsep(char **stringp, const char *delim);
 #define DEFAULT_STDIN_BUFFER_SIZE 1024
 
 // uncomment this if you want to compile for production
-//#define IMPORTANT_ONLY
+#define IMPORTANT_ONLY
 #define TIME
 
 /**
@@ -161,7 +166,12 @@ int main(void)
                     exit(1);
                 }
 
+#ifdef LINUX
                 if (sendfile(client_socket, load_fd, NULL, filestat.st_size) == -1) {
+#else
+                if (sendfile(load_fd, client_socket, 0, &(filestat.st_size), NULL, 0) == -1) {
+
+#endif
                     log_err("Failed to send file. Error: %s", strerror(errno));
                     exit(1);
                 }
@@ -178,9 +188,12 @@ int main(void)
 
             // Always wait for server response (even if it is just an OK message)
             if ((len = recv(client_socket, &(recv_message), sizeof(message), MSG_WAITALL)) > 0) {
-#ifdef TIME 
+#ifdef TIME
                 long elapsed = get_microtime() - current;
-                printf("Server's response took %ld microseconds\n", elapsed);
+                if (elapsed > 40) {
+                    printf("Server's response took %ld microseconds\n", elapsed);
+                    recv_message.status = OK_IMPORTANT;
+                }
 #endif
                 if (recv_message.status == OK_SHUTDOWN) {
                     break;

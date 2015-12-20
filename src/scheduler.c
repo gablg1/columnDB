@@ -90,7 +90,7 @@ void execute_scheduled(void) {
     column *col = root->col;
 
     // Schedule each thread on some pages
-    int n_pages = 256;
+    int n_pages = 32;
     printf("Vector size: %d\n", (int) col->vector->length);
     for (size_t i = 0; i < col->vector->length; i += n_pages * PAGESIZE) {
         int start = i;

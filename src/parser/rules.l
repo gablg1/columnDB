@@ -41,6 +41,7 @@ db { return DB; }
 tbl { return TBL; }
 col { return COL; }
 idx { return IDX; }
+size { return SIZE; }
 unsorted { return UNSORTED_T; }
 sorted {return SORTED_T; }
 primary {return PRIMARY_T; }

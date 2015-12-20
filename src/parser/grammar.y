@@ -29,6 +29,7 @@ void yyerror(db_operator *op, message *send_msg, const char *msg);
 
 /* _T is needed for conflict with #define */
 %token CREATE
+%token SIZE
 %token DB
 %token TBL
 %token COL
@@ -327,6 +328,12 @@ query: CREATE '(' DB ',' quoted_name ')'
             add_payload(send_msg, "Selected %d positions succesfully", v->length);
 
      }
+     | SIZE '(' tbl ')' {
+        table *tbl = $3;
+        op->type = NOOP;
+        add_payload(send_msg, "Table %s has size %d", tbl->name, tbl->cols[0].vector->length);
+
+    }
      | name '=' SELECT '(' col ',' maybe_int ',' maybe_int ')' {
             char *var_name = $1;
             column *col = $5;
