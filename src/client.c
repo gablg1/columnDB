@@ -11,7 +11,7 @@
  * For more information on unix sockets, refer to:
  * http://beej.us/guide/bgipc/output/html/multipage/unixsock.html
  **/
-//#define LINUX
+#define LINUX
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -44,7 +44,7 @@ char *strsep(char **stringp, const char *delim);
 
 // uncomment this if you want to compile for production
 #define IMPORTANT_ONLY
-#define TIME
+//#define TIME
 
 /**
  * connect_client()
